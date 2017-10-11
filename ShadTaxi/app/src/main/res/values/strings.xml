@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">ShadTaxi</string>
+    <string name="string_forgot_password"><b><u>Forgot password?</u></b></string>
+    <string name="hint_phone_number"><font size="14">Phone number</font></string>
+    <string name="hint_password"><font size="14">Password</font></string>
+    <string name="hint_first_name"><font size="14">First name</font></string>
+    <string name="hint_last_name"><font size="14">Last name</font></string>
+    <string name="string_terms">I accept <u><b>Terms &amp; Conditions</b></u></string>
+    <string name="title_activity_dashboard">DashboardActivity</string>
+    <string name="hint_getting_location"><font size="14">Getting your location...</font></string>
+    <string name="hint_where_to"><font size="14">Where to?</font></string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="no_location_detected">
+        No location detected. Make sure location is enabled on the device.
+    </string>
+
+    <string name="permission_rationale">Location permission is needed for core functionality</string>
+    <string name="permission_denied_explanation">Permission was denied, but is needed for corefunctionality.</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="place_details">&lt;b&gt;%1$s&lt;/b&gt;&lt;br/&gt;&lt;i&gt;Place Id: %2$s&lt;/i&gt;&lt;br/&gt;Address: %3$s&lt;br/&gt;Phone: %4$s&lt;br/&gt;Website: %5$s</string>
+
+</resources>
