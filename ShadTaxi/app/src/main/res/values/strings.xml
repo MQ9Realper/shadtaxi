@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ShadTaxi</string>
+    <string name="app_name">Safiree</string>
     <string name="string_forgot_password"><b><u>Forgot password?</u></b></string>
     <string name="hint_phone_number"><font size="14">Phone number</font></string>
     <string name="hint_password"><font size="14">Password</font></string>

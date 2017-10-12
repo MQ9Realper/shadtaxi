@@ -97,7 +97,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 .addApi(Places.GEO_DATA_API)
                 .build();
 
-        InitToolbar("ShadTaxi");
+        InitToolbar(getResources().getString(R.string.app_name));
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
