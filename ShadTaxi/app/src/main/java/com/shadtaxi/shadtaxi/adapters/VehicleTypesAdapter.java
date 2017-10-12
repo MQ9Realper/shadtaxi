@@ -41,6 +41,7 @@ public class VehicleTypesAdapter extends RecyclerView.Adapter<VehicleTypesAdapte
     public VehicleTypesAdapter(Context context, ArrayList<VehicleType> vehicleTypeArrayList) {
         this.context = context;
         this.vehicleTypeArrayList = vehicleTypeArrayList;
+        this.selectedPositions.add(vehicleTypeArrayList.size() - 1);
     }
 
     @Override
