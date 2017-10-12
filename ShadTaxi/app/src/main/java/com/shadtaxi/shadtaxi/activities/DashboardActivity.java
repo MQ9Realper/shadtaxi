@@ -21,12 +21,15 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
@@ -53,6 +56,9 @@ import com.google.android.gms.tasks.Task;
 import com.shadtaxi.shadtaxi.BuildConfig;
 import com.shadtaxi.shadtaxi.R;
 import com.shadtaxi.shadtaxi.adapters.PlaceAutocompleteAdapter;
+import com.shadtaxi.shadtaxi.adapters.VehicleTypesAdapter;
+import com.shadtaxi.shadtaxi.data.Data;
+import com.shadtaxi.shadtaxi.utils.EqualSpacingItemDecoration;
 import com.shadtaxi.shadtaxi.utils.UniversalUtils;
 import com.shadtaxi.shadtaxi.views.Atc;
 import com.shadtaxi.shadtaxi.views.Edt;
@@ -81,6 +87,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         setContentView(R.layout.activity_dashboard);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         universalUtils = new UniversalUtils(this);
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         edtPickUpLocation = (Edt) findViewById(R.id.edtPickUpLocation);
         edtDropOffLocation = (Atc) findViewById(R.id.edtDropOffLocation);
@@ -132,6 +139,8 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 Log.i(TAG, "Called getPlaceById to get Place details for " + placeId);
             }
         });
+
+        initVehicleTypes();
     }
 
     /**
@@ -463,5 +472,16 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
+    }
+
+    private void initVehicleTypes(){
+        Data data = new Data();
+        VehicleTypesAdapter vehicleTypesAdapter = new VehicleTypesAdapter(this, data.vehicleTypeArrayList());
+        RecyclerView listVehicleTypes = (RecyclerView) findViewById(R.id.listVehicleTypes);
+        listVehicleTypes.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, true));
+        listVehicleTypes.addItemDecoration(new EqualSpacingItemDecoration(16, EqualSpacingItemDecoration.HORIZONTAL));
+        //listVehicleTypes.smoothScrollToPosition(selectedPosition);
+        listVehicleTypes.setHasFixedSize(true);
+        listVehicleTypes.setAdapter(vehicleTypesAdapter);
     }
 }
