@@ -45,7 +45,7 @@ public class Btn extends AppCompatButton {
             if (typeface == null) {
                 // G1.log(TAG, "asset:: " + "fonts/" + asset);
                 typeface = Typeface.createFromAsset(ctx.getAssets(),
-                        "fonts/Raleway-Bold.ttf");
+                        "fonts/Raleway-Medium.ttf");
             }
 
         } catch (Exception e) {
