@@ -3,32 +3,31 @@ package com.shadtaxi.shadtaxi.views;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
-import android.support.v7.widget.AppCompatButton;
+import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 
 import com.shadtaxi.shadtaxi.R;
 
-
 /**
- * Created by dennismwebia on 9/6/17.
+ * Created by dennis on 11/6/17.
  */
 
-public class Btn extends AppCompatButton {
+public class TxtLogo extends AppCompatTextView {
 
 //	private static final String TAG = "TextView";
 
     private Typeface typeface;
 
-    public Btn(Context context) {
+    public TxtLogo(Context context) {
         super(context);
     }
 
-    public Btn(Context context, AttributeSet attrs) {
+    public TxtLogo(Context context, AttributeSet attrs) {
         super(context, attrs);
         setCustomFont(context, attrs);
     }
 
-    public Btn(Context context, AttributeSet attrs, int defStyle) {
+    public TxtLogo(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         setCustomFont(context, attrs);
     }
@@ -45,7 +44,7 @@ public class Btn extends AppCompatButton {
             if (typeface == null) {
                 // G1.log(TAG, "asset:: " + "fonts/" + asset);
                 typeface = Typeface.createFromAsset(ctx.getAssets(),
-                        "fonts/Raleway-Medium.ttf");
+                        "fonts/KrinkesRegularPERSONAL.ttf");
             }
 
         } catch (Exception e) {
@@ -57,5 +56,4 @@ public class Btn extends AppCompatButton {
         setTypeface(typeface);
         return true;
     }
-
 }

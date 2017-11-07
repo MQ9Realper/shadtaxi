@@ -19,6 +19,7 @@
         android:layout_margin="16dp" />
 
     <include
+        android:id="@+id/layoutBookingDetails"
         layout="@layout/layout_booking_details"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

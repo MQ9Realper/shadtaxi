@@ -12,49 +12,61 @@
         android:id="@+id/toolbarSignUp"
         layout="@layout/layout_toolbar" />
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <include
-            layout="@layout/layout_register_names"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp" />
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:orientation="vertical">
 
-        <include
-            layout="@layout/layout_register_phone_number"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp" />
+            <include
+                layout="@layout/layout_register_names"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp" />
 
-        <include
-            layout="@layout/layout_register_password"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp" />
+            <include
+                layout="@layout/layout_register_phone_number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp" />
 
-        <include
-            layout="@layout/layout_registration_terms"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp" />
+            <include
+                layout="@layout/layout_register_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp" />
 
-        <com.shadtaxi.shadtaxi.views.Btn
-            android:id="@+id/btnCompleteSignUp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/drawable_sign_in_background"
-            android:padding="16dp"
-            android:text="REGISTER"
-            android:textAllCaps="true"
-            android:textColor="@android:color/white"
-            android:textSize="15sp" />
+            <include
+                layout="@layout/layout_register_confirm_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp" />
 
-    </LinearLayout>
+            <include
+                layout="@layout/layout_registration_terms"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp" />
+
+            <com.shadtaxi.shadtaxi.views.Btn
+                android:id="@+id/btnCompleteSignUp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/drawable_sign_in_background"
+                android:padding="16dp"
+                android:text="REGISTER"
+                android:textAllCaps="true"
+                android:textColor="@android:color/white"
+                android:textSize="15sp" />
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>

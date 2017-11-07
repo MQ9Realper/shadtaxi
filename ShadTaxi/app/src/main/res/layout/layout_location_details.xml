@@ -47,6 +47,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/layoutSelectDropoff"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
@@ -72,7 +73,7 @@
 
         </LinearLayout>
 
-        <com.shadtaxi.shadtaxi.views.Atc
+        <com.shadtaxi.shadtaxi.views.Txt
             android:id="@+id/edtDropOffLocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

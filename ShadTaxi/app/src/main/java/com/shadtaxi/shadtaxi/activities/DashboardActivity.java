@@ -1,10 +1,10 @@
 package com.shadtaxi.shadtaxi.activities;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
@@ -24,25 +24,27 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
-import android.text.Spanned;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.common.Priority;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.JSONArrayRequestListener;
+import com.androidnetworking.interfaces.StringRequestListener;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.places.AutocompletePrediction;
 import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.PlaceBuffer;
 import com.google.android.gms.location.places.Places;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -55,21 +57,25 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.shadtaxi.shadtaxi.BuildConfig;
 import com.shadtaxi.shadtaxi.R;
-import com.shadtaxi.shadtaxi.adapters.PlaceAutocompleteAdapter;
 import com.shadtaxi.shadtaxi.adapters.VehicleTypesAdapter;
+import com.shadtaxi.shadtaxi.constants.Constants;
 import com.shadtaxi.shadtaxi.data.Data;
 import com.shadtaxi.shadtaxi.utils.EqualSpacingItemDecoration;
 import com.shadtaxi.shadtaxi.utils.UniversalUtils;
-import com.shadtaxi.shadtaxi.views.Atc;
 import com.shadtaxi.shadtaxi.views.Edt;
+import com.shadtaxi.shadtaxi.views.Txt;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Locale;
 
 public class DashboardActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener {
+    private static final int PLACE_PICKER_REQUEST = 0x1;
     protected GoogleApiClient mGoogleApiClient;
-    private PlaceAutocompleteAdapter placeAutocompleteAdapter;
     private GoogleMap mMap;
     private Location location;
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -78,8 +84,12 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     private UniversalUtils universalUtils;
     private Toolbar toolbar;
     private Edt edtPickUpLocation;
-    private Atc edtDropOffLocation;
+    private Txt edtDropOffLocation, txtTotalDistance, txtTotalTime, txtTotalCost;
     private String MY_ADDRESS = "";
+    private String CURRENCY = "Kes ";
+    private double DISTANCE = 0.00;
+    private LinearLayout layoutBookingDetails;
+    private DecimalFormat decimalFormat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,17 +97,27 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         setContentView(R.layout.activity_dashboard);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         universalUtils = new UniversalUtils(this);
+        decimalFormat = new DecimalFormat("0.00");
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-        edtPickUpLocation = (Edt) findViewById(R.id.edtPickUpLocation);
-        edtDropOffLocation = (Atc) findViewById(R.id.edtDropOffLocation);
+        InitToolbar(getResources().getString(R.string.app_name));
+
+        initViews();
+
+        checkDropOffAvailability();
+
+        edtDropOffLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                initPlacesPicker();
+            }
+        });
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this, 0 /* clientId */, this)
                 .addApi(Places.GEO_DATA_API)
                 .build();
 
-        InitToolbar(getResources().getString(R.string.app_name));
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -116,74 +136,35 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
             ex.printStackTrace();
         }
 
-        placeAutocompleteAdapter = new PlaceAutocompleteAdapter(this, mGoogleApiClient, null, null);
-        edtDropOffLocation.setAdapter(placeAutocompleteAdapter);
-
-        edtDropOffLocation.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                final AutocompletePrediction item = placeAutocompleteAdapter.getItem(i);
-                final String placeId = item.getPlaceId();
-                final CharSequence primaryText = item.getPrimaryText(null);
-
-                Log.i(TAG, "Autocomplete item selected: " + primaryText);
-
-            /*
-             Issue a request to the Places Geo Data API to retrieve a Place object with additional
-             details about the place.
-              */
-                PendingResult<PlaceBuffer> placeResult = Places.GeoDataApi
-                        .getPlaceById(mGoogleApiClient, placeId);
-                placeResult.setResultCallback(mUpdatePlaceDetailsCallback);
-
-                Log.i(TAG, "Called getPlaceById to get Place details for " + placeId);
-            }
-        });
-
         initVehicleTypes();
     }
 
-    /**
-     * Callback for results from a Places Geo Data API query that shows the first place result in
-     * the details view on screen.
-     */
-    private ResultCallback<PlaceBuffer> mUpdatePlaceDetailsCallback
-            = new ResultCallback<PlaceBuffer>() {
-        @Override
-        public void onResult(PlaceBuffer places) {
-            if (!places.getStatus().isSuccess()) {
-                // Request did not complete successfully
-                Log.e(TAG, "Place query did not complete. Error: " + places.getStatus().toString());
-                places.release();
-                return;
-            }
-            // Get the Place object from the buffer.
-            final Place place = places.get(0);
+    private void initViews() {
+        edtPickUpLocation = (Edt) findViewById(R.id.edtPickUpLocation);
+        edtDropOffLocation = (Txt) findViewById(R.id.edtDropOffLocation);
+        layoutBookingDetails = (LinearLayout) findViewById(R.id.layoutBookingDetails);
+        txtTotalDistance = (Txt) layoutBookingDetails.findViewById(R.id.txtTotalDistance);
+        txtTotalTime = (Txt) layoutBookingDetails.findViewById(R.id.txtTotalDuration);
+        txtTotalCost = (Txt) layoutBookingDetails.findViewById(R.id.txtTotalCost);
+    }
 
-            // Format details of the place for display and show it in a TextView.
-            edtDropOffLocation.setText(place.getAddress());
-
-            // Display the third party attributions if set.
-            final CharSequence thirdPartyAttribution = places.getAttributions();
-            if (thirdPartyAttribution == null) {
-                //mPlaceDetailsAttribution.setVisibility(View.GONE);
-            } else {
-               // mPlaceDetailsAttribution.setVisibility(View.VISIBLE);
-               // mPlaceDetailsAttribution.setText(Html.fromHtml(thirdPartyAttribution.toString()));
-            }
-
-            Log.i(TAG, "Place details received: " + place.getName());
-
-            places.release();
+    private void checkDropOffAvailability() {
+        if (edtDropOffLocation.getText().toString().isEmpty()) {
+            layoutBookingDetails.setVisibility(View.GONE);
+        } else {
+            layoutBookingDetails.setVisibility(View.VISIBLE);
         }
-    };
+    }
 
-    private static Spanned formatPlaceDetails(Resources res, CharSequence name, String id,
-                                              CharSequence address, CharSequence phoneNumber, Uri websiteUri) {
-        Log.e(TAG, res.getString(R.string.place_details, name, id, address, phoneNumber, websiteUri));
-        return Html.fromHtml(res.getString(R.string.place_details, name, id, address, phoneNumber,
-                websiteUri));
-
+    private void initPlacesPicker() {
+        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+        try {
+            startActivityForResult(builder.build(this), PLACE_PICKER_REQUEST); // for activty
+        } catch (GooglePlayServicesRepairableException e) {
+            e.printStackTrace();
+        } catch (GooglePlayServicesNotAvailableException e) {
+            e.printStackTrace();
+        }
     }
 
     private void InitToolbar(String name) {
@@ -227,6 +208,92 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         } else {
             getLastLocation();
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // checkPermissionOnActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case PLACE_PICKER_REQUEST:
+                    float[] results = new float[1];
+                    Place place = PlacePicker.getPlace(this, data);
+                    String placeName = String.format("Place: %s", place.getName());
+                    double latitude = place.getLatLng().latitude;
+                    double longitude = place.getLatLng().longitude;
+
+                    edtDropOffLocation.setText(place.getName().toString());
+
+                    initDistanceMatrix(MY_ADDRESS, place.getAddress().toString(), "AIzaSyAK59qWv6ZvFvD44uvJaRipiH88B5lqTKU");
+
+                    Location.distanceBetween(latitude, longitude, location.getLatitude(), location.getLongitude(), results);
+
+                    DISTANCE = Double.valueOf(results[0] / 1000);
+
+                    txtTotalDistance.setText(String.valueOf(decimalFormat.format(Double.valueOf(results[0] / 1000))) + " kms");
+
+            }
+        }
+
+    }
+
+    private void initDistanceMatrix(String origin, String destination, String api_key) {
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Calculating fare...");
+        progressDialog.show();
+
+        AndroidNetworking.get("https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins={origin}&destinations={destination}&key={api_key}")
+                .addPathParameter("origin", origin)
+                .addPathParameter("destination", destination)
+                .addPathParameter("api_key", api_key)
+                .setTag("distance_matrix")
+                .setPriority(Priority.LOW)
+                .build()
+                .getAsString(new StringRequestListener() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject jsonRespRouteDistance = new JSONObject(response)
+                                    .getJSONArray("rows")
+                                    .getJSONObject(0)
+                                    .getJSONArray("elements")
+                                    .getJSONObject(0)
+                                    .getJSONObject("duration");
+
+                            String duration = jsonRespRouteDistance.get("text").toString();
+                            String duration_value = jsonRespRouteDistance.get("value").toString();
+                            txtTotalTime.setText(duration);
+
+                            txtTotalCost.setText(CURRENCY + initFareCalculation(DISTANCE, duration_value));
+
+                            checkDropOffAvailability();
+
+                            progressDialog.dismiss();
+
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        progressDialog.dismiss();
+                    }
+                });
+    }
+
+    private String initFareCalculation(double total_distance, String total_duration) {
+        double total_fare = 0;
+        double duration = Double.valueOf(total_duration) / 60;
+
+        total_fare = (Constants.PRICE_PER_KILOMETER * total_distance) + (Constants.PRICE_PER_MINUTE * duration);
+
+        return decimalFormat.format(total_fare);
     }
 
     /**
@@ -474,7 +541,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
 
     }
 
-    private void initVehicleTypes(){
+    private void initVehicleTypes() {
         Data data = new Data();
         VehicleTypesAdapter vehicleTypesAdapter = new VehicleTypesAdapter(this, data.vehicleTypeArrayList());
         RecyclerView listVehicleTypes = (RecyclerView) findViewById(R.id.listVehicleTypes);

@@ -3,6 +3,7 @@
     <string name="string_forgot_password"><b><u>Forgot password?</u></b></string>
     <string name="hint_phone_number"><font size="14">Phone number</font></string>
     <string name="hint_password"><font size="14">Password</font></string>
+    <string name="hint_confirm_password"><font size="14">Confirm password</font></string>
     <string name="hint_first_name"><font size="14">First name</font></string>
     <string name="hint_last_name"><font size="14">Last name</font></string>
     <string name="string_terms">I accept <u><b>Terms &amp; Conditions</b></u></string>

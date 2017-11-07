@@ -6,17 +6,17 @@
     android:orientation="vertical">
 
     <ImageView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="32dp"
-        android:layout_marginRight="32dp"
+        android:scaleType="fitXY"
         android:contentDescription="@string/app_name"
-        android:src="@drawable/shad_taxi_logo" />
+        android:src="@drawable/road" />
 
     <com.shadtaxi.shadtaxi.views.Txt
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        android:visibility="gone"
         android:layout_marginTop="-160dp"
         android:text="Hop in. Let's go!"
         android:textColor="@android:color/white"
