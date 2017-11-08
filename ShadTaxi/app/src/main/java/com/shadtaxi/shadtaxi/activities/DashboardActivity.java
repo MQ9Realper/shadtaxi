@@ -31,12 +31,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
-import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.StringRequestListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -64,10 +62,10 @@ import com.shadtaxi.shadtaxi.constants.Constants;
 import com.shadtaxi.shadtaxi.data.Data;
 import com.shadtaxi.shadtaxi.utils.EqualSpacingItemDecoration;
 import com.shadtaxi.shadtaxi.utils.UniversalUtils;
+import com.shadtaxi.shadtaxi.views.Btn;
 import com.shadtaxi.shadtaxi.views.Edt;
 import com.shadtaxi.shadtaxi.views.Txt;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -75,7 +73,7 @@ import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Locale;
 
-public class DashboardActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener {
+public class DashboardActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
     private static final int PLACE_PICKER_REQUEST = 0x1;
     protected GoogleApiClient mGoogleApiClient;
     private GoogleMap mMap;
@@ -93,6 +91,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     private double DISTANCE = 0.00;
     private LinearLayout layoutBookingDetails;
     private DecimalFormat decimalFormat;
+    private Btn btnFindTaxi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,6 +147,9 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         txtTotalDistance = (Txt) layoutBookingDetails.findViewById(R.id.txtTotalDistance);
         txtTotalTime = (Txt) layoutBookingDetails.findViewById(R.id.txtTotalDuration);
         txtTotalCost = (Txt) layoutBookingDetails.findViewById(R.id.txtTotalCost);
+        btnFindTaxi = (Btn) layoutBookingDetails.findViewById(R.id.btnBookTaxi);
+
+        btnFindTaxi.setOnClickListener(this);
     }
 
     private void checkDropOffAvailability() {
@@ -240,6 +242,18 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
 
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btnBookTaxi:
+                Intent intent = new Intent(DashboardActivity.this, AvailableDriversActivity.class);
+                startActivity(intent);
+                break;
+            default:
+                break;
+        }
+    }
+
     private void initDistanceMatrix(String origin, String destination, String api_key) {
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -269,7 +283,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                             duration_value = jsonRespRouteDistance.get("value").toString();
                             txtTotalTime.setText(duration);
 
-                            txtTotalCost.setText(CURRENCY + initFareCalculation(DISTANCE, duration_value,0));
+                            txtTotalCost.setText(CURRENCY + initFareCalculation(DISTANCE, duration_value, 0));
 
                             checkDropOffAvailability();
 
@@ -288,11 +302,31 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 });
     }
 
+    private void changeButtonText(int position) {
+        switch (position) {
+            case 3:
+                btnFindTaxi.setText("Find BodaBoda");
+                break;
+            case 2:
+                btnFindTaxi.setText("Find TukTuk");
+                break;
+            case 1:
+                btnFindTaxi.setText("Find Salon");
+                break;
+            case 0:
+                btnFindTaxi.setText("Find Matatu");
+                break;
+            default:
+                break;
+        }
+
+    }
+
     private String initFareCalculation(double total_distance, String total_duration, int position) {
         double total_fare = 0;
         double duration = Double.valueOf(total_duration) / 60;
 
-        switch (position){
+        switch (position) {
             case 0:
                 total_fare = (Constants.BODA_PRICE_PER_KILOMETER * total_distance) + (Constants.BODA_PRICE_PER_MINUTE * duration);
                 break;
@@ -569,7 +603,8 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         listVehicleTypes.addOnItemTouchListener(new RecyclerTouchListener(this, listVehicleTypes, new ClickListener() {
             @Override
             public void onClick(View view, final int position) {
-                txtTotalCost.setText(CURRENCY + initFareCalculation(DISTANCE, duration_value,position));
+                txtTotalCost.setText(CURRENCY + initFareCalculation(DISTANCE, duration_value, position));
+                changeButtonText(position);
             }
 
             @Override
