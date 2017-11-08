@@ -25,7 +25,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
@@ -87,6 +89,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     private Txt edtDropOffLocation, txtTotalDistance, txtTotalTime, txtTotalCost;
     private String MY_ADDRESS = "";
     private String CURRENCY = "Kes ";
+    private String duration_value = "";
     private double DISTANCE = 0.00;
     private LinearLayout layoutBookingDetails;
     private DecimalFormat decimalFormat;
@@ -117,7 +120,6 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 .enableAutoManage(this, 0 /* clientId */, this)
                 .addApi(Places.GEO_DATA_API)
                 .build();
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -184,7 +186,6 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
             super.onBackPressed();
         }
     }
-
 
     /**
      * Manipulates the map once available.
@@ -265,10 +266,10 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                                     .getJSONObject("duration");
 
                             String duration = jsonRespRouteDistance.get("text").toString();
-                            String duration_value = jsonRespRouteDistance.get("value").toString();
+                            duration_value = jsonRespRouteDistance.get("value").toString();
                             txtTotalTime.setText(duration);
 
-                            txtTotalCost.setText(CURRENCY + initFareCalculation(DISTANCE, duration_value));
+                            txtTotalCost.setText(CURRENCY + initFareCalculation(DISTANCE, duration_value,0));
 
                             checkDropOffAvailability();
 
@@ -287,11 +288,26 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 });
     }
 
-    private String initFareCalculation(double total_distance, String total_duration) {
+    private String initFareCalculation(double total_distance, String total_duration, int position) {
         double total_fare = 0;
         double duration = Double.valueOf(total_duration) / 60;
 
-        total_fare = (Constants.PRICE_PER_KILOMETER * total_distance) + (Constants.PRICE_PER_MINUTE * duration);
+        switch (position){
+            case 0:
+                total_fare = (Constants.BODA_PRICE_PER_KILOMETER * total_distance) + (Constants.BODA_PRICE_PER_MINUTE * duration);
+                break;
+            case 1:
+                total_fare = (Constants.TUK_PRICE_PER_KILOMETER * total_distance) + (Constants.TUK_PRICE_PER_MINUTE * duration);
+                break;
+            case 2:
+                total_fare = (Constants.SALON_PRICE_PER_KILOMETER * total_distance) + (Constants.SALON_PRICE_PER_MINUTE * duration);
+                break;
+            case 3:
+                total_fare = (Constants.MATATU_PRICE_PER_KILOMETER * total_distance) + (Constants.MATATU_PRICE_PER_MINUTE * duration);
+                break;
+            default:
+                break;
+        }
 
         return decimalFormat.format(total_fare);
     }
@@ -549,6 +565,77 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         listVehicleTypes.addItemDecoration(new EqualSpacingItemDecoration(16, EqualSpacingItemDecoration.HORIZONTAL));
         //listVehicleTypes.smoothScrollToPosition(selectedPosition);
         listVehicleTypes.setHasFixedSize(true);
+
+        listVehicleTypes.addOnItemTouchListener(new RecyclerTouchListener(this, listVehicleTypes, new ClickListener() {
+            @Override
+            public void onClick(View view, final int position) {
+                txtTotalCost.setText(CURRENCY + initFareCalculation(DISTANCE, duration_value,position));
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+
+            }
+        }));
+
         listVehicleTypes.setAdapter(vehicleTypesAdapter);
+    }
+
+    /**
+     * RecyclerView: Implementing single item click and long press (Part-II)
+     * <p>
+     * - creating an Interface for single tap and long press
+     * - Parameters are its respective view and its position
+     */
+
+    public static interface ClickListener {
+        public void onClick(View view, int position);
+
+        public void onLongClick(View view, int position);
+    }
+
+    private class RecyclerTouchListener implements RecyclerView.OnItemTouchListener {
+
+        private ClickListener clicklistener;
+        private GestureDetector gestureDetector;
+
+        public RecyclerTouchListener(Context context, final RecyclerView recycleView, final ClickListener clicklistener) {
+
+            this.clicklistener = clicklistener;
+            gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
+                @Override
+                public boolean onSingleTapUp(MotionEvent e) {
+                    return true;
+                }
+
+                @Override
+                public void onLongPress(MotionEvent e) {
+                    View child = recycleView.findChildViewUnder(e.getX(), e.getY());
+                    if (child != null && clicklistener != null) {
+                        clicklistener.onLongClick(child, recycleView.getChildAdapterPosition(child));
+                    }
+                }
+            });
+        }
+
+        @Override
+        public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+            View child = rv.findChildViewUnder(e.getX(), e.getY());
+            if (child != null && clicklistener != null && gestureDetector.onTouchEvent(e)) {
+                clicklistener.onClick(child, rv.getChildAdapterPosition(child));
+            }
+
+            return false;
+        }
+
+        @Override
+        public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+
+        }
+
+        @Override
+        public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+
+        }
     }
 }
