@@ -44,7 +44,7 @@ public class TxtLight extends AppCompatTextView {
             if (typeface == null) {
                 // G1.log(TAG, "asset:: " + "fonts/" + asset);
                 typeface = Typeface.createFromAsset(ctx.getAssets(),
-                        "fonts/Raleway-Light.ttf");
+                        "fonts/Muli-Regular.ttf");
             }
 
         } catch (Exception e) {

@@ -2,22 +2,43 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="#EBEBEB"
+    android:layout_height="match_parent"
+    android:background="@drawable/drawable_confirm_dialog_background"
     android:orientation="vertical">
+
+    <com.shadtaxi.shadtaxi.views.TxtSemiBold
+        android:id="@+id/txtSelectedProduct"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="Confirm Booking"
+        android:textColor="@color/colorBlack"
+        android:textSize="20sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@color/colorBlack" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#EBEBEB"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@color/colorWhite"
         android:orientation="horizontal">
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/imgDriverImage"
+            android:id="@+id/imgConfirmDriverImage"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_gravity="center_vertical"
-            android:layout_margin="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginEnd="10dp"
             android:src="@drawable/default_image"
             app:civ_border_color="#FFFFFF"
             app:civ_border_width="2dp" />
@@ -30,7 +51,7 @@
             android:orientation="vertical">
 
             <com.shadtaxi.shadtaxi.views.TxtSemiBold
-                android:id="@+id/txtDriverName"
+                android:id="@+id/txtConfirmDriverName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Dennis M. Mwebia"
@@ -38,7 +59,7 @@
                 android:textSize="18sp" />
 
             <android.support.v7.widget.AppCompatRatingBar
-                android:id="@+id/ratingDriverRating"
+                android:id="@+id/ratingConfirmDriverRating"
                 style="?android:attr/ratingBarStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -48,7 +69,7 @@
                 android:numStars="5" />
 
             <com.shadtaxi.shadtaxi.views.Txt
-                android:id="@+id/txtDriverDistance"
+                android:id="@+id/txtConfirmDriverDistance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="11km away"
@@ -59,43 +80,50 @@
 
     </LinearLayout>
 
+    <include
+        layout="@layout/layout_confirm_pickup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp" />
+
+    <include
+        layout="@layout/layout_confirm_dropoff"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:orientation="horizontal">
 
         <com.shadtaxi.shadtaxi.views.Btn
-            android:id="@+id/btnDriverCall"
+            android:id="@+id/btnConfirmBook"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/drawable_driver_call"
-            android:drawableLeft="@drawable/ic_call_white_24dp"
-            android:drawablePadding="-40dp"
-            android:drawableStart="@drawable/ic_call_white_24dp"
-            android:paddingLeft="40dp"
-            android:paddingStart="40dp"
-            android:text="Call"
+            android:text="Confirm"
             android:textAllCaps="false"
             android:textColor="@color/colorWhite"
             android:textSize="15sp" />
 
         <com.shadtaxi.shadtaxi.views.Btn
-            android:id="@+id/btnDriverBook"
+            android:id="@+id/btnConfirmCancel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/drawable_driver_book"
-            android:drawableLeft="@drawable/ic_done_all_white_24dp"
-            android:drawablePadding="-40dp"
-            android:drawableStart="@drawable/ic_done_all_white_24dp"
-            android:paddingLeft="40dp"
-            android:paddingStart="40dp"
-            android:text="Book"
+            android:text="Cancel"
             android:textAllCaps="false"
             android:textColor="@color/colorWhite"
             android:textSize="15sp" />
     </LinearLayout>
 
 </LinearLayout>
-

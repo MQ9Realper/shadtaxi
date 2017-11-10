@@ -61,6 +61,7 @@ import com.shadtaxi.shadtaxi.adapters.VehicleTypesAdapter;
 import com.shadtaxi.shadtaxi.constants.Constants;
 import com.shadtaxi.shadtaxi.data.Data;
 import com.shadtaxi.shadtaxi.utils.EqualSpacingItemDecoration;
+import com.shadtaxi.shadtaxi.utils.PreferenceHelper;
 import com.shadtaxi.shadtaxi.utils.UniversalUtils;
 import com.shadtaxi.shadtaxi.views.Btn;
 import com.shadtaxi.shadtaxi.views.Edt;
@@ -88,10 +89,12 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     private String MY_ADDRESS = "";
     private String CURRENCY = "Kes ";
     private String duration_value = "";
+    private String VEHICLE_TYPE = "BodaBoda";
     private double DISTANCE = 0.00;
     private LinearLayout layoutBookingDetails;
     private DecimalFormat decimalFormat;
     private Btn btnFindTaxi;
+    private PreferenceHelper preferenceHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +103,8 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         universalUtils = new UniversalUtils(this);
         decimalFormat = new DecimalFormat("0.00");
+        preferenceHelper = new PreferenceHelper(this);
+
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         InitToolbar(getResources().getString(R.string.app_name));
@@ -247,6 +252,9 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         switch (v.getId()) {
             case R.id.btnBookTaxi:
                 Intent intent = new Intent(DashboardActivity.this, AvailableDriversActivity.class);
+                intent.putExtra("vehicle_type", VEHICLE_TYPE);
+                preferenceHelper.putSelectedVehicleType(VEHICLE_TYPE);
+                preferenceHelper.putDropOffAddress(edtDropOffLocation.getText().toString());
                 startActivity(intent);
                 break;
             default:
@@ -306,15 +314,19 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         switch (position) {
             case 3:
                 btnFindTaxi.setText("Find BodaBoda");
+                VEHICLE_TYPE = "BodaBoda";
                 break;
             case 2:
                 btnFindTaxi.setText("Find TukTuk");
+                VEHICLE_TYPE = "TukTuk";
                 break;
             case 1:
                 btnFindTaxi.setText("Find Salon");
+                VEHICLE_TYPE = "Salon";
                 break;
             case 0:
                 btnFindTaxi.setText("Find Matatu");
+                VEHICLE_TYPE = "Matatu";
                 break;
             default:
                 break;
@@ -582,6 +594,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         @Override
         protected void onPostExecute(String address) {
             edtPickUpLocation.setText(address);
+            preferenceHelper.putPickUpAddress(address);
             MY_ADDRESS = address;
         }
     }

@@ -44,7 +44,7 @@ public class TxtSemiBold extends AppCompatTextView {
             if (typeface == null) {
                 // G1.log(TAG, "asset:: " + "fonts/" + asset);
                 typeface = Typeface.createFromAsset(ctx.getAssets(),
-                        "fonts/Raleway-SemiBold.ttf");
+                        "fonts/Muli-SemiBold.ttf");
             }
 
         } catch (Exception e) {

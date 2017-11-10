@@ -1,6 +1,7 @@
 package com.shadtaxi.shadtaxi.adapters;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.widget.AppCompatRatingBar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +11,11 @@ import android.widget.Filter;
 
 import com.bumptech.glide.Glide;
 import com.shadtaxi.shadtaxi.R;
+import com.shadtaxi.shadtaxi.activities.BookDriverActivity;
 import com.shadtaxi.shadtaxi.models.AvailableDriver;
+import com.shadtaxi.shadtaxi.utils.PreferenceHelper;
+import com.shadtaxi.shadtaxi.utils.UniversalUtils;
+import com.shadtaxi.shadtaxi.views.Btn;
 import com.shadtaxi.shadtaxi.views.Txt;
 import com.shadtaxi.shadtaxi.views.TxtSemiBold;
 
@@ -26,11 +31,14 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class AvailableDriversAdapter extends BaseAdapter {
     private ViewHolder viewHolder;
+    private UniversalUtils universalUtils;
+    private PreferenceHelper preferenceHelper;
     private Activity context;
     private List<AvailableDriver> originalDriverList = null;
     private List<AvailableDriver> filteredDriverList;
     private LayoutInflater layoutInflater;
     private Filter filter;
+    private int selectedPosition = 0;
 
     public AvailableDriversAdapter(Activity context1, ArrayList<AvailableDriver> driverArrayList) {
         this.context = context1;
@@ -38,6 +46,8 @@ public class AvailableDriversAdapter extends BaseAdapter {
         this.layoutInflater = LayoutInflater.from(context1);
         this.filteredDriverList = new ArrayList<>();
         this.filteredDriverList.addAll(originalDriverList);
+        this.universalUtils = new UniversalUtils(context1);
+        this.preferenceHelper = new PreferenceHelper(context1);
     }
 
     private static class ViewHolder {
@@ -45,6 +55,7 @@ public class AvailableDriversAdapter extends BaseAdapter {
         private Txt txtDriverDistance;
         private CircleImageView imageDriver;
         private AppCompatRatingBar ratingBar;
+        private Btn btnCall, btnBook;
     }
 
     @Override
@@ -64,6 +75,7 @@ public class AvailableDriversAdapter extends BaseAdapter {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
+        selectedPosition = position;
         ViewHolder viewHolder = new ViewHolder();
         LayoutInflater layoutInflater = context.getLayoutInflater();
         if (convertView == null) {
@@ -72,6 +84,8 @@ public class AvailableDriversAdapter extends BaseAdapter {
             viewHolder.txtDriverDistance = (Txt) convertView.findViewById(R.id.txtDriverDistance);
             viewHolder.imageDriver = (CircleImageView) convertView.findViewById(R.id.imgDriverImage);
             viewHolder.ratingBar = (AppCompatRatingBar) convertView.findViewById(R.id.ratingDriverRating);
+            viewHolder.btnCall = (Btn) convertView.findViewById(R.id.btnDriverCall);
+            viewHolder.btnBook = (Btn) convertView.findViewById(R.id.btnDriverBook);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
@@ -82,6 +96,20 @@ public class AvailableDriversAdapter extends BaseAdapter {
         viewHolder.txtDriverDistance.setText(originalDriverList.get(position).getDriver_distance());
         Glide.with(context).load(originalDriverList.get(position).getDriver_image()).into(viewHolder.imageDriver);
 
+        /** click listeners */
+        viewHolder.btnCall.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        viewHolder.btnBook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                universalUtils.showConfirmationDialog(preferenceHelper.getPickUpAddress(), preferenceHelper.getDropOffAddress(), originalDriverList.get(position).getDriver_name(),originalDriverList.get(position).getDriver_distance(),originalDriverList.get(position).getDriver_rating(),originalDriverList.get(position).getDriver_image());
+            }
+        });
         return convertView;
     }
 
