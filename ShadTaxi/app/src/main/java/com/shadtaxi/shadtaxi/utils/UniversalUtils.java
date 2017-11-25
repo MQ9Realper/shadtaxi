@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatRatingBar;
@@ -33,6 +34,13 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class UniversalUtils {
     private Context context = null;
     private AlertDialog dialogConfirm, dialogTimer;
+    private Handler customHandler = new Handler();
+    private TxtSemiBold txtTimer;
+    private long startTime = 0L;
+    private long timeInMilliseconds = 0L;
+    private long timeSwapBuff = 0L;
+    private long updatedTime = 0L;
+
 
     public UniversalUtils(Context context) {
         this.context = context;
@@ -119,11 +127,42 @@ public class UniversalUtils {
         dialogTimer.setCancelable(false);
 
         TxtSemiBold txtDriverName = (TxtSemiBold) dialogView.findViewById(R.id.txtConfirmDriverName);
+        txtTimer = (TxtSemiBold) dialogView.findViewById(R.id.txtTimer);
         CircleImageView driverImage = (CircleImageView) dialogView.findViewById(R.id.imgConfirmDriverImage);
 
         Glide.with(context).load(driver_image).into(driverImage);
         txtDriverName.setText(driver_name);
 
+        startTime = SystemClock.uptimeMillis();
+        customHandler.postDelayed(updateTimerThread, 0);
+
         dialogTimer.show();
     }
+
+    private Runnable updateTimerThread = new Runnable() {
+        public void run() {
+            timeInMilliseconds = SystemClock.uptimeMillis() - startTime;
+
+            updatedTime = timeSwapBuff + timeInMilliseconds;
+
+            int secs = (int) (updatedTime / 1000);
+
+            int mins = secs / 60;
+
+            secs = secs % 60;
+
+            int milliseconds = (int) (updatedTime % 1000);
+
+            txtTimer.setText("" + mins + ":"
+
+                            + String.format("%02d", secs) + ":"
+
+                            + String.format("%03d", milliseconds));
+
+            customHandler.postDelayed(this, 0);
+
+        }
+
+    };
+
 }
