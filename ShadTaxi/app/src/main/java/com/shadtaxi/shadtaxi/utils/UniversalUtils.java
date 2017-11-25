@@ -18,8 +18,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.shadtaxi.shadtaxi.R;
-import com.shadtaxi.shadtaxi.activities.SplashActivity;
-import com.shadtaxi.shadtaxi.activities.StartActivity;
 import com.shadtaxi.shadtaxi.views.Btn;
 import com.shadtaxi.shadtaxi.views.Txt;
 import com.shadtaxi.shadtaxi.views.TxtSemiBold;
@@ -34,7 +32,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UniversalUtils {
     private Context context = null;
-    private AlertDialog dialogConfirm;
+    private AlertDialog dialogConfirm, dialogTimer;
 
     public UniversalUtils(Context context) {
         this.context = context;
@@ -54,7 +52,7 @@ public class UniversalUtils {
         }
     }
 
-    public void showConfirmationDialog(String pick_up, String drop_off, String driver_name, String driver_distance, float driver_rating, int driver_image) {
+    public void showConfirmationDialog(String pick_up, String drop_off, final String driver_name, String driver_distance, float driver_rating, final int driver_image) {
         dialogConfirm = new AlertDialog.Builder(context).create();
         dialogConfirm.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         final View dialogView = LayoutInflater.from(context).inflate(R.layout.layout_confirm_booking, null);
@@ -102,6 +100,8 @@ public class UniversalUtils {
                         if (dialogConfirm.isShowing()) {
                             dialogConfirm.dismiss();
                         }
+
+                        showDriverTimer(driver_name, driver_image);
                     }
                 }, 4000);
 
@@ -109,5 +109,21 @@ public class UniversalUtils {
         });
 
         dialogConfirm.show();
+    }
+
+    private void showDriverTimer(String driver_name,int driver_image){
+        dialogTimer = new AlertDialog.Builder(context).create();
+        dialogTimer.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        final View dialogView = LayoutInflater.from(context).inflate(R.layout.layout_arriving_driver, null);
+        dialogTimer.setView(dialogView);
+        dialogTimer.setCancelable(false);
+
+        TxtSemiBold txtDriverName = (TxtSemiBold) dialogView.findViewById(R.id.txtConfirmDriverName);
+        CircleImageView driverImage = (CircleImageView) dialogView.findViewById(R.id.imgConfirmDriverImage);
+
+        Glide.with(context).load(driver_image).into(driverImage);
+        txtDriverName.setText(driver_name);
+
+        dialogTimer.show();
     }
 }

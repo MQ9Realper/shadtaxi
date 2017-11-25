@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/drawable_confirm_dialog_background"
+    android:orientation="vertical">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/imgConfirmDriverImage"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/default_image"
+        app:civ_border_color="#FFFFFF"
+        app:civ_border_width="2dp" />
+
+    <com.shadtaxi.shadtaxi.views.TxtSemiBold
+        android:id="@+id/txtConfirmDriverName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
+        android:text="Dennis M. Mwebia"
+        android:textColor="@color/colorBlack"
+        android:textSize="24sp" />
+
+    <com.shadtaxi.shadtaxi.views.TxtSemiBold
+        android:id="@+id/txtConfirmDriverTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
+        android:text="Arriving in"
+        android:textColor="@color/colorBlackLight"
+        android:textSize="16sp" />
+
+    <com.shadtaxi.shadtaxi.views.TxtSemiBold
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
+        android:text="Please wait..."
+        android:textColor="@color/colorBlackLight"
+        android:textSize="16sp" />
+
+</LinearLayout>
