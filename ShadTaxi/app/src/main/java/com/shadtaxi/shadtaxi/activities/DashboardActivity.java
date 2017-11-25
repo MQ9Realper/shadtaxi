@@ -17,6 +17,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -24,6 +25,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MenuItem;
@@ -31,6 +33,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
@@ -74,6 +77,8 @@ import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Locale;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
+
 public class DashboardActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
     private static final int PLACE_PICKER_REQUEST = 0x1;
     protected GoogleApiClient mGoogleApiClient;
@@ -95,6 +100,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     private DecimalFormat decimalFormat;
     private Btn btnFindTaxi;
     private PreferenceHelper preferenceHelper;
+    public static final int PERMISSIONS_REQUEST_CODE = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -508,6 +514,15 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                             }
                         });
             }
+        } else if (requestCode == PERMISSIONS_REQUEST_CODE) {
+            if (grantResults.length <= 0) {
+                // If user interaction was interrupted, the permission request is cancelled and you
+                // receive empty arrays.
+                Log.i(TAG, "User interaction was cancelled.");
+            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted.
+                checkPermissionsAndCall();
+            }
         }
     }
 
@@ -515,23 +530,62 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
+        switch (item.getItemId()) {
+            case R.id.nav_trips:
+                Intent intent = new Intent(DashboardActivity.this, HistoryActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.nav_share:
+                Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+                sharingIntent.setType("text/html");
+                sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, Html.fromHtml("<p>Download Safiree and have a feel of the best taxi hailing app!.</p>"));
+                startActivity(Intent.createChooser(sharingIntent, "Share Safiree via..."));
+                break;
+            case R.id.nav_contact_us:
+                new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+                        .setTitleText("Contact Us")
+                        .setContentText("Press 'Call' to get in touch with us!")
+                        .setCancelText("Cancel")
+                        .setConfirmText("Call Us")
+                        .showCancelButton(true)
+                        .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sDialog) {
+                                sDialog.cancel();
+                            }
+                        })
+                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                checkPermissionsAndCall();
+                            }
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+                        })
+                        .show();
+                break;
+            default:
+                break;
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void checkPermissionsAndCall() {
+        String permission = Manifest.permission.CALL_PHONE;
+
+        if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
+                Toast.makeText(this, "Allow external storage to be read.", Toast.LENGTH_LONG).show();
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{permission}, PERMISSIONS_REQUEST_CODE);
+            }
+        } else {
+            Intent callIntent = new Intent(Intent.ACTION_CALL);
+            callIntent.setData(Uri.parse("tel:+254788524627"));
+            startActivity(callIntent);
+        }
     }
 
     private class GetAddressTask extends AsyncTask<Location, Void, String> {

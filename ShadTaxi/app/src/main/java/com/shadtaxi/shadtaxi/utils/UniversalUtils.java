@@ -1,9 +1,11 @@
 package com.shadtaxi.shadtaxi.utils;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatRatingBar;
@@ -16,6 +18,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.shadtaxi.shadtaxi.R;
+import com.shadtaxi.shadtaxi.activities.SplashActivity;
+import com.shadtaxi.shadtaxi.activities.StartActivity;
 import com.shadtaxi.shadtaxi.views.Btn;
 import com.shadtaxi.shadtaxi.views.Txt;
 import com.shadtaxi.shadtaxi.views.TxtSemiBold;
@@ -32,7 +36,7 @@ public class UniversalUtils {
     private Context context = null;
     private AlertDialog dialogConfirm;
 
-    public UniversalUtils(Context context){
+    public UniversalUtils(Context context) {
         this.context = context;
     }
 
@@ -50,7 +54,7 @@ public class UniversalUtils {
         }
     }
 
-    public void showConfirmationDialog(String pick_up, String drop_off, String driver_name, String driver_distance, float driver_rating, int driver_image){
+    public void showConfirmationDialog(String pick_up, String drop_off, String driver_name, String driver_distance, float driver_rating, int driver_image) {
         dialogConfirm = new AlertDialog.Builder(context).create();
         dialogConfirm.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         final View dialogView = LayoutInflater.from(context).inflate(R.layout.layout_confirm_booking, null);
@@ -85,6 +89,21 @@ public class UniversalUtils {
         btnBook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                final ProgressDialog progressDialog = new ProgressDialog(context);
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressDialog.setMessage("Booking driver. Please wait...");
+                progressDialog.setCancelable(false);
+                progressDialog.show();
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressDialog.dismiss();
+                        if (dialogConfirm.isShowing()) {
+                            dialogConfirm.dismiss();
+                        }
+                    }
+                }, 4000);
 
             }
         });
