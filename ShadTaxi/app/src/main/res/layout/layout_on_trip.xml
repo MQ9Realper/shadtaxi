@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/drawable_confirm_dialog_background"
+    android:orientation="vertical">
+
+    <com.shadtaxi.shadtaxi.views.TxtSemiBold
+        android:id="@+id/txtSelectedProduct"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:padding="16dp"
+        android:text="You are on trip with..."
+        android:textColor="@color/colorBlack"
+        android:textSize="20sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="vertical">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imgOnTripImage"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="10dp"
+            android:src="@drawable/default_image"
+            app:civ_border_color="#FFFFFF"
+            app:civ_border_width="2dp" />
+
+        <com.shadtaxi.shadtaxi.views.TxtSemiBold
+            android:id="@+id/txtOnTripDriverName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="8dp"
+            android:text="Dennis Mwebia"
+            android:textColor="@color/colorBlack"
+            android:textSize="16sp" />
+
+        <com.shadtaxi.shadtaxi.views.TxtLight
+            android:id="@+id/txtOnTripCarType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="8dp"
+            android:text="TukTuk (KCE 489G)"
+            android:textColor="@color/colorBlackLight"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorBlack"
+        android:orientation="vertical">
+
+        <com.shadtaxi.shadtaxi.views.TxtLight
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="8dp"
+            android:text="ETA"
+            android:textColor="@color/colorWhite"
+            android:textSize="20sp" />
+
+        <com.shadtaxi.shadtaxi.views.TxtSemiBold
+            android:id="@+id/txtOnTripETA"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="8dp"
+            android:text="2:30pm"
+            android:textColor="@color/colorWhite"
+            android:textSize="20sp" />
+
+    </LinearLayout>
+
+</RelativeLayout>

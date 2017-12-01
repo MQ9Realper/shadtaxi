@@ -1,12 +1,11 @@
 package com.shadtaxi.shadtaxi.utils;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatRatingBar;
@@ -34,12 +33,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class UniversalUtils {
     private Context context = null;
     private AlertDialog dialogConfirm, dialogTimer;
-    private Handler customHandler = new Handler();
+    private Dialog dialogOnTrip;
     private TxtSemiBold txtTimer;
-    private long startTime = 0L;
-    private long timeInMilliseconds = 0L;
-    private long timeSwapBuff = 0L;
-    private long updatedTime = 0L;
 
 
     public UniversalUtils(Context context) {
@@ -119,7 +114,7 @@ public class UniversalUtils {
         dialogConfirm.show();
     }
 
-    private void showDriverTimer(String driver_name,int driver_image){
+    private void showDriverTimer(String driver_name, int driver_image) {
         dialogTimer = new AlertDialog.Builder(context).create();
         dialogTimer.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         final View dialogView = LayoutInflater.from(context).inflate(R.layout.layout_arriving_driver, null);
@@ -127,42 +122,47 @@ public class UniversalUtils {
         dialogTimer.setCancelable(false);
 
         TxtSemiBold txtDriverName = (TxtSemiBold) dialogView.findViewById(R.id.txtConfirmDriverName);
-        txtTimer = (TxtSemiBold) dialogView.findViewById(R.id.txtTimer);
+        Btn btnCancelBooking = (Btn) dialogView.findViewById(R.id.btnCancelBooking);
+
+        btnCancelBooking.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogTimer.dismiss();
+            }
+        });
+
+        cn.iwgang.countdownview.CountdownView countDownView = (cn.iwgang.countdownview.CountdownView) dialogView.findViewById(R.id.countDownView);
+
+        for (int time = 0; time < 100000; time++) {
+            countDownView.updateShow(time);
+        }
+
         CircleImageView driverImage = (CircleImageView) dialogView.findViewById(R.id.imgConfirmDriverImage);
 
         Glide.with(context).load(driver_image).into(driverImage);
         txtDriverName.setText(driver_name);
 
-        startTime = SystemClock.uptimeMillis();
-        customHandler.postDelayed(updateTimerThread, 0);
+        showOnTripDialogTimer();
 
         dialogTimer.show();
     }
 
-    private Runnable updateTimerThread = new Runnable() {
-        public void run() {
-            timeInMilliseconds = SystemClock.uptimeMillis() - startTime;
+    private void showOnTripDialog() {
+        dialogOnTrip = new Dialog(context, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+        final View dialogView = LayoutInflater.from(context).inflate(R.layout.layout_on_trip, null);
+        dialogOnTrip.setCancelable(false);
+        dialogOnTrip.setContentView(dialogView);
+        dialogOnTrip.show();
 
-            updatedTime = timeSwapBuff + timeInMilliseconds;
+    }
 
-            int secs = (int) (updatedTime / 1000);
-
-            int mins = secs / 60;
-
-            secs = secs % 60;
-
-            int milliseconds = (int) (updatedTime % 1000);
-
-            txtTimer.setText("" + mins + ":"
-
-                            + String.format("%02d", secs) + ":"
-
-                            + String.format("%03d", milliseconds));
-
-            customHandler.postDelayed(this, 0);
-
-        }
-
-    };
+    private void showOnTripDialogTimer() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                showOnTripDialog();
+            }
+        }, 4000);
+    }
 
 }

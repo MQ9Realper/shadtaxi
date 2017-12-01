@@ -36,24 +36,34 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginRight="10dp"
         android:text="Arriving in"
         android:textColor="@color/colorBlackLight"
         android:textSize="16sp" />
 
-    <com.shadtaxi.shadtaxi.views.TxtSemiBold
-        android:id="@+id/txtTimer"
+    <cn.iwgang.countdownview.CountdownView
+        android:id="@+id/countDownView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginRight="10dp"
-        android:text="00:00:00"
-        android:textColor="@color/colorBlack"
-        android:textSize="24sp" />
+        android:layout_margin="10dp"
+        app:isHideTimeBackground="true"
+        app:isShowDay="false"
+        app:isShowHour="true"
+        app:isShowMillisecond="false"
+        app:isShowMinute="true"
+        app:isShowSecond="true"
+        app:isTimeTextBold="true"
+        app:suffixGravity="bottom"
+        app:suffixHour="hr"
+        app:suffixMillisecond="ms"
+        app:suffixMinute="min"
+        app:suffixSecond="s"
+        app:suffixTextColor="@color/colorBlackLight"
+        app:suffixTextSize="12sp"
+        app:timeTextColor="@color/colorBlack"
+        app:timeTextSize="24sp" />
 
     <com.shadtaxi.shadtaxi.views.TxtSemiBold
         android:layout_width="wrap_content"
@@ -65,5 +75,16 @@
         android:text="Please wait..."
         android:textColor="@color/colorBlackLight"
         android:textSize="16sp" />
+
+    <com.shadtaxi.shadtaxi.views.Btn
+        android:id="@+id/btnCancelBooking"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="@drawable/drawable_driver_call"
+        android:text="Cancel"
+        android:textAllCaps="false"
+        android:textColor="@color/colorWhite"
+        android:textSize="15sp" />
 
 </LinearLayout>
