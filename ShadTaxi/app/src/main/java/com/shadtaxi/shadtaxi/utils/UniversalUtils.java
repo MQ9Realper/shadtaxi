@@ -142,25 +142,32 @@ public class UniversalUtils {
         Glide.with(context).load(driver_image).into(driverImage);
         txtDriverName.setText(driver_name);
 
-        showOnTripDialogTimer();
+        showOnTripDialogTimer(driver_name, driver_image);
 
         dialogTimer.show();
     }
 
-    private void showOnTripDialog() {
+    private void showOnTripDialog(String driver_name, int driver_image) {
         dialogOnTrip = new Dialog(context, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
         final View dialogView = LayoutInflater.from(context).inflate(R.layout.layout_on_trip, null);
         dialogOnTrip.setCancelable(false);
         dialogOnTrip.setContentView(dialogView);
+
+        CircleImageView profileImage = (CircleImageView) dialogView.findViewById(R.id.imgOnTripImage);
+        TxtSemiBold txtDriverName = (TxtSemiBold) dialogView.findViewById(R.id.txtOnTripDriverName);
+
+        Glide.with(context).load(driver_image).into(profileImage);
+        txtDriverName.setText(driver_name);
+
         dialogOnTrip.show();
 
     }
 
-    private void showOnTripDialogTimer() {
+    private void showOnTripDialogTimer(final String driver_name, final int driver_image) {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                showOnTripDialog();
+                showOnTripDialog(driver_name, driver_image);
             }
         }, 4000);
     }

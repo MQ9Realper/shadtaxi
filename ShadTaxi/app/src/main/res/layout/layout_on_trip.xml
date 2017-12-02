@@ -11,10 +11,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
+        android:gravity="center_horizontal"
         android:padding="16dp"
         android:text="You are on trip with..."
         android:textColor="@color/colorBlack"
-        android:textSize="20sp" />
+        android:textSize="24sp" />
+
+    <com.rey.material.widget.ProgressView
+        android:id="@+id/progressView"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_below="@+id/txtSelectedProduct"
+        app:pv_autostart="true"
+        app:pv_circular="false"
+        app:pv_progressStyle="@style/Material.Drawable.CircularProgress"
+        app:pv_progressMode="indeterminate"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -40,7 +51,7 @@
             android:layout_margin="8dp"
             android:text="Dennis Mwebia"
             android:textColor="@color/colorBlack"
-            android:textSize="16sp" />
+            android:textSize="18sp" />
 
         <com.shadtaxi.shadtaxi.views.TxtLight
             android:id="@+id/txtOnTripCarType"
@@ -50,7 +61,7 @@
             android:layout_margin="8dp"
             android:text="TukTuk (KCE 489G)"
             android:textColor="@color/colorBlackLight"
-            android:textSize="13sp" />
+            android:textSize="14sp" />
     </LinearLayout>
 
     <LinearLayout
