@@ -30,7 +30,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:background="@drawable/drawable_book_taxi"
-        android:text="Book Taxi"
+        android:text="Find BodaBoda"
         android:textAllCaps="false"
         android:textColor="@color/colorWhite"
         android:textSize="14sp" />

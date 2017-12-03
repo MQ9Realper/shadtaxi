@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/colorWhite"
+    tools:context="com.shadtaxi.shadtaxi.activities.AvailableDriversActivity">
+
+    <include
+        android:id="@+id/toolbarAvailableDrivers"
+        layout="@layout/layout_toolbar" />
+
+    <com.shadtaxi.shadtaxi.views.Edt
+        android:id="@+id/edtSearchRides"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:background="@drawable/edittext_background"
+        android:hint="@string/hint_search_driver"
+        android:padding="10dp" />
+
+    <ListView
+        android:id="@+id/listViewDrivers"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="8dp"
+        android:divider="@null" />
+</LinearLayout>

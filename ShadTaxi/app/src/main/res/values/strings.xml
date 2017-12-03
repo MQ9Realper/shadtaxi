@@ -6,6 +6,7 @@
     <string name="hint_confirm_password"><font size="14">Confirm password</font></string>
     <string name="hint_first_name"><font size="14">First name</font></string>
     <string name="hint_last_name"><font size="14">Last name</font></string>
+    <string name="hint_search_driver">Search</string>
     <string name="string_terms">I accept <u><b>Terms &amp; Conditions</b></u></string>
     <string name="title_activity_dashboard">DashboardActivity</string>
     <string name="hint_getting_location"><font size="14">Getting your location...</font></string>

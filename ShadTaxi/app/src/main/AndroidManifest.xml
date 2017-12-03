@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.shadtaxi.shadtaxi">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
+
+    <uses-sdk tools:overrideLibrary="com.alexfu.countdownview"/>
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
+        tools:replace="android:icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <meta-data
@@ -29,7 +34,6 @@
             android:label="@string/title_activity_dashboard"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustNothing" />
-
         <activity android:name=".activities.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -37,7 +41,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity
+            android:name=".activities.AvailableDriversActivity"
+            android:label="@string/app_name"
+            android:parentActivityName=".activities.DashboardActivity" />
+        <activity
+            android:name=".activities.BookDriverActivity"
+            android:label="@string/app_name"
+            android:parentActivityName=".activities.AvailableDriversActivity" />
+        <activity
+            android:label="@string/app_name"
+            android:parentActivityName=".activities.DashboardActivity"
+            android:name=".activities.HistoryActivity"/>
     </application>
 
 </manifest>

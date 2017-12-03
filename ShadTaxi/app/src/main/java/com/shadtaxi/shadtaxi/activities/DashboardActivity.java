@@ -17,6 +17,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -24,8 +25,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
@@ -34,7 +38,6 @@ import android.widget.Toast;
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
-import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.StringRequestListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -61,11 +64,12 @@ import com.shadtaxi.shadtaxi.adapters.VehicleTypesAdapter;
 import com.shadtaxi.shadtaxi.constants.Constants;
 import com.shadtaxi.shadtaxi.data.Data;
 import com.shadtaxi.shadtaxi.utils.EqualSpacingItemDecoration;
+import com.shadtaxi.shadtaxi.utils.PreferenceHelper;
 import com.shadtaxi.shadtaxi.utils.UniversalUtils;
+import com.shadtaxi.shadtaxi.views.Btn;
 import com.shadtaxi.shadtaxi.views.Edt;
 import com.shadtaxi.shadtaxi.views.Txt;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -73,7 +77,9 @@ import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Locale;
 
-public class DashboardActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener {
+import cn.pedant.SweetAlert.SweetAlertDialog;
+
+public class DashboardActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
     private static final int PLACE_PICKER_REQUEST = 0x1;
     protected GoogleApiClient mGoogleApiClient;
     private GoogleMap mMap;
@@ -87,9 +93,14 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     private Txt edtDropOffLocation, txtTotalDistance, txtTotalTime, txtTotalCost;
     private String MY_ADDRESS = "";
     private String CURRENCY = "Kes ";
+    private String duration_value = "";
+    private String VEHICLE_TYPE = "BodaBoda";
     private double DISTANCE = 0.00;
     private LinearLayout layoutBookingDetails;
     private DecimalFormat decimalFormat;
+    private Btn btnFindTaxi;
+    private PreferenceHelper preferenceHelper;
+    public static final int PERMISSIONS_REQUEST_CODE = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +109,8 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         universalUtils = new UniversalUtils(this);
         decimalFormat = new DecimalFormat("0.00");
+        preferenceHelper = new PreferenceHelper(this);
+
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         InitToolbar(getResources().getString(R.string.app_name));
@@ -117,7 +130,6 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 .enableAutoManage(this, 0 /* clientId */, this)
                 .addApi(Places.GEO_DATA_API)
                 .build();
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -146,6 +158,9 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         txtTotalDistance = (Txt) layoutBookingDetails.findViewById(R.id.txtTotalDistance);
         txtTotalTime = (Txt) layoutBookingDetails.findViewById(R.id.txtTotalDuration);
         txtTotalCost = (Txt) layoutBookingDetails.findViewById(R.id.txtTotalCost);
+        btnFindTaxi = (Btn) layoutBookingDetails.findViewById(R.id.btnBookTaxi);
+
+        btnFindTaxi.setOnClickListener(this);
     }
 
     private void checkDropOffAvailability() {
@@ -184,7 +199,6 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
             super.onBackPressed();
         }
     }
-
 
     /**
      * Manipulates the map once available.
@@ -239,6 +253,21 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
 
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btnBookTaxi:
+                Intent intent = new Intent(DashboardActivity.this, AvailableDriversActivity.class);
+                intent.putExtra("vehicle_type", VEHICLE_TYPE);
+                preferenceHelper.putSelectedVehicleType(VEHICLE_TYPE);
+                preferenceHelper.putDropOffAddress(edtDropOffLocation.getText().toString());
+                startActivity(intent);
+                break;
+            default:
+                break;
+        }
+    }
+
     private void initDistanceMatrix(String origin, String destination, String api_key) {
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -265,10 +294,10 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                                     .getJSONObject("duration");
 
                             String duration = jsonRespRouteDistance.get("text").toString();
-                            String duration_value = jsonRespRouteDistance.get("value").toString();
+                            duration_value = jsonRespRouteDistance.get("value").toString();
                             txtTotalTime.setText(duration);
 
-                            txtTotalCost.setText(CURRENCY + initFareCalculation(DISTANCE, duration_value));
+                            txtTotalCost.setText(CURRENCY + initFareCalculation(DISTANCE, duration_value, 0));
 
                             checkDropOffAvailability();
 
@@ -287,11 +316,50 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 });
     }
 
-    private String initFareCalculation(double total_distance, String total_duration) {
+    private void changeButtonText(int position) {
+        switch (position) {
+            case 3:
+                btnFindTaxi.setText("Find BodaBoda");
+                VEHICLE_TYPE = "BodaBoda";
+                break;
+            case 2:
+                btnFindTaxi.setText("Find TukTuk");
+                VEHICLE_TYPE = "TukTuk";
+                break;
+            case 1:
+                btnFindTaxi.setText("Find Salon");
+                VEHICLE_TYPE = "Salon";
+                break;
+            case 0:
+                btnFindTaxi.setText("Find Matatu");
+                VEHICLE_TYPE = "Matatu";
+                break;
+            default:
+                break;
+        }
+
+    }
+
+    private String initFareCalculation(double total_distance, String total_duration, int position) {
         double total_fare = 0;
         double duration = Double.valueOf(total_duration) / 60;
 
-        total_fare = (Constants.PRICE_PER_KILOMETER * total_distance) + (Constants.PRICE_PER_MINUTE * duration);
+        switch (position) {
+            case 0:
+                total_fare = (Constants.BODA_PRICE_PER_KILOMETER * total_distance) + (Constants.BODA_PRICE_PER_MINUTE * duration);
+                break;
+            case 1:
+                total_fare = (Constants.TUK_PRICE_PER_KILOMETER * total_distance) + (Constants.TUK_PRICE_PER_MINUTE * duration);
+                break;
+            case 2:
+                total_fare = (Constants.SALON_PRICE_PER_KILOMETER * total_distance) + (Constants.SALON_PRICE_PER_MINUTE * duration);
+                break;
+            case 3:
+                total_fare = (Constants.MATATU_PRICE_PER_KILOMETER * total_distance) + (Constants.MATATU_PRICE_PER_MINUTE * duration);
+                break;
+            default:
+                break;
+        }
 
         return decimalFormat.format(total_fare);
     }
@@ -446,6 +514,15 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                             }
                         });
             }
+        } else if (requestCode == PERMISSIONS_REQUEST_CODE) {
+            if (grantResults.length <= 0) {
+                // If user interaction was interrupted, the permission request is cancelled and you
+                // receive empty arrays.
+                Log.i(TAG, "User interaction was cancelled.");
+            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted.
+                checkPermissionsAndCall();
+            }
         }
     }
 
@@ -453,23 +530,62 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
+        switch (item.getItemId()) {
+            case R.id.nav_trips:
+                Intent intent = new Intent(DashboardActivity.this, HistoryActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.nav_share:
+                Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+                sharingIntent.setType("text/html");
+                sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, Html.fromHtml("<p>Download Safiree and have a feel of the best taxi hailing app!.</p>"));
+                startActivity(Intent.createChooser(sharingIntent, "Share Safiree via..."));
+                break;
+            case R.id.nav_contact_us:
+                new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+                        .setTitleText("Contact Us")
+                        .setContentText("Press 'Call' to get in touch with us!")
+                        .setCancelText("Cancel")
+                        .setConfirmText("Call Us")
+                        .showCancelButton(true)
+                        .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sDialog) {
+                                sDialog.cancel();
+                            }
+                        })
+                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                checkPermissionsAndCall();
+                            }
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+                        })
+                        .show();
+                break;
+            default:
+                break;
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void checkPermissionsAndCall() {
+        String permission = Manifest.permission.CALL_PHONE;
+
+        if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
+                Toast.makeText(this, "Allow external storage to be read.", Toast.LENGTH_LONG).show();
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{permission}, PERMISSIONS_REQUEST_CODE);
+            }
+        } else {
+            Intent callIntent = new Intent(Intent.ACTION_CALL);
+            callIntent.setData(Uri.parse("tel:+254788524627"));
+            startActivity(callIntent);
+        }
     }
 
     private class GetAddressTask extends AsyncTask<Location, Void, String> {
@@ -532,6 +648,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         @Override
         protected void onPostExecute(String address) {
             edtPickUpLocation.setText(address);
+            preferenceHelper.putPickUpAddress(address);
             MY_ADDRESS = address;
         }
     }
@@ -549,6 +666,78 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         listVehicleTypes.addItemDecoration(new EqualSpacingItemDecoration(16, EqualSpacingItemDecoration.HORIZONTAL));
         //listVehicleTypes.smoothScrollToPosition(selectedPosition);
         listVehicleTypes.setHasFixedSize(true);
+
+        listVehicleTypes.addOnItemTouchListener(new RecyclerTouchListener(this, listVehicleTypes, new ClickListener() {
+            @Override
+            public void onClick(View view, final int position) {
+                txtTotalCost.setText(CURRENCY + initFareCalculation(DISTANCE, duration_value, position));
+                changeButtonText(position);
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+
+            }
+        }));
+
         listVehicleTypes.setAdapter(vehicleTypesAdapter);
+    }
+
+    /**
+     * RecyclerView: Implementing single item click and long press (Part-II)
+     * <p>
+     * - creating an Interface for single tap and long press
+     * - Parameters are its respective view and its position
+     */
+
+    public static interface ClickListener {
+        public void onClick(View view, int position);
+
+        public void onLongClick(View view, int position);
+    }
+
+    private class RecyclerTouchListener implements RecyclerView.OnItemTouchListener {
+
+        private ClickListener clicklistener;
+        private GestureDetector gestureDetector;
+
+        public RecyclerTouchListener(Context context, final RecyclerView recycleView, final ClickListener clicklistener) {
+
+            this.clicklistener = clicklistener;
+            gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
+                @Override
+                public boolean onSingleTapUp(MotionEvent e) {
+                    return true;
+                }
+
+                @Override
+                public void onLongPress(MotionEvent e) {
+                    View child = recycleView.findChildViewUnder(e.getX(), e.getY());
+                    if (child != null && clicklistener != null) {
+                        clicklistener.onLongClick(child, recycleView.getChildAdapterPosition(child));
+                    }
+                }
+            });
+        }
+
+        @Override
+        public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+            View child = rv.findChildViewUnder(e.getX(), e.getY());
+            if (child != null && clicklistener != null && gestureDetector.onTouchEvent(e)) {
+                clicklistener.onClick(child, rv.getChildAdapterPosition(child));
+            }
+
+            return false;
+        }
+
+        @Override
+        public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+
+        }
+
+        @Override
+        public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+
+        }
     }
 }
