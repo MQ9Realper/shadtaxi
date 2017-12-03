@@ -3,19 +3,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.shadtaxi.shadtaxi">
 
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.CALL_PHONE"/>
+    <uses-sdk tools:overrideLibrary="com.alexfu.countdownview" />
 
-    <uses-sdk tools:overrideLibrary="com.alexfu.countdownview"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        tools:replace="android:icon"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:replace="android:icon">
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
@@ -50,9 +50,13 @@
             android:label="@string/app_name"
             android:parentActivityName=".activities.AvailableDriversActivity" />
         <activity
+            android:name=".activities.HistoryActivity"
             android:label="@string/app_name"
-            android:parentActivityName=".activities.DashboardActivity"
-            android:name=".activities.HistoryActivity"/>
+            android:parentActivityName=".activities.DashboardActivity" />
+        <activity
+            android:name=".activities.ProfileActivity"
+            android:label="@string/app_name"
+            android:parentActivityName=".activities.DashboardActivity" />
     </application>
 
 </manifest>

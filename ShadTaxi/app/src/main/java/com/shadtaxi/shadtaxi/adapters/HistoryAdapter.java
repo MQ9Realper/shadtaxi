@@ -10,11 +10,9 @@ import android.widget.Filter;
 
 import com.bumptech.glide.Glide;
 import com.shadtaxi.shadtaxi.R;
-import com.shadtaxi.shadtaxi.models.AvailableDriver;
 import com.shadtaxi.shadtaxi.models.History;
 import com.shadtaxi.shadtaxi.utils.PreferenceHelper;
-import com.shadtaxi.shadtaxi.utils.UniversalUtils;
-import com.shadtaxi.shadtaxi.views.Btn;
+import com.shadtaxi.shadtaxi.utils.Utils;
 import com.shadtaxi.shadtaxi.views.Txt;
 import com.shadtaxi.shadtaxi.views.TxtSemiBold;
 
@@ -30,7 +28,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class HistoryAdapter extends BaseAdapter {
     private ViewHolder viewHolder;
-    private UniversalUtils universalUtils;
+    private Utils utils;
     private PreferenceHelper preferenceHelper;
     private Activity context;
     private List<History> originalDriverList = null;
@@ -45,7 +43,7 @@ public class HistoryAdapter extends BaseAdapter {
         this.layoutInflater = LayoutInflater.from(context1);
         this.filteredDriverList = new ArrayList<>();
         this.filteredDriverList.addAll(originalDriverList);
-        this.universalUtils = new UniversalUtils(context1);
+        this.utils = new Utils(context1);
         this.preferenceHelper = new PreferenceHelper(context1);
     }
 

@@ -8,17 +8,17 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.shadtaxi.shadtaxi.R;
-import com.shadtaxi.shadtaxi.utils.UniversalUtils;
+import com.shadtaxi.shadtaxi.utils.Utils;
 import com.shadtaxi.shadtaxi.views.Btn;
 
 public class StartActivity extends AppCompatActivity {
-    private UniversalUtils universalUtils;
+    private Utils utils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
-        universalUtils = new UniversalUtils(this);
+        utils = new Utils(this);
 
         InitToolbar("Get Started");
 
@@ -54,7 +54,7 @@ public class StartActivity extends AppCompatActivity {
                 finish();
             }
         });
-        universalUtils.centerToolbarTitle(toolbar);
+        utils.centerToolbarTitle(toolbar);
         setSupportActionBar(toolbar);
     }
 }

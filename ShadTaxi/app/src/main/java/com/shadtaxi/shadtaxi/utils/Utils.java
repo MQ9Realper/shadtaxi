@@ -35,14 +35,14 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * Created by dennismwebia on 9/6/17.
  */
 
-public class UniversalUtils {
+public class Utils {
     private Activity context = null;
     private AlertDialog dialogConfirm, dialogTimer;
     private Dialog dialogOnTrip, dialogReceipt;
     private TxtSemiBold txtTimer;
 
 
-    public UniversalUtils(Activity context) {
+    public Utils(Activity context) {
         this.context = context;
     }
 

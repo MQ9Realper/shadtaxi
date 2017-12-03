@@ -14,20 +14,19 @@ import android.widget.ListView;
 import com.shadtaxi.shadtaxi.R;
 import com.shadtaxi.shadtaxi.adapters.AvailableDriversAdapter;
 import com.shadtaxi.shadtaxi.data.Data;
-import com.shadtaxi.shadtaxi.models.AvailableDriver;
 import com.shadtaxi.shadtaxi.utils.PreferenceHelper;
-import com.shadtaxi.shadtaxi.utils.UniversalUtils;
+import com.shadtaxi.shadtaxi.utils.Utils;
 import com.shadtaxi.shadtaxi.views.Edt;
 
 public class AvailableDriversActivity extends AppCompatActivity {
-    private UniversalUtils universalUtils;
+    private Utils utils;
     private PreferenceHelper preferenceHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_available_drivers);
-        universalUtils = new UniversalUtils(this);
+        utils = new Utils(this);
         preferenceHelper = new PreferenceHelper(this);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
@@ -49,7 +48,7 @@ public class AvailableDriversActivity extends AppCompatActivity {
                 finish();
             }
         });
-        universalUtils.centerToolbarTitle(toolbar);
+        utils.centerToolbarTitle(toolbar);
         setSupportActionBar(toolbar);
     }
 

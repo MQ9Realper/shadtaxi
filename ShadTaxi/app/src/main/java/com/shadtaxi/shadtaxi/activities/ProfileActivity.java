@@ -6,35 +6,31 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.ListView;
 
 import com.shadtaxi.shadtaxi.R;
-import com.shadtaxi.shadtaxi.adapters.HistoryAdapter;
-import com.shadtaxi.shadtaxi.data.Data;
 import com.shadtaxi.shadtaxi.utils.Utils;
 
-public class HistoryActivity extends AppCompatActivity {
+public class ProfileActivity extends AppCompatActivity {
     private Utils utils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_history);
+        setContentView(R.layout.activity_profile);
         utils = new Utils(this);
 
-        InitToolbar("My Trips");
-
-        initHistoryList();
+        InitToolbar("Profile");
     }
+
     private void InitToolbar(String name) {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarHistory);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarProfile);
         toolbar.setTitle(name);
         toolbar.setTitleTextColor(Color.WHITE);
         toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_keyboard_arrow_left_white_24dp));
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(HistoryActivity.this, DashboardActivity.class);
+                Intent intent = new Intent(ProfileActivity.this, DashboardActivity.class);
                 startActivity(intent);
                 finish();
             }
@@ -42,12 +38,4 @@ public class HistoryActivity extends AppCompatActivity {
         utils.centerToolbarTitle(toolbar);
         setSupportActionBar(toolbar);
     }
-
-    private void initHistoryList() {
-        Data data = new Data();
-        final HistoryAdapter ridesAdapter = new HistoryAdapter(this, data.historyArrayList());
-        ListView listView = (ListView) findViewById(R.id.listViewHistory);
-        listView.setAdapter(ridesAdapter);
-    }
-
 }
