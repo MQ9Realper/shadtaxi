@@ -5,11 +5,13 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatRatingBar;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
@@ -36,14 +38,15 @@ import de.hdodenhof.circleimageview.CircleImageView;
  */
 
 public class Utils {
-    private Activity context = null;
+    private Activity context;
+    private AppCompatActivity appCompatActivity;
     private AlertDialog dialogConfirm, dialogTimer;
     private Dialog dialogOnTrip, dialogReceipt;
     private TxtSemiBold txtTimer;
 
-
-    public Utils(Activity context) {
-        this.context = context;
+    public Utils(Activity activity, AppCompatActivity appCompatActivity) {
+        this.context = activity;
+        this.appCompatActivity = appCompatActivity;
     }
 
     public void centerToolbarTitle(@NonNull final Toolbar toolbar) {
@@ -58,6 +61,22 @@ public class Utils {
             layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
             toolbar.requestLayout();
         }
+    }
+
+    public void initToolbar(Toolbar toolbar, String title, final Class<?> destination_class){
+        toolbar.setTitle(title);
+        toolbar.setTitleTextColor(Color.WHITE);
+        toolbar.setNavigationIcon(context.getResources().getDrawable(R.drawable.ic_keyboard_arrow_left_white_24dp));
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, destination_class);
+                context.startActivity(intent);
+                context.finish();
+            }
+        });
+        centerToolbarTitle(toolbar);
+        appCompatActivity.setSupportActionBar(toolbar);
     }
 
     public void showConfirmationDialog(String pick_up, String drop_off, final String driver_name, String driver_distance, float driver_rating, final int driver_image) {

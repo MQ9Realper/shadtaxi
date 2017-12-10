@@ -20,7 +20,7 @@ public class HistoryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
-        utils = new Utils(this);
+        utils = new Utils(this, this);
 
         InitToolbar("My Trips");
 
@@ -45,7 +45,7 @@ public class HistoryActivity extends AppCompatActivity {
 
     private void initHistoryList() {
         Data data = new Data();
-        final HistoryAdapter ridesAdapter = new HistoryAdapter(this, data.historyArrayList());
+        final HistoryAdapter ridesAdapter = new HistoryAdapter(this, this,data.historyArrayList());
         ListView listView = (ListView) findViewById(R.id.listViewHistory);
         listView.setAdapter(ridesAdapter);
     }

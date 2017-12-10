@@ -10,7 +10,7 @@
         android:layout_height="wrap_content" />
 
     <com.shadtaxi.shadtaxi.views.Txt
-        android:textColor="@android:color/white"
+        android:textColor="@color/colorBlack"
         android:textSize="16sp"
         android:text="@string/string_terms"
         android:layout_width="wrap_content"

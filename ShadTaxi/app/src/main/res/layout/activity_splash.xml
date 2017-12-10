@@ -7,11 +7,12 @@
     tools:context="com.shadtaxi.shadtaxi.activities.SplashActivity">
 
     <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:contentDescription="@string/app_name"
+        android:layout_gravity="center_vertical|center_horizontal"
         android:scaleType="fitXY"
-        android:src="@drawable/splash_image" />
+        android:src="@drawable/logo" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -25,7 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            app:indicatorColor="@color/colorWhite"
+            app:indicatorColor="@color/colorPrimary"
             app:indicatorName="LineSpinFadeLoaderIndicator"
             app:maxHeight="50dp"
             app:maxWidth="50dp" />
@@ -36,7 +37,7 @@
             android:layout_gravity="center_vertical"
             android:layout_margin="4dp"
             android:text="Please wait.."
-            android:textColor="@color/colorWhite"
+            android:textColor="@color/colorPrimary"
             android:textSize="16sp"
             android:textStyle="bold" />
 

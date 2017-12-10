@@ -26,7 +26,7 @@ public class AvailableDriversActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_available_drivers);
-        utils = new Utils(this);
+        utils = new Utils(this, this);
         preferenceHelper = new PreferenceHelper(this);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
@@ -75,7 +75,7 @@ public class AvailableDriversActivity extends AppCompatActivity {
 
     private void initDriverList() {
         Data data = new Data();
-        final AvailableDriversAdapter ridesAdapter = new AvailableDriversAdapter(this, data.driverArrayList());
+        final AvailableDriversAdapter ridesAdapter = new AvailableDriversAdapter(this, this, data.driverArrayList());
         ListView listView = (ListView) findViewById(R.id.listViewDrivers);
         listView.setAdapter(ridesAdapter);
 

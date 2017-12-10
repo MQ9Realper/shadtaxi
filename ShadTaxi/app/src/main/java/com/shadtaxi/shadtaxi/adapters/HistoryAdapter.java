@@ -1,6 +1,7 @@
 package com.shadtaxi.shadtaxi.adapters;
 
 import android.app.Activity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatRatingBar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,19 +32,21 @@ public class HistoryAdapter extends BaseAdapter {
     private Utils utils;
     private PreferenceHelper preferenceHelper;
     private Activity context;
+    private AppCompatActivity appCompatActivity;
     private List<History> originalDriverList = null;
     private List<History> filteredDriverList;
     private LayoutInflater layoutInflater;
     private Filter filter;
     private int selectedPosition = 0;
 
-    public HistoryAdapter(Activity context1, ArrayList<History> driverArrayList) {
+    public HistoryAdapter(Activity context1, AppCompatActivity appCompatActivity, ArrayList<History> driverArrayList) {
         this.context = context1;
+        this.appCompatActivity = appCompatActivity;
         this.originalDriverList = driverArrayList;
         this.layoutInflater = LayoutInflater.from(context1);
         this.filteredDriverList = new ArrayList<>();
         this.filteredDriverList.addAll(originalDriverList);
-        this.utils = new Utils(context1);
+        this.utils = new Utils(context1, appCompatActivity);
         this.preferenceHelper = new PreferenceHelper(context1);
     }
 

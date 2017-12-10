@@ -1,97 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary"
+    android:background="@color/colorWhite"
+    android:orientation="vertical"
     tools:context="com.shadtaxi.shadtaxi.activities.StartActivity">
 
     <include
         android:id="@+id/toolbarGetStarted"
         layout="@layout/layout_toolbar" />
 
-    <com.shadtaxi.shadtaxi.views.TxtLogo
-        android:id="@+id/txtLogo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/toolbarGetStarted"
-        android:layout_centerHorizontal="true"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/app_name"
-        android:textColor="@android:color/white"
-        android:textSize="110sp"
-        android:textStyle="bold" />
-
-    <ImageView
-        android:id="@+id/imageLogo"
-        android:layout_width="wrap_content"
-        android:layout_height="200dp"
-        android:layout_below="@+id/toolbarGetStarted"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="-16dp"
-        android:contentDescription="@string/app_name"
-        android:src="@drawable/shad_taxi_logo"
-        android:visibility="gone" />
-
-    <LinearLayout
+    <com.shadtaxi.shadtaxi.views.SlidingTabLayout
+        android:id="@+id/slidingTabLayoutMain"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/txtLogo"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
-        android:orientation="vertical">
+        android:background="@color/colorWhite"
+        android:elevation="2dp" />
 
-        <include layout="@layout/layout_login_mobile_number" />
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorWhite" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/white" />
-
-        <include layout="@layout/layout_login_password" />
-
-        <com.shadtaxi.shadtaxi.views.Txt
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
-            android:text="@string/string_forgot_password"
-            android:textColor="@android:color/white"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-
-        <com.shadtaxi.shadtaxi.views.Btn
-            android:id="@+id/btnCompleteSignIn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/drawable_sign_in_background"
-            android:paddingBottom="16dp"
-            android:paddingTop="16dp"
-            android:text="Sign In"
-            android:textAllCaps="true"
-            android:textColor="@android:color/white"
-            android:textSize="15sp" />
-
-        <include layout="@layout/layout_or_divider" />
-
-        <com.shadtaxi.shadtaxi.views.Btn
-            android:id="@+id/btnRegister"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/drawable_sign_in_background"
-            android:padding="16dp"
-            android:text="REGISTER"
-            android:textAllCaps="true"
-            android:textColor="@android:color/white"
-            android:textSize="15sp" />
-    </LinearLayout>
-
-
-</RelativeLayout>
+</LinearLayout>

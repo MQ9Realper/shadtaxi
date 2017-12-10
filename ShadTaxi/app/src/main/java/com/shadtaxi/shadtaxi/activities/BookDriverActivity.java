@@ -17,7 +17,7 @@ public class BookDriverActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_driver);
-        utils = new Utils(this);
+        utils = new Utils(this, this);
 
         getExtraData();
     }

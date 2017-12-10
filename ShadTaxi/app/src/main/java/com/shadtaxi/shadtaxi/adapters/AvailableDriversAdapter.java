@@ -1,6 +1,7 @@
 package com.shadtaxi.shadtaxi.adapters;
 
 import android.app.Activity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatRatingBar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,19 +33,21 @@ public class AvailableDriversAdapter extends BaseAdapter {
     private Utils utils;
     private PreferenceHelper preferenceHelper;
     private Activity context;
+    private AppCompatActivity compatActivity;
     private List<AvailableDriver> originalDriverList = null;
     private List<AvailableDriver> filteredDriverList;
     private LayoutInflater layoutInflater;
     private Filter filter;
     private int selectedPosition = 0;
 
-    public AvailableDriversAdapter(Activity context1, ArrayList<AvailableDriver> driverArrayList) {
+    public AvailableDriversAdapter(Activity context1, AppCompatActivity appCompatActivity,  ArrayList<AvailableDriver> driverArrayList) {
         this.context = context1;
+        this.compatActivity = appCompatActivity;
         this.originalDriverList = driverArrayList;
         this.layoutInflater = LayoutInflater.from(context1);
         this.filteredDriverList = new ArrayList<>();
         this.filteredDriverList.addAll(originalDriverList);
-        this.utils = new Utils(context1);
+        this.utils = new Utils(context1, appCompatActivity);
         this.preferenceHelper = new PreferenceHelper(context1);
     }
 

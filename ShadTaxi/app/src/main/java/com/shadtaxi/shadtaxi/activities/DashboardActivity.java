@@ -108,7 +108,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        utils = new Utils(this);
+        utils = new Utils(this, this);
         decimalFormat = new DecimalFormat("0.00");
         preferenceHelper = new PreferenceHelper(this);
 
