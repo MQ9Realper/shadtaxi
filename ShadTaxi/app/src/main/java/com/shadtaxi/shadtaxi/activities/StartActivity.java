@@ -1,60 +1,53 @@
 package com.shadtaxi.shadtaxi.activities;
 
-import android.content.Intent;
-import android.graphics.Color;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 
 import com.shadtaxi.shadtaxi.R;
-import com.shadtaxi.shadtaxi.utils.UniversalUtils;
-import com.shadtaxi.shadtaxi.views.Btn;
+import com.shadtaxi.shadtaxi.adapters.StartScreenAdapter;
+import com.shadtaxi.shadtaxi.fragments.LoginFragment;
+import com.shadtaxi.shadtaxi.fragments.RegisterFragment;
+import com.shadtaxi.shadtaxi.utils.Utils;
+import com.shadtaxi.shadtaxi.views.SlidingTabLayout;
 
 public class StartActivity extends AppCompatActivity {
-    private UniversalUtils universalUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
-        universalUtils = new UniversalUtils(this);
-
-        InitToolbar("Get Started");
-
-        Btn btnRegister = (Btn) findViewById(R.id.btnRegister);
-        btnRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(StartActivity.this, SignUpActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        Btn btnSignIn = (Btn) findViewById(R.id.btnCompleteSignIn);
-        btnSignIn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(StartActivity.this, DashboardActivity.class);
-                startActivity(intent);
-            }
-        });
-    }
-
-    private void InitToolbar(String name) {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarGetStarted);
-        toolbar.setTitle(name);
-        toolbar.setTitleTextColor(Color.WHITE);
-        toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_keyboard_arrow_left_white_24dp));
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        SlidingTabLayout slidingTabLayout = (SlidingTabLayout) findViewById(R.id.slidingTabLayoutMain);
+        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+
+        Utils utils = new Utils(this, this);
+        utils.initToolbar(toolbar, "Get Started", MainActivity.class);
+
+        initTabLayout(slidingTabLayout, viewPager);
+    }
+
+    private void initTabLayout(SlidingTabLayout slidingTabLayout, ViewPager viewPager) {
+        LoginFragment loginFragment = new LoginFragment();
+        RegisterFragment registerFragment = new RegisterFragment();
+
+        Fragment[] fragments = new Fragment[]{loginFragment, registerFragment};
+
+        StartScreenAdapter startScreenAdapter = new StartScreenAdapter(getSupportFragmentManager(), new String[]{"Login", "Create Account"}, 2, fragments);
+        viewPager.setAdapter(startScreenAdapter);
+
+        slidingTabLayout.setDistributeEvenly(true);
+
+        slidingTabLayout.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
             @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(StartActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
+            public int getIndicatorColor(int position) {
+                return getResources().getColor(R.color.colorPrimary);
             }
         });
-        universalUtils.centerToolbarTitle(toolbar);
-        setSupportActionBar(toolbar);
+        slidingTabLayout.setViewPager(viewPager);
+
     }
+
 }

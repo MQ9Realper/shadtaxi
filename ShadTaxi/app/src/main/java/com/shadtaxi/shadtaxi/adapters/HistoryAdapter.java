@@ -1,6 +1,7 @@
 package com.shadtaxi.shadtaxi.adapters;
 
 import android.app.Activity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatRatingBar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,11 +11,9 @@ import android.widget.Filter;
 
 import com.bumptech.glide.Glide;
 import com.shadtaxi.shadtaxi.R;
-import com.shadtaxi.shadtaxi.models.AvailableDriver;
 import com.shadtaxi.shadtaxi.models.History;
 import com.shadtaxi.shadtaxi.utils.PreferenceHelper;
-import com.shadtaxi.shadtaxi.utils.UniversalUtils;
-import com.shadtaxi.shadtaxi.views.Btn;
+import com.shadtaxi.shadtaxi.utils.Utils;
 import com.shadtaxi.shadtaxi.views.Txt;
 import com.shadtaxi.shadtaxi.views.TxtSemiBold;
 
@@ -30,22 +29,24 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class HistoryAdapter extends BaseAdapter {
     private ViewHolder viewHolder;
-    private UniversalUtils universalUtils;
+    private Utils utils;
     private PreferenceHelper preferenceHelper;
     private Activity context;
+    private AppCompatActivity appCompatActivity;
     private List<History> originalDriverList = null;
     private List<History> filteredDriverList;
     private LayoutInflater layoutInflater;
     private Filter filter;
     private int selectedPosition = 0;
 
-    public HistoryAdapter(Activity context1, ArrayList<History> driverArrayList) {
+    public HistoryAdapter(Activity context1, AppCompatActivity appCompatActivity, ArrayList<History> driverArrayList) {
         this.context = context1;
+        this.appCompatActivity = appCompatActivity;
         this.originalDriverList = driverArrayList;
         this.layoutInflater = LayoutInflater.from(context1);
         this.filteredDriverList = new ArrayList<>();
         this.filteredDriverList.addAll(originalDriverList);
-        this.universalUtils = new UniversalUtils(context1);
+        this.utils = new Utils(context1, appCompatActivity);
         this.preferenceHelper = new PreferenceHelper(context1);
     }
 

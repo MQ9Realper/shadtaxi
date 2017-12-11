@@ -1,7 +1,7 @@
 package com.shadtaxi.shadtaxi.adapters;
 
 import android.app.Activity;
-import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatRatingBar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,10 +11,9 @@ import android.widget.Filter;
 
 import com.bumptech.glide.Glide;
 import com.shadtaxi.shadtaxi.R;
-import com.shadtaxi.shadtaxi.activities.BookDriverActivity;
 import com.shadtaxi.shadtaxi.models.AvailableDriver;
 import com.shadtaxi.shadtaxi.utils.PreferenceHelper;
-import com.shadtaxi.shadtaxi.utils.UniversalUtils;
+import com.shadtaxi.shadtaxi.utils.Utils;
 import com.shadtaxi.shadtaxi.views.Btn;
 import com.shadtaxi.shadtaxi.views.Txt;
 import com.shadtaxi.shadtaxi.views.TxtSemiBold;
@@ -31,22 +30,24 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class AvailableDriversAdapter extends BaseAdapter {
     private ViewHolder viewHolder;
-    private UniversalUtils universalUtils;
+    private Utils utils;
     private PreferenceHelper preferenceHelper;
     private Activity context;
+    private AppCompatActivity compatActivity;
     private List<AvailableDriver> originalDriverList = null;
     private List<AvailableDriver> filteredDriverList;
     private LayoutInflater layoutInflater;
     private Filter filter;
     private int selectedPosition = 0;
 
-    public AvailableDriversAdapter(Activity context1, ArrayList<AvailableDriver> driverArrayList) {
+    public AvailableDriversAdapter(Activity context1, AppCompatActivity appCompatActivity,  ArrayList<AvailableDriver> driverArrayList) {
         this.context = context1;
+        this.compatActivity = appCompatActivity;
         this.originalDriverList = driverArrayList;
         this.layoutInflater = LayoutInflater.from(context1);
         this.filteredDriverList = new ArrayList<>();
         this.filteredDriverList.addAll(originalDriverList);
-        this.universalUtils = new UniversalUtils(context1);
+        this.utils = new Utils(context1, appCompatActivity);
         this.preferenceHelper = new PreferenceHelper(context1);
     }
 
@@ -107,7 +108,7 @@ public class AvailableDriversAdapter extends BaseAdapter {
         viewHolder.btnBook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                universalUtils.showConfirmationDialog(preferenceHelper.getPickUpAddress(), preferenceHelper.getDropOffAddress(), originalDriverList.get(position).getDriver_name(),originalDriverList.get(position).getDriver_distance(),originalDriverList.get(position).getDriver_rating(),originalDriverList.get(position).getDriver_image());
+                utils.showConfirmationDialog(preferenceHelper.getPickUpAddress(), preferenceHelper.getDropOffAddress(), originalDriverList.get(position).getDriver_name(),originalDriverList.get(position).getDriver_distance(),originalDriverList.get(position).getDriver_rating(),originalDriverList.get(position).getDriver_image());
             }
         });
         return convertView;

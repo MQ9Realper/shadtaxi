@@ -43,7 +43,7 @@ public class Edt extends AppCompatEditText {
             if (typeface == null) {
                 // G1.log(TAG, "asset:: " + "fonts/" + asset);
                 typeface = Typeface.createFromAsset(ctx.getAssets(),
-                        "fonts/Muli-Regular.ttf");
+                        "fonts/Muli-Light.ttf");
             }
 
         } catch (Exception e) {

@@ -1,44 +1,52 @@
 package com.shadtaxi.shadtaxi.utils;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatRatingBar;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.shadtaxi.shadtaxi.R;
+import com.shadtaxi.shadtaxi.activities.DashboardActivity;
 import com.shadtaxi.shadtaxi.views.Btn;
 import com.shadtaxi.shadtaxi.views.Txt;
 import com.shadtaxi.shadtaxi.views.TxtSemiBold;
 
 import java.util.ArrayList;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by dennismwebia on 9/6/17.
  */
 
-public class UniversalUtils {
-    private Context context = null;
+public class Utils {
+    private Activity context;
+    private AppCompatActivity appCompatActivity;
     private AlertDialog dialogConfirm, dialogTimer;
-    private Dialog dialogOnTrip;
+    private Dialog dialogOnTrip, dialogReceipt;
     private TxtSemiBold txtTimer;
 
-
-    public UniversalUtils(Context context) {
-        this.context = context;
+    public Utils(Activity activity, AppCompatActivity appCompatActivity) {
+        this.context = activity;
+        this.appCompatActivity = appCompatActivity;
     }
 
     public void centerToolbarTitle(@NonNull final Toolbar toolbar) {
@@ -53,6 +61,22 @@ public class UniversalUtils {
             layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
             toolbar.requestLayout();
         }
+    }
+
+    public void initToolbar(Toolbar toolbar, String title, final Class<?> destination_class){
+        toolbar.setTitle(title);
+        toolbar.setTitleTextColor(Color.WHITE);
+        toolbar.setNavigationIcon(context.getResources().getDrawable(R.drawable.ic_keyboard_arrow_left_white_24dp));
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, destination_class);
+                context.startActivity(intent);
+                context.finish();
+            }
+        });
+        centerToolbarTitle(toolbar);
+        appCompatActivity.setSupportActionBar(toolbar);
     }
 
     public void showConfirmationDialog(String pick_up, String drop_off, final String driver_name, String driver_distance, float driver_rating, final int driver_image) {
@@ -159,8 +183,45 @@ public class UniversalUtils {
         Glide.with(context).load(driver_image).into(profileImage);
         txtDriverName.setText(driver_name);
 
+        showTripReceiptTimer();
+
         dialogOnTrip.show();
 
+    }
+
+    private void showReceiptDialog() {
+        dialogReceipt = new Dialog(context, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+        final View dialogView = LayoutInflater.from(context).inflate(R.layout.layout_trip_receipt, null);
+        dialogReceipt.setCancelable(false);
+        dialogReceipt.setContentView(dialogView);
+
+        CircleImageView profileImage = (CircleImageView) dialogView.findViewById(R.id.imgOnTripImage);
+        TxtSemiBold txtDriverName = (TxtSemiBold) dialogView.findViewById(R.id.txtOnTripDriverName);
+        LinearLayout layoutCompleteRide = (LinearLayout) dialogView.findViewById(R.id.layoutCompleteRide);
+
+        layoutCompleteRide.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE)
+                        .setTitleText("Thank You!")
+                        .setContentText("Thank you for riding with Safiree!")
+                        .setConfirmText("Okay")
+                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sDialog) {
+                                Intent intent = new Intent(context, DashboardActivity.class);
+                                context.startActivity(intent);
+                                context.finish();
+                            }
+                        })
+                        .show();
+            }
+        });
+
+        //Glide.with(context).load(driver_image).into(profileImage);
+        //txtDriverName.setText(driver_name);
+
+        dialogReceipt.show();
     }
 
     private void showOnTripDialogTimer(final String driver_name, final int driver_image) {
@@ -168,6 +229,15 @@ public class UniversalUtils {
             @Override
             public void run() {
                 showOnTripDialog(driver_name, driver_image);
+            }
+        }, 4000);
+    }
+
+    private void showTripReceiptTimer() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                showReceiptDialog();
             }
         }, 4000);
     }

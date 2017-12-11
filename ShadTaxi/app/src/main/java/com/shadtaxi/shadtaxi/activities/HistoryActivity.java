@@ -5,26 +5,22 @@ import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.ListView;
 
 import com.shadtaxi.shadtaxi.R;
-import com.shadtaxi.shadtaxi.adapters.AvailableDriversAdapter;
 import com.shadtaxi.shadtaxi.adapters.HistoryAdapter;
 import com.shadtaxi.shadtaxi.data.Data;
-import com.shadtaxi.shadtaxi.utils.UniversalUtils;
-import com.shadtaxi.shadtaxi.views.Edt;
+import com.shadtaxi.shadtaxi.utils.Utils;
 
 public class HistoryActivity extends AppCompatActivity {
-    private UniversalUtils universalUtils;
+    private Utils utils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
-        universalUtils = new UniversalUtils(this);
+        utils = new Utils(this, this);
 
         InitToolbar("My Trips");
 
@@ -43,13 +39,13 @@ public class HistoryActivity extends AppCompatActivity {
                 finish();
             }
         });
-        universalUtils.centerToolbarTitle(toolbar);
+        utils.centerToolbarTitle(toolbar);
         setSupportActionBar(toolbar);
     }
 
     private void initHistoryList() {
         Data data = new Data();
-        final HistoryAdapter ridesAdapter = new HistoryAdapter(this, data.historyArrayList());
+        final HistoryAdapter ridesAdapter = new HistoryAdapter(this, this,data.historyArrayList());
         ListView listView = (ListView) findViewById(R.id.listViewHistory);
         listView.setAdapter(ridesAdapter);
     }

@@ -13,6 +13,8 @@
     <string name="hint_where_to"><font size="14">Where to?</font></string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="string_show_password">SHOW</string>
+    <string name="string_hide_password">HIDE</string>
 
     <string name="no_location_detected">
         No location detected. Make sure location is enabled on the device.
@@ -23,5 +25,8 @@
 
     <string name="action_settings">Settings</string>
     <string name="place_details">&lt;b&gt;%1$s&lt;/b&gt;&lt;br/&gt;&lt;i&gt;Place Id: %2$s&lt;/i&gt;&lt;br/&gt;Address: %3$s&lt;br/&gt;Phone: %4$s&lt;br/&gt;Website: %5$s</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

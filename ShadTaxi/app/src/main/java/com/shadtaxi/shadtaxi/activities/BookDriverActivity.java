@@ -8,16 +8,16 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.shadtaxi.shadtaxi.R;
-import com.shadtaxi.shadtaxi.utils.UniversalUtils;
+import com.shadtaxi.shadtaxi.utils.Utils;
 
 public class BookDriverActivity extends AppCompatActivity {
-    private UniversalUtils universalUtils;
+    private Utils utils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_driver);
-        universalUtils = new UniversalUtils(this);
+        utils = new Utils(this, this);
 
         getExtraData();
     }
@@ -35,7 +35,7 @@ public class BookDriverActivity extends AppCompatActivity {
                 finish();
             }
         });
-        universalUtils.centerToolbarTitle(toolbar);
+        utils.centerToolbarTitle(toolbar);
         setSupportActionBar(toolbar);
     }
 

@@ -65,7 +65,7 @@ import com.shadtaxi.shadtaxi.constants.Constants;
 import com.shadtaxi.shadtaxi.data.Data;
 import com.shadtaxi.shadtaxi.utils.EqualSpacingItemDecoration;
 import com.shadtaxi.shadtaxi.utils.PreferenceHelper;
-import com.shadtaxi.shadtaxi.utils.UniversalUtils;
+import com.shadtaxi.shadtaxi.utils.Utils;
 import com.shadtaxi.shadtaxi.views.Btn;
 import com.shadtaxi.shadtaxi.views.Edt;
 import com.shadtaxi.shadtaxi.views.Txt;
@@ -78,6 +78,7 @@ import java.util.List;
 import java.util.Locale;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class DashboardActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
     private static final int PLACE_PICKER_REQUEST = 0x1;
@@ -87,7 +88,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     private FusedLocationProviderClient fusedLocationProviderClient;
     private static final String TAG = DashboardActivity.class.getSimpleName();
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
-    private UniversalUtils universalUtils;
+    private Utils utils;
     private Toolbar toolbar;
     private Edt edtPickUpLocation;
     private Txt edtDropOffLocation, txtTotalDistance, txtTotalTime, txtTotalCost;
@@ -107,7 +108,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        universalUtils = new UniversalUtils(this);
+        utils = new Utils(this, this);
         decimalFormat = new DecimalFormat("0.00");
         preferenceHelper = new PreferenceHelper(this);
 
@@ -138,6 +139,15 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View headerView = navigationView.getHeaderView(0);
+        CircleImageView profileImage = (CircleImageView) headerView.findViewById(R.id.profile_image);
+        profileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DashboardActivity.this, ProfileActivity.class);
+                startActivity(intent);
+            }
+        });
         navigationView.setNavigationItemSelectedListener(this);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -186,7 +196,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         toolbar = (Toolbar) findViewById(R.id.toolbarMain);
         toolbar.setTitle(name);
         toolbar.setTitleTextColor(Color.WHITE);
-        universalUtils.centerToolbarTitle(toolbar);
+        utils.centerToolbarTitle(toolbar);
         setSupportActionBar(toolbar);
     }
 
