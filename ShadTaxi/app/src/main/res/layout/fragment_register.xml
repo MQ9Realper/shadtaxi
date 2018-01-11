@@ -53,7 +53,7 @@
                 android:textStyle="bold" />
 
             <com.shadtaxi.shadtaxi.views.Edt
-                android:id="@+id/edtLoginEmail"
+                android:id="@+id/edtRegEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/edittext_background"
@@ -70,7 +70,12 @@
 
         <include layout="@layout/layout_registration_confirm_password" />
 
-        <include layout="@layout/layout_registration_terms" />
+        <include
+            layout="@layout/layout_registration_terms"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp" />
 
         <com.shadtaxi.shadtaxi.views.Btn
             android:id="@+id/btnCreateAccount"

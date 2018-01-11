@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.shadtaxi.shadtaxi">
 
-    <uses-sdk tools:overrideLibrary="com.alexfu.countdownview" />
+    <uses-sdk tools:overrideLibrary="com.alexfu.countdownview, com.muddzdev.styleabletoastlibrary" />
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.CALL_PHONE" />

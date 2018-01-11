@@ -1,8 +1,10 @@
 package com.shadtaxi.shadtaxi.activities;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -21,6 +23,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -206,8 +209,12 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            if (preferenceHelper.getIsLoggedIn()) {
+                return;
+            }
         }
+
+        super.onBackPressed();
     }
 
     /**
@@ -572,6 +579,30 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
 
                         })
                         .show();
+                break;
+            case R.id.nav_logout:
+                AlertDialog.Builder alertLogout = new AlertDialog.Builder(this);
+                alertLogout.setTitle("Confirm Logout");
+                alertLogout.setMessage("Are you sure you want to logout?");
+                alertLogout.setPositiveButton("Logout", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        preferenceHelper.putIsLoggedIn(false);
+                        Intent intent1 = new Intent(DashboardActivity.this, StartActivity.class);
+                        startActivity(intent1);
+                        finish();
+                    }
+                });
+                alertLogout.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                       dialog.dismiss();
+                    }
+                });
+
+                Dialog dialog = alertLogout.create();
+                dialog.show();
+
                 break;
             default:
                 break;
