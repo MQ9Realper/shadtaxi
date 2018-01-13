@@ -21,10 +21,16 @@ public class Data {
     public ArrayList<VehicleType> vehicleTypeArrayList() {
 
         ArrayList<VehicleType> vehicleTypes = new ArrayList<>();
-        vehicleTypes.add(new VehicleType("Matatu", R.drawable.icon_matatu_not_selected));
-        vehicleTypes.add(new VehicleType("Salon", R.drawable.icon_salon_not_selected));
-        vehicleTypes.add(new VehicleType("TukTuk", R.drawable.icon_tuktuk_not_selected));
-        vehicleTypes.add(new VehicleType("BodaBoda", R.drawable.icon_motorbike_not_selected));
+        VehicleType vehicleType = new VehicleType();
+        vehicleType.setId("1");
+        vehicleType.setName("Boda");
+        vehicleType.setIcon("");
+        vehicleType.setBase_price(0.00);
+        vehicleType.setMinimum_price(0.00);
+        vehicleType.setPer_distance(0.00);
+        vehicleType.setPer_minute(0.00);
+
+        vehicleTypes.add(vehicleType);
 
         return vehicleTypes;
     }

@@ -28,6 +28,8 @@ import com.muddzdev.styleabletoastlibrary.StyleableToast;
 import com.shadtaxi.shadtaxi.R;
 import com.shadtaxi.shadtaxi.activities.DashboardActivity;
 import com.shadtaxi.shadtaxi.constants.Constants;
+import com.shadtaxi.shadtaxi.database.DatabaseHelper;
+import com.shadtaxi.shadtaxi.models.User;
 import com.shadtaxi.shadtaxi.utils.PreferenceHelper;
 import com.shadtaxi.shadtaxi.views.Btn;
 import com.shadtaxi.shadtaxi.views.Edt;
@@ -43,6 +45,7 @@ public class LoginFragment extends Fragment {
     private Edt edtLoginMobileNumber, edtLoginPassword;
     private ProgressDialog progressDialog;
     private PreferenceHelper preferenceHelper;
+    private DatabaseHelper databaseHelper;
 
     public LoginFragment() {
         // Required empty public constructor
@@ -54,6 +57,7 @@ public class LoginFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        databaseHelper = new DatabaseHelper(getActivity());
         preferenceHelper = new PreferenceHelper(getActivity());
         return inflater.inflate(R.layout.fragment_login, container, false);
     }
@@ -180,13 +184,27 @@ public class LoginFragment extends Fragment {
                         try {
                             JSONObject jsonArray = new JSONObject(response);
                             JSONObject jsonObject = jsonArray.getJSONObject("data");
-                            JSONObject jsonObject1 = jsonObject.getJSONObject("user");
 
-                            final String firstName = jsonObject1.getString("firstname");
-                            final String lastName = jsonObject1.getString("lastname");
-                            final String email = jsonObject1.getString("email");
-                            final String phone = jsonObject1.getString("phone");
-                            final String photo = jsonObject1.getString("photo");
+                            final String id = jsonObject.getString("id");
+                            final String name = jsonObject.getString("name");
+                            final String email = jsonObject.getString("email");
+                            final String phone = jsonObject.getString("phone");
+                            final String image = jsonObject.getString("image");
+                            final String isRider = jsonObject.getString("isRider");
+                            final String isDriver = jsonObject.getString("isDriver");
+                            final String profile = jsonObject.getString("profile");
+
+                            User user =  new User();
+                            user.setId(id);
+                            user.setName(name);
+                            user.setEmail(email);
+                            user.setPhone(phone);
+                            user.setImage(image);
+                            user.setRider(isRider);
+                            user.setDriver(isDriver);
+                            user.setProfile(profile);
+
+                            databaseHelper.addUser(user);
 
 
                         } catch (JSONException e) {
@@ -217,7 +235,7 @@ public class LoginFragment extends Fragment {
                 .duration(Toast.LENGTH_LONG)
                 .text(message)
                 .textColor(Color.WHITE)
-                .typeface(Typeface.createFromAsset(getActivity().getAssets(), "fonts/Muli-SemiBold.ttf"))
+                .typeface(Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Medium.ttf"))
                 .backgroundColor(Color.RED)
                 .build();
 

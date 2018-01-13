@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -42,6 +43,7 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.StringRequestListener;
+import com.bumptech.glide.Glide;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -61,22 +63,30 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.muddzdev.styleabletoastlibrary.StyleableToast;
 import com.shadtaxi.shadtaxi.BuildConfig;
 import com.shadtaxi.shadtaxi.R;
 import com.shadtaxi.shadtaxi.adapters.VehicleTypesAdapter;
 import com.shadtaxi.shadtaxi.constants.Constants;
 import com.shadtaxi.shadtaxi.data.Data;
+import com.shadtaxi.shadtaxi.database.DatabaseHelper;
+import com.shadtaxi.shadtaxi.models.User;
+import com.shadtaxi.shadtaxi.models.VehicleType;
 import com.shadtaxi.shadtaxi.utils.EqualSpacingItemDecoration;
 import com.shadtaxi.shadtaxi.utils.PreferenceHelper;
 import com.shadtaxi.shadtaxi.utils.Utils;
 import com.shadtaxi.shadtaxi.views.Btn;
 import com.shadtaxi.shadtaxi.views.Edt;
 import com.shadtaxi.shadtaxi.views.Txt;
+import com.shadtaxi.shadtaxi.views.TxtSemiBold;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -104,18 +114,21 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     private DecimalFormat decimalFormat;
     private Btn btnFindTaxi;
     private PreferenceHelper preferenceHelper;
+    private DatabaseHelper databaseHelper;
+    private ArrayList<VehicleType> vehicleTypes;
     public static final int PERMISSIONS_REQUEST_CODE = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         utils = new Utils(this, this);
         decimalFormat = new DecimalFormat("0.00");
         preferenceHelper = new PreferenceHelper(this);
-
-        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        databaseHelper = new DatabaseHelper(this);
+        vehicleTypes = new ArrayList<>();
 
         InitToolbar(getResources().getString(R.string.app_name));
 
@@ -144,6 +157,8 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         View headerView = navigationView.getHeaderView(0);
         CircleImageView profileImage = (CircleImageView) headerView.findViewById(R.id.profile_image);
+        TxtSemiBold txtUsername = (TxtSemiBold) headerView.findViewById(R.id.txtUsername);
+        Txt txtUserMobileNumber = (Txt) headerView.findViewById(R.id.txtUserMobileNumber);
         profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -151,6 +166,9 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 startActivity(intent);
             }
         });
+
+        setProfile(profileImage, txtUsername, txtUserMobileNumber);
+
         navigationView.setNavigationItemSelectedListener(this);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -161,7 +179,8 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
             ex.printStackTrace();
         }
 
-        initVehicleTypes();
+        getVehicleTypes();
+
     }
 
     private void initViews() {
@@ -174,6 +193,21 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         btnFindTaxi = (Btn) layoutBookingDetails.findViewById(R.id.btnBookTaxi);
 
         btnFindTaxi.setOnClickListener(this);
+    }
+
+    private void setProfile(CircleImageView profile_image, TxtSemiBold user_name, Txt user_mobile_number) {
+        ArrayList<User> users = databaseHelper.getAllUsers();
+        User user = users.get(0);
+
+        user_name.setText(user.getName());
+        user_mobile_number.setText(user.getPhone());
+
+        if (!user.getImage().isEmpty()) {
+            Glide.with(this).load(user.getImage()).into(profile_image);
+        } else {
+            Glide.with(this).load(R.drawable.default_image).into(profile_image);
+        }
+
     }
 
     private void checkDropOffAvailability() {
@@ -596,7 +630,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 alertLogout.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                       dialog.dismiss();
+                        dialog.dismiss();
                     }
                 });
 
@@ -701,12 +735,12 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
 
     private void initVehicleTypes() {
         Data data = new Data();
-        VehicleTypesAdapter vehicleTypesAdapter = new VehicleTypesAdapter(this, data.vehicleTypeArrayList());
+        VehicleTypesAdapter vehicleTypesAdapter = new VehicleTypesAdapter(this, databaseHelper.getAllVehicleTypes());
         RecyclerView listVehicleTypes = (RecyclerView) findViewById(R.id.listVehicleTypes);
         listVehicleTypes.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, true));
-        listVehicleTypes.addItemDecoration(new EqualSpacingItemDecoration(16, EqualSpacingItemDecoration.HORIZONTAL));
+        listVehicleTypes.addItemDecoration(new EqualSpacingItemDecoration(0, EqualSpacingItemDecoration.HORIZONTAL));
         //listVehicleTypes.smoothScrollToPosition(selectedPosition);
-        listVehicleTypes.setHasFixedSize(true);
+        listVehicleTypes.setHasFixedSize(false);
 
         listVehicleTypes.addOnItemTouchListener(new RecyclerTouchListener(this, listVehicleTypes, new ClickListener() {
             @Override
@@ -779,6 +813,81 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         @Override
         public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
 
+        }
+    }
+
+    private void getVehicleTypes(){
+        String token = preferenceHelper.getAccessToken();
+        AndroidNetworking.post(Constants.GET_VEHICLES)
+                .addHeaders("Authorization", "Bearer " + token)
+                .addHeaders("Accept","application/json")
+                .addHeaders("Content-Type","application/x-www-form-urlencoded")
+                .addBodyParameter("latlong", "-1.248462, 36.772894")
+                .setTag("vehicleTypes")
+                .setPriority(Priority.HIGH)
+                .build()
+                .getAsString(new StringRequestListener() {
+                    @Override
+                    public void onResponse(String response) {
+                       showErrorToast(response);
+                       try {
+                            JSONObject jsonArray = new JSONObject(response);
+                            JSONObject jsonObject = jsonArray.getJSONObject("data");
+                            JSONArray jsonArray1 = jsonObject.getJSONArray("vehicletypes");
+
+                            for (int i = 0; i<jsonArray1.length();i++){
+                                JSONObject jsonObject1 = jsonArray1.getJSONObject(i);
+                                final String id = jsonObject1.getString("id");
+                                final String name = jsonObject1.getString("name");
+                                final String icon = jsonObject1.getString("icon");
+                                final double per_distance = jsonObject1.getDouble("per_distance");
+                                final double per_minute = jsonObject1.getDouble("per_minute");
+                                final double minimum_price = jsonObject1.getDouble("minimum_price");
+                                final double base_price = jsonObject1.getDouble("base_price");
+
+                                VehicleType vehicleType = new VehicleType();
+                                vehicleType.setId(id);
+                                vehicleType.setName(name);
+                                vehicleType.setIcon(icon);
+                                vehicleType.setBase_price(base_price);
+                                vehicleType.setMinimum_price(minimum_price);
+                                vehicleType.setPer_distance(per_distance);
+                                vehicleType.setPer_minute(per_minute);
+
+                                databaseHelper.addVehicleType(vehicleType);
+
+                            }
+
+
+                        } catch (JSONException e) {
+                            Log.e("vehicles::", e.getMessage());
+                        }
+
+                        initVehicleTypes();
+
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+                        showErrorToast(error.getErrorBody());
+                    }
+                });
+
+    }
+
+    private void showErrorToast(String message) {
+        StyleableToast styleableToast = new StyleableToast
+                .Builder(this)
+                .duration(Toast.LENGTH_LONG)
+                .text(message)
+                .textColor(Color.WHITE)
+                .typeface(Typeface.createFromAsset(getAssets(), "fonts/Roboto-Medium.ttf"))
+                .backgroundColor(Color.RED)
+                .build();
+
+        if (styleableToast != null) {
+            styleableToast.show();
+            styleableToast = null;
         }
     }
 }
