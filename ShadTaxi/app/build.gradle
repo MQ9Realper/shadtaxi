@@ -74,6 +74,7 @@ dependencies {
     compile 'com.github.iwgang:countdownview:2.1.6'
     compile 'com.muddzdev:styleabletoast:1.0.9'
     compile 'com.googlecode.libphonenumber:libphonenumber:7.2.2'
+    compile  'org.apache.commons:commons-lang3:3.0'
 
     testCompile 'junit:junit:4.12'
 }
