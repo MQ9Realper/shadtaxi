@@ -30,6 +30,8 @@ import com.shadtaxi.shadtaxi.views.Btn;
 import com.shadtaxi.shadtaxi.views.Txt;
 import com.shadtaxi.shadtaxi.views.TxtSemiBold;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
@@ -65,7 +67,7 @@ public class Utils {
         }
     }
 
-    public void initToolbar(Toolbar toolbar, String title, final Class<?> destination_class){
+    public void initToolbar(Toolbar toolbar, String title, final Class<?> destination_class) {
         toolbar.setTitle(title);
         toolbar.setTitleTextColor(Color.WHITE);
         toolbar.setNavigationIcon(context.getResources().getDrawable(R.drawable.ic_keyboard_arrow_left_white_24dp));
@@ -242,6 +244,28 @@ public class Utils {
                 showReceiptDialog();
             }
         }, 4000);
+    }
+
+    public String formatDouble(double input) {
+        NumberFormat numberFormat = new DecimalFormat("00.00");
+        return numberFormat.format(input);
+    }
+
+    public void showSuccessDialog(String message) {
+        StyleableToast styleableToast = new StyleableToast
+                .Builder(context)
+                .duration(Toast.LENGTH_LONG)
+                .text(message)
+                .textColor(Color.WHITE)
+                .typeface(Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Medium.ttf"))
+                .backgroundColor(Color.GREEN)
+                .build();
+
+        if (styleableToast != null) {
+            styleableToast.show();
+            styleableToast = null;
+        }
+
     }
 
 }

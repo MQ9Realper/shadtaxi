@@ -205,6 +205,7 @@ public class LoginFragment extends Fragment {
                             user.setProfile(profile);
 
                             databaseHelper.addUser(user);
+                            preferenceHelper.putUserId(Integer.parseInt(id));
 
 
                         } catch (JSONException e) {

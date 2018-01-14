@@ -34,6 +34,12 @@ public class PreferenceHelper {
         edit.apply();
     }
 
+    public void putUserId(int user_id){
+        SharedPreferences.Editor edit = app_prefs.edit();
+        edit.putInt("user_id", 0);
+        edit.apply();
+    }
+
     public String getPickUpAddress(){
         return app_prefs.getString("pick_up_address", "");
     }
@@ -74,5 +80,9 @@ public class PreferenceHelper {
 
     public boolean getIsLoggedIn() {
         return app_prefs.getBoolean("logged_in", false);
+    }
+
+    public int getUserId(){
+        return app_prefs.getInt("user_id",0);
     }
 }

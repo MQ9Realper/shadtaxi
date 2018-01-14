@@ -26,27 +26,27 @@
                 android:layout_height="100dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_margin="10dp"
-                android:src="@drawable/denno"
+                android:src="@drawable/default_image"
                 app:civ_border_color="#FFFFFF"
                 app:civ_border_width="2dp" />
 
             <com.shadtaxi.shadtaxi.views.TxtSemiBold
-                android:id="@+id/textViewTermsConditions"
+                android:id="@+id/txtProfileName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="4dp"
-                android:text="DENNIS M. MWEBIA"
+                android:text="..."
                 android:textColor="@color/colorBlack"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
             <com.shadtaxi.shadtaxi.views.TxtLight
-                android:id="@+id/textViewTermsConditions1"
+                android:id="@+id/txtProfilePhoneNumber"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:text="+254 728 591 754"
+                android:text="..."
                 android:textColor="@color/colorBlackLight"
                 android:textSize="13sp"
                 android:textStyle="bold" />
@@ -62,12 +62,12 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
                     android:text="Full Name"
-                    android:textColor="@android:color/black"
+                    android:textColor="@color/colorBlack"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
                 <com.shadtaxi.shadtaxi.views.Edt
-                    android:id="@+id/edtRegFirstName"
+                    android:id="@+id/edtProfileName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/edittext_background"
@@ -89,12 +89,12 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
                     android:text="Email Address"
-                    android:textColor="@android:color/black"
+                    android:textColor="@color/colorBlack"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
                 <com.shadtaxi.shadtaxi.views.Edt
-                    android:id="@+id/edtLoginEmail"
+                    android:id="@+id/edtProfileEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/edittext_background"

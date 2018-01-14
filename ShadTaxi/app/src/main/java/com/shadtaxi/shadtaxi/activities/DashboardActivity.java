@@ -80,6 +80,7 @@ import com.shadtaxi.shadtaxi.views.Edt;
 import com.shadtaxi.shadtaxi.views.Txt;
 import com.shadtaxi.shadtaxi.views.TxtSemiBold;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -200,7 +201,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         User user = users.get(0);
 
         user_name.setText(user.getName());
-        user_mobile_number.setText(user.getPhone());
+        user_mobile_number.setText(user.getEmail()); //phone number
 
         if (!user.getImage().isEmpty()) {
             Glide.with(this).load(user.getImage()).into(profile_image);
@@ -350,6 +351,8 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
 
                             txtTotalCost.setText(CURRENCY + initFareCalculation(DISTANCE, duration_value, 0));
 
+                            changeButtonText(databaseHelper.getAllVehicleTypes().size() - 1);
+
                             checkDropOffAvailability();
 
                             progressDialog.dismiss();
@@ -368,49 +371,17 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     }
 
     private void changeButtonText(int position) {
-        switch (position) {
-            case 3:
-                btnFindTaxi.setText("Find BodaBoda");
-                VEHICLE_TYPE = "BodaBoda";
-                break;
-            case 2:
-                btnFindTaxi.setText("Find TukTuk");
-                VEHICLE_TYPE = "TukTuk";
-                break;
-            case 1:
-                btnFindTaxi.setText("Find Salon");
-                VEHICLE_TYPE = "Salon";
-                break;
-            case 0:
-                btnFindTaxi.setText("Find Matatu");
-                VEHICLE_TYPE = "Matatu";
-                break;
-            default:
-                break;
-        }
-
+        ArrayList<VehicleType> vehicleTypes = databaseHelper.getAllVehicleTypes();
+        btnFindTaxi.setText("Find " + WordUtils.capitalizeFully(vehicleTypes.get(position).getName()));
+        VEHICLE_TYPE = vehicleTypes.get(position).getName();
     }
 
     private String initFareCalculation(double total_distance, String total_duration, int position) {
+        ArrayList<VehicleType> vehicleTypes = databaseHelper.getAllVehicleTypes();
         double total_fare = 0;
         double duration = Double.valueOf(total_duration) / 60;
 
-        switch (position) {
-            case 0:
-                total_fare = (Constants.BODA_PRICE_PER_KILOMETER * total_distance) + (Constants.BODA_PRICE_PER_MINUTE * duration);
-                break;
-            case 1:
-                total_fare = (Constants.TUK_PRICE_PER_KILOMETER * total_distance) + (Constants.TUK_PRICE_PER_MINUTE * duration);
-                break;
-            case 2:
-                total_fare = (Constants.SALON_PRICE_PER_KILOMETER * total_distance) + (Constants.SALON_PRICE_PER_MINUTE * duration);
-                break;
-            case 3:
-                total_fare = (Constants.MATATU_PRICE_PER_KILOMETER * total_distance) + (Constants.MATATU_PRICE_PER_MINUTE * duration);
-                break;
-            default:
-                break;
-        }
+        total_fare = (vehicleTypes.get(position).getPer_distance() * total_distance) + (vehicleTypes.get(position).getPer_minute() * duration);
 
         return decimalFormat.format(total_fare);
     }
@@ -621,6 +592,10 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 alertLogout.setPositiveButton("Logout", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        ArrayList<User> users = databaseHelper.getAllUsers();
+                        ArrayList<VehicleType> vehicleTypes = databaseHelper.getAllVehicleTypes();
+                        databaseHelper.deleteUser(users);
+                        databaseHelper.clearVehicleTypes(vehicleTypes);
                         preferenceHelper.putIsLoggedIn(false);
                         Intent intent1 = new Intent(DashboardActivity.this, StartActivity.class);
                         startActivity(intent1);
@@ -738,7 +713,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         VehicleTypesAdapter vehicleTypesAdapter = new VehicleTypesAdapter(this, databaseHelper.getAllVehicleTypes());
         RecyclerView listVehicleTypes = (RecyclerView) findViewById(R.id.listVehicleTypes);
         listVehicleTypes.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, true));
-        listVehicleTypes.addItemDecoration(new EqualSpacingItemDecoration(0, EqualSpacingItemDecoration.HORIZONTAL));
+        listVehicleTypes.addItemDecoration(new EqualSpacingItemDecoration(16, EqualSpacingItemDecoration.HORIZONTAL));
         //listVehicleTypes.smoothScrollToPosition(selectedPosition);
         listVehicleTypes.setHasFixedSize(false);
 
@@ -816,12 +791,12 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         }
     }
 
-    private void getVehicleTypes(){
+    private void getVehicleTypes() {
         String token = preferenceHelper.getAccessToken();
         AndroidNetworking.post(Constants.GET_VEHICLES)
                 .addHeaders("Authorization", "Bearer " + token)
-                .addHeaders("Accept","application/json")
-                .addHeaders("Content-Type","application/x-www-form-urlencoded")
+                .addHeaders("Accept", "application/json")
+                .addHeaders("Content-Type", "application/x-www-form-urlencoded")
                 .addBodyParameter("latlong", "-1.248462, 36.772894")
                 .setTag("vehicleTypes")
                 .setPriority(Priority.HIGH)
@@ -829,13 +804,13 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 .getAsString(new StringRequestListener() {
                     @Override
                     public void onResponse(String response) {
-                       showErrorToast(response);
-                       try {
+                        //showErrorToast(response);
+                        try {
                             JSONObject jsonArray = new JSONObject(response);
                             JSONObject jsonObject = jsonArray.getJSONObject("data");
                             JSONArray jsonArray1 = jsonObject.getJSONArray("vehicletypes");
 
-                            for (int i = 0; i<jsonArray1.length();i++){
+                            for (int i = 0; i < jsonArray1.length(); i++) {
                                 JSONObject jsonObject1 = jsonArray1.getJSONObject(i);
                                 final String id = jsonObject1.getString("id");
                                 final String name = jsonObject1.getString("name");

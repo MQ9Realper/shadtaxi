@@ -61,7 +61,7 @@ public class EqualSpacingItemDecoration extends RecyclerView.ItemDecoration {
                 if (layoutManager instanceof GridLayoutManager) {
                     GridLayoutManager gridLayoutManager = (GridLayoutManager) layoutManager;
                     int cols = gridLayoutManager.getSpanCount();
-                    int rows = itemCount / cols;
+                    int rows = itemCount / cols + 1;
 
                     outRect.left = spacing;
                     outRect.right = position % cols == cols - 1 ? spacing : 0;

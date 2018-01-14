@@ -13,6 +13,9 @@ import com.bumptech.glide.Glide;
 import com.shadtaxi.shadtaxi.R;
 import com.shadtaxi.shadtaxi.models.VehicleType;
 import com.shadtaxi.shadtaxi.views.Txt;
+import com.shadtaxi.shadtaxi.views.TxtSemiBold;
+
+import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.ArrayList;
 
@@ -26,13 +29,13 @@ public class VehicleTypesAdapter extends RecyclerView.Adapter<VehicleTypesAdapte
     private ArrayList<Integer> selectedPositions = new ArrayList<>();
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private Txt txtVehicleType;
+        private TxtSemiBold txtVehicleType;
         private ImageView imageViewVehicleIcon;
         private LinearLayout layoutVehicleType;
 
         public ViewHolder(View v) {
             super(v);
-            txtVehicleType = (Txt) v.findViewById(R.id.txtVehicleType);
+            txtVehicleType = (TxtSemiBold) v.findViewById(R.id.txtVehicleType);
             imageViewVehicleIcon = (ImageView) v.findViewById(R.id.imageViewVehicleType);
             layoutVehicleType = (LinearLayout) v.findViewById(R.id.layoutVehicleType);
         }
@@ -46,30 +49,24 @@ public class VehicleTypesAdapter extends RecyclerView.Adapter<VehicleTypesAdapte
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        holder.txtVehicleType.setText(vehicleTypeArrayList.get(position).getName());
-        if (vehicleTypeArrayList.get(position).getIcon().isEmpty()) {
-            Glide.with(context).load(R.drawable.tuktuk).into(holder.imageViewVehicleIcon);
-        } else {
-            Glide.with(context).load(vehicleTypeArrayList.get(position).getIcon()).into(holder.imageViewVehicleIcon);
-        }
-
+        holder.txtVehicleType.setText(WordUtils.capitalizeFully(vehicleTypeArrayList.get(position).getName()));
 
         if (!selectedPositions.contains(position)) {
             if (vehicleTypeArrayList.get(position).getName().contains("BODA")) {
-                holder.imageViewVehicleIcon.setImageResource(R.drawable.icon_motorbike_not_selected);
+                holder.imageViewVehicleIcon.setImageResource(R.drawable.motorcycle);
             } else if (vehicleTypeArrayList.get(position).getName().contains("TUK")) {
-                holder.imageViewVehicleIcon.setImageResource(R.drawable.icon_tuktuk_not_selected);
+                holder.imageViewVehicleIcon.setImageResource(R.drawable.tuk_tuk);
             } else if (vehicleTypeArrayList.get(position).getName().contains("TAXI")) {
-                holder.imageViewVehicleIcon.setImageResource(R.drawable.icon_salon_not_selected);
+                holder.imageViewVehicleIcon.setImageResource(R.drawable.car);
             }
             holder.txtVehicleType.setTextColor(context.getResources().getColor(R.color.colorBlack));
         } else {
             if (vehicleTypeArrayList.get(position).getName().contains("BODA")) {
-                holder.imageViewVehicleIcon.setImageResource(R.drawable.icon_motorbike_selected);
+                holder.imageViewVehicleIcon.setImageResource(R.drawable.motorcycle_active);
             } else if (vehicleTypeArrayList.get(position).getName().contains("TUK")) {
-                holder.imageViewVehicleIcon.setImageResource(R.drawable.icon_tuktuk_selected);
+                holder.imageViewVehicleIcon.setImageResource(R.drawable.tuk_tuk_active);
             } else if (vehicleTypeArrayList.get(position).getName().contains("TAXI")) {
-                holder.imageViewVehicleIcon.setImageResource(R.drawable.icon_salon_selected);
+                holder.imageViewVehicleIcon.setImageResource(R.drawable.car_active);
             }
             holder.txtVehicleType.setTextColor(context.getResources().getColor(R.color.colorPrimary));
         }
@@ -80,11 +77,11 @@ public class VehicleTypesAdapter extends RecyclerView.Adapter<VehicleTypesAdapte
                     selectedPositions.clear();
                     selectedPositions.add(position);
                     if (vehicleTypeArrayList.get(position).getName().contains("Boda")) {
-                        holder.imageViewVehicleIcon.setImageResource(R.drawable.icon_motorbike_selected);
+                        holder.imageViewVehicleIcon.setImageResource(R.drawable.motorcycle_active);
                     } else if (vehicleTypeArrayList.get(position).getName().contains("Tuk")) {
-                        holder.imageViewVehicleIcon.setImageResource(R.drawable.icon_tuktuk_selected);
+                        holder.imageViewVehicleIcon.setImageResource(R.drawable.tuk_tuk_active);
                     } else if (vehicleTypeArrayList.get(position).getName().contains("Salon")) {
-                        holder.imageViewVehicleIcon.setImageResource(R.drawable.icon_salon_selected);
+                        holder.imageViewVehicleIcon.setImageResource(R.drawable.car_active);
                     }
                     holder.txtVehicleType.setTextColor(context.getResources().getColor(R.color.colorPrimary));
                     notifyDataSetChanged();

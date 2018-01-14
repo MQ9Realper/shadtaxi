@@ -94,7 +94,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Adding vehicles
-    public void addVehicleType(VehicleType vehicleType){
+    public void addVehicleType(VehicleType vehicleType) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(KEY_VEHICLE_ID, vehicleType.getId());
@@ -197,10 +197,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Deleting single CartItem
-    public void deleteUser(User user) {
+    public void deleteUser(ArrayList<User> users) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_USER, KEY_USER_ID + " = ?",
-                new String[]{String.valueOf(user.getId())});
+        for (User user : users) {
+            db.delete(TABLE_USER, KEY_USER_ID + " = ?", new String[]{String.valueOf(user.getId())});
+        }
         db.close();
     }
 

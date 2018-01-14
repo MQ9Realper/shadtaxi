@@ -4,21 +4,22 @@
     android:id="@+id/layoutVehicleType"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="4dp"
     android:layout_marginLeft="8dp"
     android:layout_marginRight="8dp"
-    android:layout_marginBottom="4dp"
     android:orientation="vertical">
 
     <ImageView
         android:id="@+id/imageViewVehicleType"
         android:layout_width="60dp"
         android:layout_height="60dp"
+        android:layout_gravity="center_horizontal"
         android:contentDescription="@string/app_name"
         android:padding="10dp"
         android:scaleType="fitCenter"
-        android:src="@drawable/icon_motorbike_not_selected" />
+        android:src="@drawable/motorcycle" />
 
-    <com.shadtaxi.shadtaxi.views.Txt
+    <com.shadtaxi.shadtaxi.views.TxtSemiBold
         android:id="@+id/txtVehicleType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
