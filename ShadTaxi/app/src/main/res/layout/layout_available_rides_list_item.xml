@@ -75,6 +75,7 @@
             android:drawableStart="@drawable/ic_call_white_24dp"
             android:paddingLeft="40dp"
             android:paddingStart="40dp"
+            android:visibility="gone"
             android:text="Call"
             android:textAllCaps="false"
             android:textColor="@color/colorWhite"

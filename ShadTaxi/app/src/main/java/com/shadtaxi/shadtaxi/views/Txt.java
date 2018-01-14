@@ -43,7 +43,7 @@ public class Txt extends AppCompatTextView {
 			if (typeface == null) {
 				// G1.log(TAG, "asset:: " + "fonts/" + asset);
 				typeface = Typeface.createFromAsset(ctx.getAssets(),
-						"fonts/Muli-Regular.ttf");
+						"fonts/Roboto-Regular.ttf");
 			}
 
 		} catch (Exception e) {

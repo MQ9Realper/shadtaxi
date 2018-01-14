@@ -1,5 +1,6 @@
 package com.shadtaxi.shadtaxi.activities;
 
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +11,7 @@ import com.shadtaxi.shadtaxi.R;
 import com.shadtaxi.shadtaxi.adapters.StartScreenAdapter;
 import com.shadtaxi.shadtaxi.fragments.LoginFragment;
 import com.shadtaxi.shadtaxi.fragments.RegisterFragment;
+import com.shadtaxi.shadtaxi.utils.PreferenceHelper;
 import com.shadtaxi.shadtaxi.utils.Utils;
 import com.shadtaxi.shadtaxi.views.SlidingTabLayout;
 
@@ -19,9 +21,16 @@ public class StartActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
+        PreferenceHelper preferenceHelper = new PreferenceHelper(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarGetStarted);
         SlidingTabLayout slidingTabLayout = (SlidingTabLayout) findViewById(R.id.slidingTabLayoutMain);
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+
+        if (preferenceHelper.getIsLoggedIn()) {
+            Intent intent = new Intent(StartActivity.this, DashboardActivity.class);
+            startActivity(intent);
+            finish();
+        }
 
         Utils utils = new Utils(this, this);
         utils.initToolbar(toolbar, "Get Started", MainActivity.class);

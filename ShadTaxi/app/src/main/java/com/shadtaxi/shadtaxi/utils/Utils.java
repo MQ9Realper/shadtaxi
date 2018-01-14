@@ -20,8 +20,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.muddzdev.styleabletoastlibrary.StyleableToast;
 import com.shadtaxi.shadtaxi.R;
 import com.shadtaxi.shadtaxi.activities.DashboardActivity;
 import com.shadtaxi.shadtaxi.views.Btn;
@@ -56,7 +58,7 @@ public class Utils {
         if (!outViews.isEmpty()) {
             final TextView titleView = (TextView) outViews.get(0);
             titleView.setGravity(Gravity.LEFT);
-            titleView.setTypeface(Typeface.createFromAsset(context.getAssets(), "fonts/Muli-Light.ttf"));
+            titleView.setTypeface(Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Light.ttf"));
             final Toolbar.LayoutParams layoutParams = (Toolbar.LayoutParams) titleView.getLayoutParams();
             layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
             toolbar.requestLayout();

@@ -46,29 +46,30 @@ public class VehicleTypesAdapter extends RecyclerView.Adapter<VehicleTypesAdapte
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        holder.txtVehicleType.setText(vehicleTypeArrayList.get(position).getVehicle_type());
-        Glide.with(context).load(vehicleTypeArrayList.get(position).getVehicle_icon()).into(holder.imageViewVehicleIcon);
+        holder.txtVehicleType.setText(vehicleTypeArrayList.get(position).getName());
+        if (vehicleTypeArrayList.get(position).getIcon().isEmpty()) {
+            Glide.with(context).load(R.drawable.tuktuk).into(holder.imageViewVehicleIcon);
+        } else {
+            Glide.with(context).load(vehicleTypeArrayList.get(position).getIcon()).into(holder.imageViewVehicleIcon);
+        }
+
 
         if (!selectedPositions.contains(position)) {
-            if (vehicleTypeArrayList.get(position).getVehicle_type().contains("Boda")) {
+            if (vehicleTypeArrayList.get(position).getName().contains("BODA")) {
                 holder.imageViewVehicleIcon.setImageResource(R.drawable.icon_motorbike_not_selected);
-            } else if (vehicleTypeArrayList.get(position).getVehicle_type().contains("Tuk")) {
+            } else if (vehicleTypeArrayList.get(position).getName().contains("TUK")) {
                 holder.imageViewVehicleIcon.setImageResource(R.drawable.icon_tuktuk_not_selected);
-            } else if (vehicleTypeArrayList.get(position).getVehicle_type().contains("Salon")) {
+            } else if (vehicleTypeArrayList.get(position).getName().contains("TAXI")) {
                 holder.imageViewVehicleIcon.setImageResource(R.drawable.icon_salon_not_selected);
-            } else if (vehicleTypeArrayList.get(position).getVehicle_type().contains("Matatu")) {
-                holder.imageViewVehicleIcon.setImageResource(R.drawable.icon_matatu_not_selected);
             }
             holder.txtVehicleType.setTextColor(context.getResources().getColor(R.color.colorBlack));
         } else {
-            if (vehicleTypeArrayList.get(position).getVehicle_type().contains("Boda")) {
+            if (vehicleTypeArrayList.get(position).getName().contains("BODA")) {
                 holder.imageViewVehicleIcon.setImageResource(R.drawable.icon_motorbike_selected);
-            } else if (vehicleTypeArrayList.get(position).getVehicle_type().contains("Tuk")) {
+            } else if (vehicleTypeArrayList.get(position).getName().contains("TUK")) {
                 holder.imageViewVehicleIcon.setImageResource(R.drawable.icon_tuktuk_selected);
-            } else if (vehicleTypeArrayList.get(position).getVehicle_type().contains("Salon")) {
+            } else if (vehicleTypeArrayList.get(position).getName().contains("TAXI")) {
                 holder.imageViewVehicleIcon.setImageResource(R.drawable.icon_salon_selected);
-            } else if (vehicleTypeArrayList.get(position).getVehicle_type().contains("Matatu")) {
-                holder.imageViewVehicleIcon.setImageResource(R.drawable.icon_matatu_selected);
             }
             holder.txtVehicleType.setTextColor(context.getResources().getColor(R.color.colorPrimary));
         }
@@ -78,14 +79,12 @@ public class VehicleTypesAdapter extends RecyclerView.Adapter<VehicleTypesAdapte
                 if (!selectedPositions.contains(position)) {
                     selectedPositions.clear();
                     selectedPositions.add(position);
-                    if (vehicleTypeArrayList.get(position).getVehicle_type().contains("Boda")) {
+                    if (vehicleTypeArrayList.get(position).getName().contains("Boda")) {
                         holder.imageViewVehicleIcon.setImageResource(R.drawable.icon_motorbike_selected);
-                    } else if (vehicleTypeArrayList.get(position).getVehicle_type().contains("Tuk")) {
+                    } else if (vehicleTypeArrayList.get(position).getName().contains("Tuk")) {
                         holder.imageViewVehicleIcon.setImageResource(R.drawable.icon_tuktuk_selected);
-                    } else if (vehicleTypeArrayList.get(position).getVehicle_type().contains("Salon")) {
+                    } else if (vehicleTypeArrayList.get(position).getName().contains("Salon")) {
                         holder.imageViewVehicleIcon.setImageResource(R.drawable.icon_salon_selected);
-                    } else if (vehicleTypeArrayList.get(position).getVehicle_type().contains("Matatu")) {
-                        holder.imageViewVehicleIcon.setImageResource(R.drawable.icon_matatu_selected);
                     }
                     holder.txtVehicleType.setTextColor(context.getResources().getColor(R.color.colorPrimary));
                     notifyDataSetChanged();

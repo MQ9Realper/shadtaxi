@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/drawable_confirm_dialog_background"
+    android:orientation="vertical">
+
+    <com.shadtaxi.shadtaxi.views.TxtSemiBold
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="Select Country"
+        android:textColor="@android:color/black"
+        android:textSize="20sp" />
+
+    <View
+        android:background="@android:color/black"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_height="1dp"/>
+
+    <ListView
+        android:id="@+id/listViewCountries"
+        android:layout_width="match_parent"
+        android:divider="@null"
+        android:layout_weight="1"
+        android:layout_height="0dp"/>
+
+    <com.shadtaxi.shadtaxi.views.Btn
+        android:id="@+id/btnCancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:background="@drawable/drawable_sign_in_background"
+        android:padding="16dp"
+        android:text="Cancel"
+        android:textColor="@android:color/white"
+        android:textSize="13sp" />
+
+</LinearLayout>

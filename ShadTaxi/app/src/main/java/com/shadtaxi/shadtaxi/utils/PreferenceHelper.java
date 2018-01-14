@@ -45,4 +45,34 @@ public class PreferenceHelper {
     public String getSelectedVehicleType(){
         return app_prefs.getString("selected_vehicle_type", "");
     }
+
+    public void putIsLoggedIn(boolean logged_in) {
+        SharedPreferences.Editor edit = app_prefs.edit();
+        edit.putBoolean("logged_in", logged_in);
+        edit.apply();
+    }
+
+    public void putAccessToken(String access_token) {
+        SharedPreferences.Editor edit = app_prefs.edit();
+        edit.putString("access_token", access_token);
+        edit.apply();
+    }
+
+    public void putRefreshToken(String refresh_token) {
+        SharedPreferences.Editor edit = app_prefs.edit();
+        edit.putString("refresh_token", refresh_token);
+        edit.apply();
+    }
+
+    public String getAccessToken() {
+        return app_prefs.getString("access_token", "");
+    }
+
+    public String getRefreshToken() {
+        return app_prefs.getString("refresh_token", "");
+    }
+
+    public boolean getIsLoggedIn() {
+        return app_prefs.getBoolean("logged_in", false);
+    }
 }
