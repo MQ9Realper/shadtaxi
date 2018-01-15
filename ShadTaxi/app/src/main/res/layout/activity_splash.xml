@@ -4,43 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorWhite"
     tools:context="com.shadtaxi.shadtaxi.activities.SplashActivity">
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/app_name"
+        android:id="@+id/logo"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
         android:layout_gravity="center_vertical|center_horizontal"
+        android:contentDescription="@string/app_name"
         android:scaleType="fitXY"
         android:src="@drawable/logo" />
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal|bottom"
-        android:layout_marginBottom="8dp"
-        android:orientation="horizontal">
-
-        <com.wang.avi.AVLoadingIndicatorView
-            android:id="@+id/avLoadingIndicator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            app:indicatorColor="@color/colorPrimary"
-            app:indicatorName="LineSpinFadeLoaderIndicator"
-            app:maxHeight="50dp"
-            app:maxWidth="50dp" />
-
-        <com.shadtaxi.shadtaxi.views.Txt
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_margin="4dp"
-            android:text="Please wait.."
-            android:textColor="@color/colorPrimary"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-
-    </LinearLayout>
 
 </FrameLayout>
