@@ -46,6 +46,7 @@ public class Utils {
     private AppCompatActivity appCompatActivity;
     private AlertDialog dialogConfirm, dialogTimer;
     private Dialog dialogOnTrip, dialogReceipt;
+    private ProgressDialog progressDialog;
     private TxtSemiBold txtTimer;
 
     public Utils(Activity activity, AppCompatActivity appCompatActivity) {
@@ -201,9 +202,9 @@ public class Utils {
 
         CircleImageView profileImage = (CircleImageView) dialogView.findViewById(R.id.imgOnTripImage);
         TxtSemiBold txtDriverName = (TxtSemiBold) dialogView.findViewById(R.id.txtOnTripDriverName);
-        LinearLayout layoutCompleteRide = (LinearLayout) dialogView.findViewById(R.id.layoutCompleteRide);
+        Btn btnProceed = (Btn) dialogView.findViewById(R.id.btnReceiptProceed);
 
-        layoutCompleteRide.setOnClickListener(new View.OnClickListener() {
+        btnProceed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE)
@@ -246,19 +247,18 @@ public class Utils {
         }, 4000);
     }
 
-    public String formatDouble(double input) {
-        NumberFormat numberFormat = new DecimalFormat("00.00");
-        return numberFormat.format(input);
+    public long roundOff(double input) {
+        return Math.round(input);
     }
 
-    public void showSuccessDialog(String message) {
+    public void showSuccessToast(String message) {
         StyleableToast styleableToast = new StyleableToast
                 .Builder(context)
                 .duration(Toast.LENGTH_LONG)
                 .text(message)
                 .textColor(Color.WHITE)
                 .typeface(Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Medium.ttf"))
-                .backgroundColor(Color.GREEN)
+                .backgroundColor(Color.parseColor("#2cb742"))
                 .build();
 
         if (styleableToast != null) {
@@ -266,6 +266,37 @@ public class Utils {
             styleableToast = null;
         }
 
+    }
+
+    public void showErrorToast(String message) {
+        StyleableToast styleableToast = new StyleableToast
+                .Builder(context)
+                .duration(Toast.LENGTH_LONG)
+                .text(message)
+                .textColor(Color.WHITE)
+                .typeface(Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Medium.ttf"))
+                .backgroundColor(Color.RED)
+                .build();
+
+        if (styleableToast != null) {
+            styleableToast.show();
+            styleableToast = null;
+        }
+    }
+
+    public void showProgressDialog(String message) {
+        progressDialog = new ProgressDialog(context);
+        progressDialog.setMessage(message);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        if (!progressDialog.isShowing()) {
+            progressDialog.show();
+        }
+    }
+
+    public void dismissProgressDialog() {
+        if (progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
     }
 
 }
