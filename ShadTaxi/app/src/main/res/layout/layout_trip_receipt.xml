@@ -14,24 +14,28 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorBlack"
+            android:background="@color/colorWhite"
             android:orientation="vertical">
 
-            <com.shadtaxi.shadtaxi.views.TxtLight
+            <com.shadtaxi.shadtaxi.views.TxtSemiBold
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_margin="8dp"
-                android:padding="10dp"
-                android:text="RECEIPT"
-                android:textColor="@color/colorWhite"
-                android:textSize="18sp" />
+                android:text="Receipt"
+                android:textColor="@color/colorBlack"
+                android:textSize="24sp" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
             android:orientation="horizontal">
 
             <View
@@ -39,7 +43,8 @@
                 android:layout_height="0.5dp"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
-                android:background="@color/colorBlack" />
+                android:background="@color/colorBlack"
+                android:visibility="gone" />
 
             <com.shadtaxi.shadtaxi.views.TxtLight
                 android:layout_width="0dp"
@@ -49,15 +54,16 @@
                 android:layout_weight="1"
                 android:gravity="center_horizontal"
                 android:text="DEC 2, 2017 4:30AM"
-                android:textColor="@color/colorBlackLight"
-                android:textSize="12sp" />
+                android:textColor="@color/colorBlack"
+                android:textSize="14sp" />
 
             <View
                 android:layout_width="0dp"
                 android:layout_height="0.5dp"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
-                android:background="@color/colorBlack" />
+                android:background="@color/colorBlack"
+                android:visibility="gone" />
 
         </LinearLayout>
 
@@ -71,26 +77,12 @@
             android:textColor="@color/colorBlack"
             android:textSize="34sp" />
 
-        <RadioGroup
+        <include
+            layout="@layout/layout_payment_options"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:orientation="horizontal">
-
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="true"
-                android:padding="4dp"
-                android:text="Cash" />
-
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="4dp"
-                android:text="Mpesa" />
-
-        </RadioGroup>
+            android:layout_marginTop="8dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -103,7 +95,8 @@
                 android:layout_height="0.5dp"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
-                android:background="@color/colorBlack" />
+                android:background="@color/colorBlack"
+                android:visibility="gone" />
 
             <com.shadtaxi.shadtaxi.views.TxtLight
                 android:layout_width="0dp"
@@ -113,15 +106,16 @@
                 android:layout_weight="1"
                 android:gravity="center_horizontal"
                 android:text="TRIP SUMMARY"
-                android:textColor="@color/colorBlackLight"
-                android:textSize="12sp" />
+                android:textColor="@color/colorBlack"
+                android:textSize="14sp" />
 
             <View
                 android:layout_width="0dp"
                 android:layout_height="0.5dp"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
-                android:background="@color/colorBlack" />
+                android:background="@color/colorBlack"
+                android:visibility="gone" />
 
         </LinearLayout>
 
@@ -140,13 +134,14 @@
                 android:layout_alignParentStart="true"
                 android:orientation="vertical">
 
-                <de.hdodenhof.circleimageview.CircleImageView
+                <ImageView
+                    android:id="@+id/imageViewVehicleType"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:layout_gravity="center_horizontal"
-                    android:src="@drawable/tuk_tuk_active"
-                    app:civ_border_color="#FFFFFF"
-                    app:civ_border_width="2dp" />
+                    android:contentDescription="@string/app_name"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/tuk_tuk_active" />
 
                 <com.shadtaxi.shadtaxi.views.TxtSemiBold
                     android:id="@+id/txtOnTripDriverName"
@@ -157,6 +152,12 @@
                     android:textColor="@color/colorBlack"
                     android:textSize="12sp" />
             </LinearLayout>
+
+            <View
+                android:layout_width="0.3dp"
+                android:layout_height="80dp"
+                android:layout_centerHorizontal="true"
+                android:background="@color/colorBlackLight" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -196,7 +197,8 @@
                 android:layout_height="0.5dp"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
-                android:background="@color/colorBlack" />
+                android:background="@color/colorBlack"
+                android:visibility="gone" />
 
             <com.shadtaxi.shadtaxi.views.TxtLight
                 android:layout_width="0dp"
@@ -206,15 +208,16 @@
                 android:layout_weight="1"
                 android:gravity="center_horizontal"
                 android:text="RATE YOUR DRIVER"
-                android:textColor="@color/colorBlackLight"
-                android:textSize="12sp" />
+                android:textColor="@color/colorBlack"
+                android:textSize="14sp" />
 
             <View
                 android:layout_width="0dp"
                 android:layout_height="0.5dp"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
-                android:background="@color/colorBlack" />
+                android:background="@color/colorBlack"
+                android:visibility="gone" />
 
         </LinearLayout>
 
@@ -228,26 +231,17 @@
             android:layout_marginStart="16dp"
             android:numStars="5" />
 
-        <LinearLayout
-            android:id="@+id/layoutCompleteRide"
-            android:layout_width="match_parent"
+        <com.shadtaxi.shadtaxi.views.Btn
+            android:id="@+id/btnReceiptProceed"
+            android:layout_width="220dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:layout_marginTop="16dp"
-            android:clickable="true"
-            android:background="@drawable/drawable_proceed_button"
-            android:gravity="bottom"
-            android:orientation="vertical">
-
-            <com.shadtaxi.shadtaxi.views.TxtLight
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_margin="8dp"
-                android:padding="10dp"
-                android:text="PROCEED"
-                android:textColor="@color/colorWhite"
-                android:textSize="18sp" />
-        </LinearLayout>
+            android:background="@drawable/drawable_driver_book"
+            android:text="Proceed"
+            android:textAllCaps="false"
+            android:textColor="@color/colorWhite"
+            android:textSize="16sp" />
 
     </LinearLayout>
 

@@ -10,16 +10,5 @@ public class Constants {
     public static final String LOGIN_URL = BASE_URL + "/oauth/token";
     public static final String GET_USER = BASE_URL + "/api/user";
     public static final String GET_VEHICLES = BASE_URL + "/api/app/load";
-
-    public static final int BODA_PRICE_PER_KILOMETER = 100;
-    public static final int BODA_PRICE_PER_MINUTE = 5;
-
-    public static final int TUK_PRICE_PER_KILOMETER = 120;
-    public static final int TUK_PRICE_PER_MINUTE = 5;
-
-    public static final int SALON_PRICE_PER_KILOMETER = 180;
-    public static final int SALON_PRICE_PER_MINUTE = 5;
-
-    public static final int MATATU_PRICE_PER_KILOMETER = 30;
-    public static final int MATATU_PRICE_PER_MINUTE = 5;
+    public static final String UPDATE_PROFILE = BASE_URL + "/api/user/update";
 }

@@ -18,6 +18,8 @@ import com.shadtaxi.shadtaxi.utils.PreferenceHelper;
 import com.shadtaxi.shadtaxi.utils.Utils;
 import com.shadtaxi.shadtaxi.views.Edt;
 
+import org.apache.commons.lang3.text.WordUtils;
+
 public class AvailableDriversActivity extends AppCompatActivity {
     private Utils utils;
     private PreferenceHelper preferenceHelper;
@@ -59,16 +61,16 @@ public class AvailableDriversActivity extends AppCompatActivity {
             if (bundle.containsKey("vehicle_type")) {
                 String vehicle_type = bundle.getString("vehicle_type");
                 if (vehicle_type.contains("BodaBoda")) {
-                    InitToolbar("Nearby " + vehicle_type + " Riders");
+                    InitToolbar("Nearby " + WordUtils.capitalizeFully(vehicle_type) + " Riders");
                 } else {
-                    InitToolbar("Nearby " + vehicle_type + " Drivers");
+                    InitToolbar("Nearby " + WordUtils.capitalizeFully(vehicle_type) + " Drivers");
                 }
             }
         } else {
             if (preferenceHelper.getSelectedVehicleType().contains("BodaBoda")) {
-                InitToolbar("Nearby " + preferenceHelper.getSelectedVehicleType() + " Riders");
+                InitToolbar("Nearby " + WordUtils.capitalizeFully(preferenceHelper.getSelectedVehicleType()) + " Riders");
             } else {
-                InitToolbar("Nearby " + preferenceHelper.getSelectedVehicleType() + " Drivers");
+                InitToolbar("Nearby " + WordUtils.capitalizeFully(preferenceHelper.getSelectedVehicleType()) + " Drivers");
             }
         }
     }

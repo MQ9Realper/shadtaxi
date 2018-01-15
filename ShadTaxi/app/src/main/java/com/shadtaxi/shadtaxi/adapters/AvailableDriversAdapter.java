@@ -56,7 +56,7 @@ public class AvailableDriversAdapter extends BaseAdapter {
         private Txt txtDriverDistance;
         private CircleImageView imageDriver;
         private AppCompatRatingBar ratingBar;
-        private Btn btnCall, btnBook;
+        private Btn btnBook;
     }
 
     @Override
@@ -85,7 +85,6 @@ public class AvailableDriversAdapter extends BaseAdapter {
             viewHolder.txtDriverDistance = (Txt) convertView.findViewById(R.id.txtDriverDistance);
             viewHolder.imageDriver = (CircleImageView) convertView.findViewById(R.id.imgDriverImage);
             viewHolder.ratingBar = (AppCompatRatingBar) convertView.findViewById(R.id.ratingDriverRating);
-            viewHolder.btnCall = (Btn) convertView.findViewById(R.id.btnDriverCall);
             viewHolder.btnBook = (Btn) convertView.findViewById(R.id.btnDriverBook);
             convertView.setTag(viewHolder);
         } else {
@@ -96,14 +95,6 @@ public class AvailableDriversAdapter extends BaseAdapter {
         viewHolder.txtDriverName.setText(originalDriverList.get(position).getDriver_name());
         viewHolder.txtDriverDistance.setText(originalDriverList.get(position).getDriver_distance());
         Glide.with(context).load(originalDriverList.get(position).getDriver_image()).into(viewHolder.imageDriver);
-
-        /** click listeners */
-        viewHolder.btnCall.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
 
         viewHolder.btnBook.setOnClickListener(new View.OnClickListener() {
             @Override

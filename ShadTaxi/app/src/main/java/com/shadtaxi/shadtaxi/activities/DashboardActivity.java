@@ -126,7 +126,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         utils = new Utils(this, this);
-        decimalFormat = new DecimalFormat("0.00");
+        decimalFormat = new DecimalFormat("00.00");
         preferenceHelper = new PreferenceHelper(this);
         databaseHelper = new DatabaseHelper(this);
         vehicleTypes = new ArrayList<>();
@@ -180,7 +180,11 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
             ex.printStackTrace();
         }
 
-        getVehicleTypes();
+        if (databaseHelper.getAllVehicleTypes().isEmpty()) {
+            getVehicleTypes();
+        } else {
+            initVehicleTypes();
+        }
 
     }
 
@@ -383,7 +387,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
 
         total_fare = (vehicleTypes.get(position).getPer_distance() * total_distance) + (vehicleTypes.get(position).getPer_minute() * duration);
 
-        return decimalFormat.format(total_fare);
+        return decimalFormat.format(utils.roundOff(total_fare));
     }
 
     /**
