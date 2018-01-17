@@ -79,6 +79,7 @@ import com.shadtaxi.shadtaxi.utils.Utils;
 import com.shadtaxi.shadtaxi.views.Btn;
 import com.shadtaxi.shadtaxi.views.Edt;
 import com.shadtaxi.shadtaxi.views.Txt;
+import com.shadtaxi.shadtaxi.views.TxtItalic;
 import com.shadtaxi.shadtaxi.views.TxtSemiBold;
 
 import org.apache.commons.lang3.text.WordUtils;
@@ -161,6 +162,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         CircleImageView profileImage = (CircleImageView) headerView.findViewById(R.id.profile_image);
         TxtSemiBold txtUsername = (TxtSemiBold) headerView.findViewById(R.id.txtUsername);
         Txt txtUserMobileNumber = (Txt) headerView.findViewById(R.id.txtUserMobileNumber);
+        TxtItalic txtUserProfile = (TxtItalic) headerView.findViewById(R.id.txtUserProfile);
         profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -169,7 +171,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
             }
         });
 
-        setProfile(profileImage, txtUsername, txtUserMobileNumber);
+        setProfile(profileImage, txtUsername, txtUserMobileNumber, txtUserProfile);
 
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -201,12 +203,13 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         btnFindTaxi.setOnClickListener(this);
     }
 
-    private void setProfile(CircleImageView profile_image, TxtSemiBold user_name, Txt user_mobile_number) {
+    private void setProfile(CircleImageView profile_image, TxtSemiBold user_name, Txt user_mobile_number, TxtItalic user_profile) {
         ArrayList<User> users = databaseHelper.getAllUsers();
         User user = users.get(0);
 
         user_name.setText(user.getName());
         user_mobile_number.setText(user.getEmail()); //phone number
+        user_profile.setText(WordUtils.capitalizeFully(user.getProfile()));
 
         if (!user.getImage().isEmpty()) {
             Glide.with(this).load(user.getImage()).into(profile_image);
@@ -255,9 +258,9 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
             case R.id.action_settings:
                 Intent intent = new Intent(DashboardActivity.this, SettingsActivity.class);
                 startActivity(intent);
-                break;
+                return true;
             default:
-                super.onOptionsItemSelected(item);
+                return super.onOptionsItemSelected(item);
         }
     }
 

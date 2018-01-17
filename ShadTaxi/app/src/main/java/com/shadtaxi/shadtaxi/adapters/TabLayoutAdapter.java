@@ -8,12 +8,12 @@ import android.support.v4.app.FragmentPagerAdapter;
  * Created by dennis on 12/5/17.
  */
 
-public class StartScreenAdapter extends FragmentPagerAdapter {
+public class TabLayoutAdapter extends FragmentPagerAdapter {
     private String[] tab_titles;
     private int tab_quantity;
     private Fragment[] tab_fragments;
 
-    public StartScreenAdapter(FragmentManager fragmentManager, String[] tab_titles, int tab_quantity, Fragment[] tab_fragments){
+    public TabLayoutAdapter(FragmentManager fragmentManager, String[] tab_titles, int tab_quantity, Fragment[] tab_fragments){
         super(fragmentManager);
         this.tab_titles = tab_titles;
         this.tab_quantity = tab_quantity;

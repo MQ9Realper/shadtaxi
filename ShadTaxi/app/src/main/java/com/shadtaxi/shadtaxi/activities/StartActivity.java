@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
 import com.shadtaxi.shadtaxi.R;
-import com.shadtaxi.shadtaxi.adapters.StartScreenAdapter;
+import com.shadtaxi.shadtaxi.adapters.TabLayoutAdapter;
 import com.shadtaxi.shadtaxi.fragments.LoginFragment;
 import com.shadtaxi.shadtaxi.fragments.RegisterFragment;
 import com.shadtaxi.shadtaxi.utils.PreferenceHelper;
@@ -44,8 +44,8 @@ public class StartActivity extends AppCompatActivity {
 
         Fragment[] fragments = new Fragment[]{loginFragment, registerFragment};
 
-        StartScreenAdapter startScreenAdapter = new StartScreenAdapter(getSupportFragmentManager(), new String[]{"Login", "Create Account"}, 2, fragments);
-        viewPager.setAdapter(startScreenAdapter);
+        TabLayoutAdapter tabLayoutAdapter = new TabLayoutAdapter(getSupportFragmentManager(), new String[]{"Login", "Create Account"}, 2, fragments);
+        viewPager.setAdapter(tabLayoutAdapter);
 
         slidingTabLayout.setDistributeEvenly(true);
 

@@ -15,13 +15,19 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="string_show_password">SHOW</string>
     <string name="string_hide_password">HIDE</string>
+    <string name="string_passenger_description">As a passenger, you\'ll be able to request for rides.</string>
+    <string name="string_driver_description">As a driver, you\'ll be able to accept ride requests and make money!</string>
+    <string name="string_switch_to_driver">Switch to Driver</string>
+    <string name="string_switch_to_passenger">Switch to Passenger</string>
+    <string name="string_disable_driver">Disable Driver</string>
+    <string name="string_disable_passenger">Disable Passenger</string>
 
     <string name="no_location_detected">
         No location detected. Make sure location is enabled on the device.
     </string>
 
     <string name="permission_rationale">Location permission is needed for core functionality</string>
-    <string name="permission_denied_explanation">Permission was denied, but is needed for corefunctionality.</string>
+    <string name="permission_denied_explanation">Permission was denied, but is needed for core functionality.</string>
 
     <string name="action_settings">Settings</string>
     <string name="place_details">&lt;b&gt;%1$s&lt;/b&gt;&lt;br/&gt;&lt;i&gt;Place Id: %2$s&lt;/i&gt;&lt;br/&gt;Address: %3$s&lt;br/&gt;Phone: %4$s&lt;br/&gt;Website: %5$s</string>

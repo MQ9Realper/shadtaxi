@@ -284,6 +284,24 @@ public class Utils {
         }
     }
 
+    public void showProgressToast(String message){
+        StyleableToast styleableToast = new StyleableToast
+                .Builder(context)
+                .duration(Toast.LENGTH_LONG)
+                .icon(R.drawable.ic_autorenew_white_24dp)
+                .spinIcon()
+                .text(message)
+                .textColor(Color.WHITE)
+                .typeface(Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Medium.ttf"))
+                .backgroundColor(context.getResources().getColor(R.color.colorSecondary))
+                .build();
+
+        if (styleableToast != null) {
+            styleableToast.show();
+            styleableToast = null;
+        }
+    }
+
     public void showProgressDialog(String message) {
         progressDialog = new ProgressDialog(context);
         progressDialog.setMessage(message);
