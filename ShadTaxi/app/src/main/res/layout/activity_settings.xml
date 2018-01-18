@@ -12,73 +12,62 @@
         android:id="@+id/toolbarSettings"
         layout="@layout/layout_toolbar" />
 
-    <ScrollView
+    <include layout="@layout/layout_user_type_options"/>
+
+    <include
+        android:id="@+id/layoutVehicleDetails"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        layout="@layout/layout_driver_vehicle_list"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        android:padding="16dp">
+
+        <com.shadtaxi.shadtaxi.views.Btn
+            android:id="@+id/btnStatusPassenger"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="2dp"
+            android:layout_marginRight="2dp"
+            android:layout_weight="1"
+            android:background="@drawable/drawable_selected_user_status"
+            android:text="Passenger"
+            android:textAllCaps="false"
+            android:textColor="@color/colorWhite"
+            android:textSize="16sp" />
 
-            <include layout="@layout/layout_user_type_options"/>
+        <com.shadtaxi.shadtaxi.views.Btn
+            android:id="@+id/btnStatusDriver"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="2dp"
+            android:layout_marginStart="2dp"
+            android:layout_weight="1"
+            android:background="@drawable/drawable_unselected_user_status"
+            android:text="Driver"
+            android:textAllCaps="false"
+            android:textColor="@color/colorBlack"
+            android:textSize="16sp" />
 
-            <include
-                android:id="@+id/layoutVehicleDetails"
-                layout="@layout/layout_driver_vehicle_list"/>
+    </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:visibility="gone"
-                android:padding="16dp">
-
-                <com.shadtaxi.shadtaxi.views.Btn
-                    android:id="@+id/btnStatusPassenger"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginEnd="2dp"
-                    android:layout_marginRight="2dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/drawable_selected_user_status"
-                    android:text="Passenger"
-                    android:textAllCaps="false"
-                    android:textColor="@color/colorWhite"
-                    android:textSize="16sp" />
-
-                <com.shadtaxi.shadtaxi.views.Btn
-                    android:id="@+id/btnStatusDriver"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="2dp"
-                    android:layout_marginStart="2dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/drawable_unselected_user_status"
-                    android:text="Driver"
-                    android:textAllCaps="false"
-                    android:textColor="@color/colorBlack"
-                    android:textSize="16sp" />
-
-            </LinearLayout>
-
-            <com.shadtaxi.shadtaxi.views.Btn
-                android:id="@+id/btnBecomeDriver"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_margin="16dp"
-                android:background="@drawable/drawable_driver_book"
-                android:text="Register as a driver"
-                android:textAllCaps="false"
-                android:textColor="@color/colorWhite"
-                android:textSize="15sp"
-                android:visibility="gone" />
-
-        </LinearLayout>
-
-    </ScrollView>
+    <com.shadtaxi.shadtaxi.views.Btn
+        android:id="@+id/btnBecomeDriver"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="16dp"
+        android:background="@drawable/drawable_driver_book"
+        android:text="Register as a driver"
+        android:textAllCaps="false"
+        android:textColor="@color/colorWhite"
+        android:textSize="15sp"
+        android:visibility="gone" />
 
 </LinearLayout>

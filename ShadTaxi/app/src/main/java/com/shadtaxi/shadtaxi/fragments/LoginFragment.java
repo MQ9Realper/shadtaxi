@@ -221,10 +221,31 @@ public class LoginFragment extends Fragment {
 
                     @Override
                     public void onError(ANError error) {
-                        if (error.getErrorCode() == 0) {
+                        dismissProgressDialog();
+                        String response_string = error.getErrorBody();
+                        if (response_string != null) {
+                            if (response_string.contains("data")) {
+                                try {
+                                    JSONObject jsonObject = new JSONObject(response_string);
+                                    JSONObject jsonObject1 = jsonObject.getJSONObject("data");
+                                    showErrorToast(jsonObject1.getString("message"));
+
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+                            } else {
+                                try {
+                                    JSONObject jsonObject = new JSONObject(response_string);
+                                    showErrorToast(jsonObject.getString("message"));
+
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+                            }
+
+                        } else {
                             showErrorToast("Internet is not available, please try again!");
                         }
-                        dismissProgressDialog();
                     }
                 });
 
