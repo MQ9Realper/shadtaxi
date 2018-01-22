@@ -194,7 +194,7 @@ public class LoginFragment extends Fragment {
                             final String isDriver = jsonObject.getString("isDriver");
                             final String profile = jsonObject.getString("profile");
 
-                            User user =  new User();
+                            User user = new User();
                             user.setId(id);
                             user.setName(name);
                             user.setEmail(email);
@@ -205,7 +205,7 @@ public class LoginFragment extends Fragment {
                             user.setProfile(profile);
 
                             databaseHelper.addUser(user);
-                            preferenceHelper.putUserId(Integer.parseInt(id));
+                            preferenceHelper.putUserDetails(id, name, phone, image, isRider, isDriver, profile, email);
 
 
                         } catch (JSONException e) {

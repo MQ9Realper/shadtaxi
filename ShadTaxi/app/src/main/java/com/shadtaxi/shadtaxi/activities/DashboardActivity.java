@@ -118,13 +118,16 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     private static final String TAG = DashboardActivity.class.getSimpleName();
     private Utils utils;
     private Edt edtPickUpLocation;
-    private Txt edtDropOffLocation, txtTotalDistance, txtTotalTime, txtTotalCost;
+    private Txt edtDropOffLocation, txtTotalDistance, txtTotalTime, txtTotalCost, txtUserMobileNumber;
+    private TxtSemiBold txtUsername;
+    private TxtItalic txtUserProfile;
+    private CircleImageView profileImage;
     private String MY_ADDRESS = "";
     private String CURRENCY = "Kes ";
     private String duration_value = "";
     private String VEHICLE_TYPE = "BodaBoda";
     private double DISTANCE = 0.00;
-    private LinearLayout layoutBookingDetails;
+    private LinearLayout layoutBookingDetails, layoutDropOff;
     private DecimalFormat decimalFormat;
     private Btn btnFindTaxi;
     private PreferenceHelper preferenceHelper;
@@ -144,6 +147,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         decimalFormat = new DecimalFormat("00.00");
         preferenceHelper = new PreferenceHelper(this);
         databaseHelper = new DatabaseHelper(this);
+        ArrayList<User> users = databaseHelper.getAllUsers();
         vehicleTypes = new ArrayList<>();
 
         initGoogleApiClient();
@@ -169,10 +173,10 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         View headerView = navigationView.getHeaderView(0);
-        CircleImageView profileImage = (CircleImageView) headerView.findViewById(R.id.profile_image);
-        TxtSemiBold txtUsername = (TxtSemiBold) headerView.findViewById(R.id.txtUsername);
-        Txt txtUserMobileNumber = (Txt) headerView.findViewById(R.id.txtUserMobileNumber);
-        TxtItalic txtUserProfile = (TxtItalic) headerView.findViewById(R.id.txtUserProfile);
+        profileImage = (CircleImageView) headerView.findViewById(R.id.profile_image);
+        txtUsername = (TxtSemiBold) headerView.findViewById(R.id.txtUsername);
+        txtUserMobileNumber = (Txt) headerView.findViewById(R.id.txtUserMobileNumber);
+        txtUserProfile = (TxtItalic) headerView.findViewById(R.id.txtUserProfile);
         profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -180,8 +184,6 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 startActivity(intent);
             }
         });
-
-        setProfile(profileImage, txtUsername, txtUserMobileNumber, txtUserProfile);
 
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -199,12 +201,15 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
             initVehicleTypes();
         }
 
+        setProfile(users, profileImage, txtUsername, txtUserMobileNumber, txtUserProfile);
+
     }
 
     private void initViews() {
         edtPickUpLocation = (Edt) findViewById(R.id.edtPickUpLocation);
         edtDropOffLocation = (Txt) findViewById(R.id.edtDropOffLocation);
         layoutBookingDetails = (LinearLayout) findViewById(R.id.layoutBookingDetails);
+        layoutDropOff = (LinearLayout) findViewById(R.id.layoutSelectDropoff);
         txtTotalDistance = (Txt) layoutBookingDetails.findViewById(R.id.txtTotalDistance);
         txtTotalTime = (Txt) layoutBookingDetails.findViewById(R.id.txtTotalDuration);
         txtTotalCost = (Txt) layoutBookingDetails.findViewById(R.id.txtTotalCost);
@@ -213,18 +218,40 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         btnFindTaxi.setOnClickListener(this);
     }
 
-    private void setProfile(CircleImageView profile_image, TxtSemiBold user_name, Txt user_mobile_number, TxtItalic user_profile) {
-        ArrayList<User> users = databaseHelper.getAllUsers();
-        User user = users.get(0);
+    private void setProfile(ArrayList<User> users, CircleImageView profile_image, TxtSemiBold user_name, Txt user_mobile_number, TxtItalic user_profile) {
+        if (users.isEmpty()) {
+            user_name.setText(preferenceHelper.getUserName());
+            user_mobile_number.setText(preferenceHelper.getUserEmail());
+            user_profile.setText(preferenceHelper.getUserProfile());
+            if (!preferenceHelper.getUserImage().isEmpty()) {
+                Glide.with(this).load(preferenceHelper.getUserImage()).into(profile_image);
+            } else {
+                Glide.with(this).load(R.drawable.default_image).into(profile_image);
+            }
 
-        user_name.setText(user.getName());
-        user_mobile_number.setText(user.getEmail()); //phone number
-        user_profile.setText(WordUtils.capitalizeFully(user.getProfile()));
+            if (preferenceHelper.getUserProfile().equals("driver")) {
+                layoutDropOff.setVisibility(View.GONE);
+            } else if (preferenceHelper.getUserProfile().equals("rider")) {
+                layoutDropOff.setVisibility(View.VISIBLE);
+            }
 
-        if (!user.getImage().isEmpty()) {
-            Glide.with(this).load(user.getImage()).into(profile_image);
         } else {
-            Glide.with(this).load(R.drawable.default_image).into(profile_image);
+            User user = users.get(0);
+            user_name.setText(user.getName());
+            user_mobile_number.setText(user.getEmail()); //phone number
+            user_profile.setText(WordUtils.capitalizeFully(user.getProfile()));
+
+            if (!user.getImage().isEmpty()) {
+                Glide.with(this).load(user.getImage()).into(profile_image);
+            } else {
+                Glide.with(this).load(R.drawable.default_image).into(profile_image);
+            }
+
+            if (user.getProfile().equals("driver")) {
+                layoutDropOff.setVisibility(View.GONE);
+            } else if (user.getProfile().equals("rider")) {
+                layoutDropOff.setVisibility(View.VISIBLE);
+            }
         }
 
     }
@@ -514,9 +541,10 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                     public void onClick(DialogInterface dialog, int which) {
                         ArrayList<User> users = databaseHelper.getAllUsers();
                         ArrayList<VehicleType> vehicleTypes = databaseHelper.getAllVehicleTypes();
-                        databaseHelper.deleteUser(users);
+                        databaseHelper.clearUsers(users);
                         databaseHelper.clearVehicleTypes(vehicleTypes);
                         preferenceHelper.putIsLoggedIn(false);
+                        preferenceHelper.clearData();
                         Intent intent1 = new Intent(DashboardActivity.this, StartActivity.class);
                         startActivity(intent1);
                         finish();
@@ -723,7 +751,6 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 .getAsString(new StringRequestListener() {
                     @Override
                     public void onResponse(String response) {
-                        //showErrorToast(response);
                         try {
                             JSONObject jsonArray = new JSONObject(response);
                             JSONObject jsonObject = jsonArray.getJSONObject("data");
@@ -763,7 +790,30 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
 
                     @Override
                     public void onError(ANError error) {
-                        showErrorToast(error.getErrorBody());
+                        String response_string = error.getErrorBody();
+                        if (response_string != null) {
+                            if (response_string.contains("data")) {
+                                try {
+                                    JSONObject jsonObject = new JSONObject(response_string);
+                                    JSONObject jsonObject1 = jsonObject.getJSONObject("data");
+                                    showErrorToast(jsonObject1.getString("message"));
+
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+                            } else {
+                                try {
+                                    JSONObject jsonObject = new JSONObject(response_string);
+                                    showErrorToast(jsonObject.getString("message"));
+
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+                            }
+
+                        } else {
+                            showErrorToast("Internet is not available, please try again!");
+                        }
                     }
                 });
 

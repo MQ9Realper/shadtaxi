@@ -194,7 +194,7 @@ public class RegisterFragment extends Fragment {
     }
 
     private void registerCommand(User user) {
-        showProgressDialog("Creating account. Please wait...");
+        showProgressDialog("Creating account...");
         AndroidNetworking.post(Constants.REGISTRATION_URL)
                 .addBodyParameter(user)
                 .setTag("registration")
@@ -210,8 +210,8 @@ public class RegisterFragment extends Fragment {
                             String access_token = jsonObject.getString("access_token");
 
                             if (!access_token.isEmpty()) {
-
-                                getUserDetails();
+                                preferenceHelper.putAccessToken(access_token);
+                                getUserDetails(access_token);
                             }
 
                         } catch (Exception ex) {
@@ -253,10 +253,9 @@ public class RegisterFragment extends Fragment {
                 });
     }
 
-    private void getUserDetails() {
-        String token = preferenceHelper.getAccessToken();
+    private void getUserDetails(String access_token) {
         AndroidNetworking.get(Constants.GET_USER)
-                .addHeaders("Authorization", "Bearer " + token)
+                .addHeaders("Authorization", "Bearer " + access_token)
                 .setTag("userDetails")
                 .setPriority(Priority.LOW)
                 .build()
@@ -288,18 +287,20 @@ public class RegisterFragment extends Fragment {
 
                             databaseHelper.addUser(user);
 
+                            preferenceHelper.putUserDetails(id, name, phone, image, isRider, isDriver, profile, email);
+
 
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
                         dismissProgressDialog();
-
+                        preferenceHelper.putIsLoggedIn(true);
                         Intent intent_main = new Intent(getActivity(), DashboardActivity.class);
                         getActivity().startActivity(intent_main);
                         getActivity().finish();
 
-                        preferenceHelper.putIsLoggedIn(true);
+
                     }
 
                     @Override

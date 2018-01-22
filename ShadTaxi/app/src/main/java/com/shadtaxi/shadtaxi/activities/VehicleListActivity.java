@@ -48,20 +48,20 @@ public class VehicleListActivity extends AppCompatActivity {
         layoutEmptyVehicleList = (LinearLayout) findViewById(R.id.layoutEmptyList);
         btnVehicleListRefresh = (Btn) layoutEmptyVehicleList.findViewById(R.id.btnRefreshVehicles);
 
-        getVehicleTypes(utils);
+        getVehicleList(utils);
 
         btnVehicleListRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getVehicleTypes(utils);
+                getVehicleList(utils);
             }
         });
     }
 
-    private void getVehicleTypes(final Utils utils) {
+    private void getVehicleList(final Utils utils) {
         utils.showProgressDialog("Please wait...");
         String token = preferenceHelper.getAccessToken();
-        AndroidNetworking.post(Constants.GET_VEHICLE_TYPES)
+        AndroidNetworking.get(Constants.GET_VEHICLES)
                 .addHeaders("Authorization", "Bearer " + token)
                 .addHeaders("Accept", "application/json")
                 .addHeaders("Content-Type", "application/x-www-form-urlencoded")
@@ -71,7 +71,7 @@ public class VehicleListActivity extends AppCompatActivity {
                 .getAsString(new StringRequestListener() {
                     @Override
                     public void onResponse(String response) {
-                        //showErrorToast(response);
+                        //utils.showErrorToast(response);
                         try {
                             JSONObject jsonArray = new JSONObject(response);
                             JSONArray jsonArray1 = jsonArray.getJSONArray("data");
