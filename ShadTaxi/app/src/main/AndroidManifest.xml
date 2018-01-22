@@ -5,8 +5,11 @@
 
     <uses-sdk tools:overrideLibrary="com.alexfu.countdownview, com.muddzdev.styleabletoastlibrary" />
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:name=".utils.App"
@@ -66,6 +69,16 @@
             android:name=".activities.VehicleListActivity"
             android:label="@string/app_name"
             android:parentActivityName=".activities.SettingsActivity" />
+
+        <receiver android:name=".location_tracker.LocationTrackerBootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".location_tracker.LocationTrackerAlarmReceiver">
+        </receiver>
+        <service android:name=".location_tracker.LocationService">
+        </service>
     </application>
 
 </manifest>
