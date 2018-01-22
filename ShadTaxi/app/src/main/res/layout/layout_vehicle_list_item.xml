@@ -71,7 +71,7 @@
                 android:id="@+id/viewActionDivider"
                 android:layout_width="match_parent"
                 android:layout_height="0.3dp"
-                android:layout_above="@+id/txtDownloadBook"
+                android:layout_above="@+id/txtActivateVehicle"
                 android:background="@color/colorBlackLight" />
 
             <com.shadtaxi.shadtaxi.views.TxtSemiBold
@@ -84,20 +84,19 @@
                 android:paddingRight="8dp"
                 android:paddingTop="16dp"
                 android:text="ACTIVATE"
-                android:textColor="@color/colorAccent"
+                android:textColor="@color/colorSecondaryDark"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
         </RelativeLayout>
 
-        <com.facebook.drawee.view.SimpleDraweeView
-            android:id="@+id/imageLibrary"
+        <ImageView
+            android:id="@+id/imageVehicle"
             android:layout_width="130dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:contentDescription="@string/app_name"
-            fresco:actualImageScaleType="centerInside"
-            fresco:placeholderImage="@drawable/default_car"
-            fresco:progressBarAutoRotateInterval="1000" />
+            android:scaleType="centerInside"
+            android:src="@drawable/default_car" />
 
     </LinearLayout>
 
