@@ -3,8 +3,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorWhite"
-    android:orientation="vertical"
-    tools:context="com.shadtaxi.shadtaxi.fragments.VehicleAddFragment">
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/toolbarVehicleList"
+        layout="@layout/layout_toolbar"/>
 
     <include
         android:id="@+id/layoutEmptyList"
@@ -18,8 +21,8 @@
         android:id="@+id/listViewVehicles"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@+id/toolbarVehicleList"
         android:visibility="gone"
         android:layout_margin="8dp" />
-
 
 </RelativeLayout>

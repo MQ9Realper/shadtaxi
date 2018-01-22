@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorWhite"
+    android:orientation="vertical">
+
+    <com.shadtaxi.shadtaxi.views.Btn
+        android:id="@+id/btnAddVehicle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginStart="4dp"
+        android:background="@drawable/drawable_primary_button"
+        android:padding="16dp"
+        android:text="ADD VEHICLE"
+        android:textAllCaps="true"
+        android:textColor="@color/colorWhite"
+        android:textSize="14sp" />
+
+    <com.shadtaxi.shadtaxi.views.Btn
+        android:id="@+id/btnViewVehicles"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginStart="4dp"
+        android:background="@drawable/drawable_primary_button"
+        android:padding="16dp"
+        android:text="VEHICLE LIST"
+        android:textAllCaps="true"
+        android:textColor="@color/colorWhite"
+        android:textSize="14sp" />
+
+</LinearLayout>

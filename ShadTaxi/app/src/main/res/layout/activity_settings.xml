@@ -18,7 +18,8 @@
         android:id="@+id/layoutVehicleDetails"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        layout="@layout/layout_driver_vehicle_list"/>
+        android:layout_gravity="center_vertical"
+        layout="@layout/layout_vehicle_actions"/>
 
     <LinearLayout
         android:layout_width="match_parent"

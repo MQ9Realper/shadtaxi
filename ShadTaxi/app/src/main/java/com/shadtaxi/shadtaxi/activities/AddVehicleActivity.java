@@ -1,18 +1,15 @@
-package com.shadtaxi.shadtaxi.fragments;
-
+package com.shadtaxi.shadtaxi.activities;
 
 import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.AppCompatAutoCompleteTextView;
 import android.support.v7.widget.AppCompatSpinner;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
@@ -26,42 +23,33 @@ import com.shadtaxi.shadtaxi.R;
 import com.shadtaxi.shadtaxi.adapters.VehicleTypeSpinnerAdapter;
 import com.shadtaxi.shadtaxi.constants.Constants;
 import com.shadtaxi.shadtaxi.database.DatabaseHelper;
-import com.shadtaxi.shadtaxi.models.Vehicle;
-import com.shadtaxi.shadtaxi.models.VehicleType;
 import com.shadtaxi.shadtaxi.utils.PreferenceHelper;
+import com.shadtaxi.shadtaxi.utils.Utils;
 import com.shadtaxi.shadtaxi.views.Btn;
 import com.shadtaxi.shadtaxi.views.Edt;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- * A simple {@link Fragment} subclass.
- */
-public class VehicleAddFragment extends Fragment implements View.OnClickListener {
-    private AppCompatSpinner spinnerVehicleTypes;
-    private AppCompatAutoCompleteTextView txtVehicleModels;
+public class AddVehicleActivity extends AppCompatActivity implements View.OnClickListener{
+    private AppCompatSpinner spinnerVehicleTypes,txtVehicleModels;
     private PreferenceHelper preferenceHelper;
     private ProgressDialog progressDialog;
     private Btn btnSaveVehicle;
     private Edt edtVehicleCapacity, edtVehicleNumber;
     private DatabaseHelper databaseHelper;
 
-    public VehicleAddFragment() {
-        // Required empty public constructor
-    }
-
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        databaseHelper = new DatabaseHelper(getActivity());
-        preferenceHelper = new PreferenceHelper(getActivity());
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_add_vehicle);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        databaseHelper = new DatabaseHelper(this);
+        preferenceHelper = new PreferenceHelper(this);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarAddVehicle);
+        initViews();
 
-        View view = inflater.inflate(R.layout.fragment_vehicle_add, container, false);
-        initViews(view);
+        Utils utils = new Utils(this,this);
+        utils.initToolbar(toolbar, "Add Vehicle", SettingsActivity.class);
 
         initVehicleTypeList();
 
@@ -69,19 +57,18 @@ public class VehicleAddFragment extends Fragment implements View.OnClickListener
 
         initListeners();
 
-        return view;
     }
 
-    private void initViews(View view) {
-        spinnerVehicleTypes = (AppCompatSpinner) view.findViewById(R.id.spinnerVehicleType);
-        txtVehicleModels = (AppCompatAutoCompleteTextView) view.findViewById(R.id.txtVehicleModel);
-        btnSaveVehicle = (Btn) view.findViewById(R.id.btnSaveVehicle);
-        edtVehicleCapacity = (Edt) view.findViewById(R.id.edtVehicleCapacity);
-        edtVehicleNumber = (Edt) view.findViewById(R.id.edtVehicleNumber);
+    private void initViews() {
+        spinnerVehicleTypes = (AppCompatSpinner) findViewById(R.id.spinnerVehicleType);
+        txtVehicleModels = (AppCompatSpinner) findViewById(R.id.txtVehicleModel);
+        btnSaveVehicle = (Btn) findViewById(R.id.btnSaveVehicle);
+        edtVehicleCapacity = (Edt) findViewById(R.id.edtVehicleCapacity);
+        edtVehicleNumber = (Edt) findViewById(R.id.edtVehicleNumber);
     }
 
     private void initVehicleTypeList() {
-        VehicleTypeSpinnerAdapter vehicleTypeSpinnerAdapter = new VehicleTypeSpinnerAdapter(getActivity(), R.layout.layout_spinner_item, databaseHelper.getAllVehicleTypes());
+        VehicleTypeSpinnerAdapter vehicleTypeSpinnerAdapter = new VehicleTypeSpinnerAdapter(this, R.layout.layout_spinner_item, databaseHelper.getAllVehicleTypes());
         spinnerVehicleTypes.setAdapter(vehicleTypeSpinnerAdapter);
     }
 
@@ -91,8 +78,7 @@ public class VehicleAddFragment extends Fragment implements View.OnClickListener
 
     private void initVehicleModels() {
         String[] vehicleModels = {"Toyota Allion", "Toyota Belta", "Toyota Axio", "Toyota Fielder", "Toyota NZE", "Tiger 900", "Tiger 955i", "Tiger 1050", "Tiger 800", "Ape A", "Ape C", "Ape P501"};
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.layout_spinner_item, R.id.txtSpinnerItem, vehicleModels);
-        txtVehicleModels.setThreshold(1);
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.layout_spinner_item, R.id.txtSpinnerItem, vehicleModels);
         txtVehicleModels.setAdapter(arrayAdapter);
     }
 
@@ -104,10 +90,8 @@ public class VehicleAddFragment extends Fragment implements View.OnClickListener
                     showErrorToast("Please enter the vehicle number.");
                 } else if (TextUtils.isEmpty(edtVehicleCapacity.getText().toString())) {
                     showErrorToast("Please enter the vehicle capacity.");
-                } else if (TextUtils.isEmpty(txtVehicleModels.getText().toString())) {
-                    showErrorToast("Please enter the vehicle model.");
-                } else {
-                    addVehicle(edtVehicleNumber.getText().toString(), edtVehicleCapacity.getText().toString(), txtVehicleModels.getText().toString(), databaseHelper.getAllVehicleTypes().get(spinnerVehicleTypes.getSelectedItemPosition()).getId());
+                }  else {
+                    addVehicle(edtVehicleNumber.getText().toString(), edtVehicleCapacity.getText().toString(), txtVehicleModels.getSelectedItem().toString(), databaseHelper.getAllVehicleTypes().get(spinnerVehicleTypes.getSelectedItemPosition()).getId());
                 }
                 break;
             default:
@@ -133,34 +117,13 @@ public class VehicleAddFragment extends Fragment implements View.OnClickListener
                     @Override
                     public void onResponse(String response) {
                         Log.e("vehicle", response);
-                        try {
-                            JSONObject jsonArray = new JSONObject(response);
-                            JSONObject jsonObject = jsonArray.getJSONObject("data");
-
-                            final int id = jsonObject.getInt("id");
-                            final String number = jsonObject.getString("number");
-                            final int year = jsonObject.getInt("year");
-                            final int capacity = jsonObject.getInt("capacity");
-                            final String model = jsonObject.getString("model");
-                            final boolean isVerified = jsonObject.getBoolean("verified");
-
-                            Vehicle vehicle = new Vehicle();
-                            vehicle.setId(id);
-                            vehicle.setNumber(number);
-                            vehicle.setYear(year);
-                            vehicle.setCapacity(capacity);
-                            vehicle.setModel(model);
-                            vehicle.setVerified(isVerified);
-
+                        if (response.contains("data")) {
+                            dismissProgressDialog();
                             showSuccessToast("You have successfully added a vehicle!");
-
-                            //Reset textboxes
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                            edtVehicleCapacity.setText("");
+                            edtVehicleNumber.setText("");
                         }
 
-                        dismissProgressDialog();
                     }
 
                     @Override
@@ -196,11 +159,11 @@ public class VehicleAddFragment extends Fragment implements View.OnClickListener
 
     private void showErrorToast(String message) {
         StyleableToast styleableToast = new StyleableToast
-                .Builder(getActivity())
+                .Builder(this)
                 .duration(Toast.LENGTH_LONG)
                 .text(message)
                 .textColor(Color.WHITE)
-                .typeface(Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Medium.ttf"))
+                .typeface(Typeface.createFromAsset(getAssets(), "fonts/Roboto-Medium.ttf"))
                 .backgroundColor(Color.RED)
                 .build();
 
@@ -211,7 +174,7 @@ public class VehicleAddFragment extends Fragment implements View.OnClickListener
     }
 
     private void showProgressDialog(String message) {
-        progressDialog = new ProgressDialog(getActivity());
+        progressDialog = new ProgressDialog(this);
         progressDialog.setMessage(message);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         if (!progressDialog.isShowing()) {
@@ -227,11 +190,11 @@ public class VehicleAddFragment extends Fragment implements View.OnClickListener
 
     private void showSuccessToast(String message) {
         StyleableToast styleableToast = new StyleableToast
-                .Builder(getActivity())
+                .Builder(this)
                 .duration(Toast.LENGTH_LONG)
                 .text(message)
                 .textColor(Color.WHITE)
-                .typeface(Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Medium.ttf"))
+                .typeface(Typeface.createFromAsset(getAssets(), "fonts/Roboto-Medium.ttf"))
                 .backgroundColor(Color.parseColor("#2cb742"))
                 .build();
 
@@ -241,5 +204,5 @@ public class VehicleAddFragment extends Fragment implements View.OnClickListener
         }
 
     }
-
 }
+

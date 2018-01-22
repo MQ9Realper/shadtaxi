@@ -3,19 +3,24 @@ package com.shadtaxi.shadtaxi.activities;
 import android.Manifest;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -49,8 +54,16 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStates;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
@@ -65,11 +78,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.muddzdev.styleabletoastlibrary.StyleableToast;
-import com.shadtaxi.shadtaxi.BuildConfig;
 import com.shadtaxi.shadtaxi.R;
 import com.shadtaxi.shadtaxi.adapters.VehicleTypesAdapter;
 import com.shadtaxi.shadtaxi.constants.Constants;
-import com.shadtaxi.shadtaxi.data.Data;
 import com.shadtaxi.shadtaxi.database.DatabaseHelper;
 import com.shadtaxi.shadtaxi.models.User;
 import com.shadtaxi.shadtaxi.models.VehicleType;
@@ -98,14 +109,14 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class DashboardActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
     private static final int PLACE_PICKER_REQUEST = 0x1;
-    protected GoogleApiClient mGoogleApiClient;
+    private static final int REQUEST_CHECK_SETTINGS = 0x7;
+    private static final int ACCESS_FINE_LOCATION_INTENT_ID = 0x9;
+    protected GoogleApiClient googleApiClient;
     private GoogleMap mMap;
     private Location location;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private static final String TAG = DashboardActivity.class.getSimpleName();
-    private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
     private Utils utils;
-    private Toolbar toolbar;
     private Edt edtPickUpLocation;
     private Txt edtDropOffLocation, txtTotalDistance, txtTotalTime, txtTotalCost;
     private String MY_ADDRESS = "";
@@ -120,12 +131,14 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     private DatabaseHelper databaseHelper;
     private ArrayList<VehicleType> vehicleTypes;
     public static final int PERMISSIONS_REQUEST_CODE = 0;
+    private static final String BROADCAST_ACTION = "android.location.PROVIDERS_CHANGED";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarMain);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         utils = new Utils(this, this);
         decimalFormat = new DecimalFormat("00.00");
@@ -133,9 +146,11 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         databaseHelper = new DatabaseHelper(this);
         vehicleTypes = new ArrayList<>();
 
-        InitToolbar(getResources().getString(R.string.app_name));
+        initGoogleApiClient();
 
         initViews();
+
+        utils.initToolbar(toolbar, "Safiree", null);
 
         checkDropOffAvailability();
 
@@ -145,11 +160,6 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 initPlacesPicker();
             }
         });
-
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, 0 /* clientId */, this)
-                .addApi(Places.GEO_DATA_API)
-                .build();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -238,13 +248,21 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         }
     }
 
-    private void InitToolbar(String name) {
-        toolbar = (Toolbar) findViewById(R.id.toolbarMain);
-        toolbar.setTitle(name);
-        toolbar.setTitleTextColor(Color.WHITE);
-        utils.centerToolbarTitle(toolbar);
-        setSupportActionBar(toolbar);
+    /**
+     * Initiate Google API Client
+     */
+    private void initGoogleApiClient() {
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this, 0 /* clientId */, this)
+                .addApi(Places.GEO_DATA_API)
+                .addApi(LocationServices.API)
+                .build();
+        if (!googleApiClient.isConnected()) {
+            googleApiClient.connect();
+        }
+
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -254,7 +272,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.action_settings:
                 Intent intent = new Intent(DashboardActivity.this, SettingsActivity.class);
                 startActivity(intent);
@@ -293,42 +311,41 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     }
 
     @Override
-    public void onStart() {
+    protected void onStart() {
         super.onStart();
-        if (!checkPermissions()) {
-            requestPermissions();
-        } else {
-            getLastLocation();
-        }
+        checkLocationPermissions();
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        // checkPermissionOnActivityResult(requestCode, resultCode, data);
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(GpsLocationReceiver, new IntentFilter(BROADCAST_ACTION));
+    }
 
-        if (resultCode == RESULT_OK) {
-            switch (requestCode) {
-                case PLACE_PICKER_REQUEST:
-                    float[] results = new float[1];
-                    Place place = PlacePicker.getPlace(this, data);
-                    String placeName = String.format("Place: %s", place.getName());
-                    double latitude = place.getLatLng().latitude;
-                    double longitude = place.getLatLng().longitude;
-
-                    edtDropOffLocation.setText(place.getName().toString());
-
-                    initDistanceMatrix(MY_ADDRESS, place.getAddress().toString(), "AIzaSyAK59qWv6ZvFvD44uvJaRipiH88B5lqTKU");
-
-                    Location.distanceBetween(latitude, longitude, location.getLatitude(), location.getLongitude(), results);
-
-                    DISTANCE = Double.valueOf(results[0] / 1000);
-
-                    txtTotalDistance.setText(String.valueOf(decimalFormat.format(Double.valueOf(results[0] / 1000))) + " kms");
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            if (GpsLocationReceiver != null) {
+                unregisterReceiver(GpsLocationReceiver);
             }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        try {
+            if (GpsLocationReceiver != null) {
+                unregisterReceiver(GpsLocationReceiver);
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     @Override
@@ -450,129 +467,6 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 });
     }
 
-    /**
-     * Shows a {@link Snackbar} using {@code text}.
-     *
-     * @param text The Snackbar text.
-     */
-    private void showSnackbar(final String text) {
-        View container = findViewById(R.id.map);
-        if (container != null) {
-            Snackbar.make(container, text, Snackbar.LENGTH_LONG).show();
-        }
-    }
-
-    /**
-     * Shows a {@link Snackbar}.
-     *
-     * @param mainTextStringId The id for the string resource for the Snackbar text.
-     * @param actionStringId   The text of the action item.
-     * @param listener         The listener associated with the Snackbar action.
-     */
-    private void showSnackbar(final int mainTextStringId, final int actionStringId, View.OnClickListener listener) {
-        Snackbar.make(findViewById(android.R.id.content),
-                getString(mainTextStringId),
-                Snackbar.LENGTH_INDEFINITE)
-                .setAction(getString(actionStringId), listener).show();
-    }
-
-    /**
-     * Return the current state of the permissions needed.
-     */
-    private boolean checkPermissions() {
-        int permissionState = ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_COARSE_LOCATION);
-        return permissionState == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private void startLocationPermissionRequest() {
-        ActivityCompat.requestPermissions(DashboardActivity.this,
-                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                REQUEST_PERMISSIONS_REQUEST_CODE);
-    }
-
-    private void requestPermissions() {
-        boolean shouldProvideRationale =
-                ActivityCompat.shouldShowRequestPermissionRationale(this,
-                        Manifest.permission.ACCESS_COARSE_LOCATION);
-
-        // Provide an additional rationale to the user. This would happen if the user denied the
-        // request previously, but didn't check the "Don't ask again" checkbox.
-        if (shouldProvideRationale) {
-            Log.i(TAG, "Displaying permission rationale to provide additional context.");
-
-            showSnackbar(R.string.permission_rationale, android.R.string.ok,
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            // Request permission
-                            startLocationPermissionRequest();
-                        }
-                    });
-
-        } else {
-            Log.i(TAG, "Requesting permission");
-            // Request permission. It's possible this can be auto answered if device policy
-            // sets the permission in a given state or the user denied the permission
-            // previously and checked "Never ask again".
-            startLocationPermissionRequest();
-        }
-    }
-
-    /**
-     * Callback received when a permissions request has been completed.
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        Log.i(TAG, "onRequestPermissionResult");
-        if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
-            if (grantResults.length <= 0) {
-                // If user interaction was interrupted, the permission request is cancelled and you
-                // receive empty arrays.
-                Log.i(TAG, "User interaction was cancelled.");
-            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted.
-                getLastLocation();
-            } else {
-                // Permission denied.
-
-                // Notify the user via a SnackBar that they have rejected a core permission for the
-                // app, which makes the Activity useless. In a real app, core permissions would
-                // typically be best requested during a welcome-screen flow.
-
-                // Additionally, it is important to remember that a permission might have been
-                // rejected without asking the user for permission (device policy or "Never ask
-                // again" prompts). Therefore, a user interface affordance is typically implemented
-                // when permissions are denied. Otherwise, your app could appear unresponsive to
-                // touches or interactions which have required permissions.
-                showSnackbar(R.string.permission_denied_explanation, R.string.action_settings,
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                // Build intent that displays the App settings screen.
-                                Intent intent = new Intent();
-                                intent.setAction(
-                                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                Uri uri = Uri.fromParts("package",
-                                        BuildConfig.APPLICATION_ID, null);
-                                intent.setData(uri);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                startActivity(intent);
-                            }
-                        });
-            }
-        } else if (requestCode == PERMISSIONS_REQUEST_CODE) {
-            if (grantResults.length <= 0) {
-                // If user interaction was interrupted, the permission request is cancelled and you
-                // receive empty arrays.
-                Log.i(TAG, "User interaction was cancelled.");
-            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted.
-                checkPermissionsAndCall();
-            }
-        }
-    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -735,7 +629,6 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     }
 
     private void initVehicleTypes() {
-        Data data = new Data();
         VehicleTypesAdapter vehicleTypesAdapter = new VehicleTypesAdapter(this, databaseHelper.getAllVehicleTypes());
         RecyclerView listVehicleTypes = (RecyclerView) findViewById(R.id.listVehicleTypes);
         listVehicleTypes.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, true));
@@ -819,7 +712,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
 
     private void getVehicleTypes() {
         String token = preferenceHelper.getAccessToken();
-        AndroidNetworking.post(Constants.GET_VEHICLES)
+        AndroidNetworking.post(Constants.GET_VEHICLE_TYPES)
                 .addHeaders("Authorization", "Bearer " + token)
                 .addHeaders("Accept", "application/json")
                 .addHeaders("Content-Type", "application/x-www-form-urlencoded")
@@ -889,6 +782,171 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         if (styleableToast != null) {
             styleableToast.show();
             styleableToast = null;
+        }
+    }
+
+    /**
+     * Initiate Location permissions enquiry
+     */
+    private void checkLocationPermissions() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                requestLocationPermissions();
+            } else {
+                showLocationSettingsDialog();
+            }
+
+        } else {
+            showLocationSettingsDialog();
+        }
+    }
+
+    /**
+     * Show user permission dialog
+     */
+    private void requestLocationPermissions() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, ACCESS_FINE_LOCATION_INTENT_ID);
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, ACCESS_FINE_LOCATION_INTENT_ID);
+        }
+    }
+
+    /**
+     * Show Location Access Dialog
+     */
+    private void showLocationSettingsDialog() {
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(30 * 1000);
+        locationRequest.setFastestInterval(5 * 1000);
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
+        builder.setAlwaysShow(true);
+
+        PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build());
+        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+            @Override
+            public void onResult(LocationSettingsResult result) {
+                final Status status = result.getStatus();
+                final LocationSettingsStates state = result.getLocationSettingsStates();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        getLastLocation();
+                        break;
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        // Location settings are not satisfied. But could be fixed by showing the user
+                        // a dialog.
+                        try {
+                            // Show the dialog by calling startResolutionForResult(),
+                            // and check the result in onActivityResult().
+                            status.startResolutionForResult(DashboardActivity.this, REQUEST_CHECK_SETTINGS);
+                        } catch (IntentSender.SendIntentException e) {
+                            e.printStackTrace();
+                            // Ignore the error.
+                        }
+                        break;
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        // Location settings are not satisfied. However, we have no way to fix the
+                        // settings so we won't show the dialog.
+                        break;
+                }
+            }
+        });
+    }
+
+    /**
+     * On Request permission method to check the permisison is granted or not for Marshmallow+ Devices
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case ACCESS_FINE_LOCATION_INTENT_ID: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    //If permission granted show location dialog if APIClient is not null
+                    if (googleApiClient == null) {
+                        initGoogleApiClient();
+                        showLocationSettingsDialog();
+                    } else
+                        showLocationSettingsDialog();
+                } else {
+                    requestLocationPermissions();
+                }
+                break;
+            }
+        }
+    }
+
+    /**
+     * Receive results
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            // Check for the integer request code originally supplied to startResolutionForResult().
+            case REQUEST_CHECK_SETTINGS:
+                switch (resultCode) {
+                    case RESULT_OK:
+                        getLastLocation();
+                        break;
+                    case RESULT_CANCELED:
+                        showLocationSettingsDialog();
+                        break;
+                }
+                break;
+            case PLACE_PICKER_REQUEST:
+                float[] results = new float[1];
+                Place place = PlacePicker.getPlace(this, data);
+                String placeName = String.format("Place: %s", place.getName());
+                double latitude = place.getLatLng().latitude;
+                double longitude = place.getLatLng().longitude;
+
+                edtDropOffLocation.setText(place.getName().toString());
+
+                initDistanceMatrix(MY_ADDRESS, place.getAddress().toString(), "AIzaSyAK59qWv6ZvFvD44uvJaRipiH88B5lqTKU");
+
+                Location.distanceBetween(latitude, longitude, location.getLatitude(), location.getLongitude(), results);
+
+                DISTANCE = Double.valueOf(results[0] / 1000);
+
+                txtTotalDistance.setText(String.valueOf(decimalFormat.format(Double.valueOf(results[0] / 1000))) + " kms");
+                break;
+        }
+    }
+
+    /**
+     * Broadcast receiver to check status of GPS
+     */
+    private BroadcastReceiver GpsLocationReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().matches(BROADCAST_ACTION)) {
+                LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+                if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+
+                } else {
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            showLocationSettingsDialog();
+                        }
+                    }, 10);
+
+                }
+
+            }
+        }
+    };
+
+    /**
+     * Show SnackBar
+     */
+    private void showSnackbar(final String text) {
+        View container = findViewById(R.id.layoutStart);
+        if (container != null) {
+            Snackbar.make(container, text, Snackbar.LENGTH_LONG).show();
         }
     }
 }

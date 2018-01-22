@@ -2,7 +2,7 @@ package com.shadtaxi.shadtaxi.activities;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.support.v4.app.Fragment;
+import android.content.Intent;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -18,13 +18,8 @@ import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.StringRequestListener;
 import com.shadtaxi.shadtaxi.R;
-import com.shadtaxi.shadtaxi.adapters.TabLayoutAdapter;
 import com.shadtaxi.shadtaxi.constants.Constants;
 import com.shadtaxi.shadtaxi.database.DatabaseHelper;
-import com.shadtaxi.shadtaxi.fragments.LoginFragment;
-import com.shadtaxi.shadtaxi.fragments.RegisterFragment;
-import com.shadtaxi.shadtaxi.fragments.VehicleAddFragment;
-import com.shadtaxi.shadtaxi.fragments.VehicleListFragment;
 import com.shadtaxi.shadtaxi.models.User;
 import com.shadtaxi.shadtaxi.utils.PreferenceHelper;
 import com.shadtaxi.shadtaxi.utils.Utils;
@@ -39,7 +34,7 @@ import java.util.ArrayList;
 
 
 public class SettingsActivity extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
-    private Btn btnBecomeDriver, btnStatusPassenger, btnStatusDriver;
+    private Btn btnBecomeDriver, btnStatusPassenger, btnStatusDriver, btnAddVehicle, btnVehicleList;
     private Utils utils;
     private PreferenceHelper preferenceHelper;
     private DatabaseHelper databaseHelper;
@@ -72,7 +67,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             btnBecomeDriver.setVisibility(View.VISIBLE);
         }
 
-        initVehicleDetails();
 
     }
 
@@ -87,12 +81,17 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         slidingTabLayout = (SlidingTabLayout) findViewById(R.id.slidingTabLayoutVehicles);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         layoutVehicleDetails = (LinearLayout) findViewById(R.id.layoutVehicleDetails);
+
+        btnAddVehicle = (Btn) findViewById(R.id.btnAddVehicle);
+        btnVehicleList = (Btn) findViewById(R.id.btnViewVehicles);
     }
 
     private void setListeners() {
         btnBecomeDriver.setOnClickListener(this);
         btnStatusPassenger.setOnClickListener(this);
         btnStatusDriver.setOnClickListener(this);
+        btnVehicleList.setOnClickListener(this);
+        btnAddVehicle.setOnClickListener(this);
 
         switchCompatPassenger.setOnCheckedChangeListener(this);
         switchCompatDriver.setOnCheckedChangeListener(this);
@@ -126,6 +125,14 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 break;
             case R.id.btnStatusDriver:
                 toggleUser();
+                break;
+            case R.id.btnAddVehicle:
+                Intent intent = new Intent(SettingsActivity.this, AddVehicleActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.btnViewVehicles:
+                Intent intent1 = new Intent(SettingsActivity.this, VehicleListActivity.class);
+                startActivity(intent1);
                 break;
             default:
                 break;
@@ -326,25 +333,5 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             }
         }
 
-    }
-
-    private void initVehicleDetails() {
-        VehicleAddFragment vehicleAddFragment = new VehicleAddFragment();
-        VehicleListFragment vehicleListFragment = new VehicleListFragment();
-
-        Fragment[] fragments = new Fragment[]{vehicleAddFragment, vehicleListFragment};
-
-        TabLayoutAdapter tabLayoutAdapter = new TabLayoutAdapter(getSupportFragmentManager(), new String[]{"Add Vehicle", "Vehicle List"}, 2, fragments);
-        viewPager.setAdapter(tabLayoutAdapter);
-
-        slidingTabLayout.setDistributeEvenly(true);
-
-        slidingTabLayout.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
-            @Override
-            public int getIndicatorColor(int position) {
-                return getResources().getColor(R.color.colorPrimary);
-            }
-        });
-        slidingTabLayout.setViewPager(viewPager);
     }
 }

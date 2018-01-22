@@ -26,14 +26,13 @@
         android:background="@drawable/edittext_background"
         android:orientation="horizontal">
 
-        <android.support.v7.widget.AppCompatAutoCompleteTextView
+        <android.support.v7.widget.AppCompatSpinner
             android:id="@+id/txtVehicleModel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"
-            android:background="@null" />
+            android:layout_marginStart="8dp" />
     </LinearLayout>
 
 </LinearLayout>
