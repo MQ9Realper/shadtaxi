@@ -19,8 +19,10 @@
     <string name="string_driver_description">As a driver, you\'ll be able to accept ride requests and make money!</string>
     <string name="string_switch_to_driver">Switch to Driver</string>
     <string name="string_switch_to_passenger">Switch to Passenger</string>
+    <string name="string_become_driver">Register As Driver</string>
     <string name="string_disable_driver">Disable Driver</string>
     <string name="string_disable_passenger">Disable Passenger</string>
+    <string name="string_driver_settings"><u>Driver Settings</u></string>
 
     <string name="no_location_detected">
         No location detected. Make sure location is enabled on the device.

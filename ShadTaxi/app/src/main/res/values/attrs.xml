@@ -12,13 +12,22 @@
     </declare-styleable>
 
     <declare-styleable name="DottedSeekBar">
-        <attr name="dots_positions" format="reference"/>
-        <attr name="dots_drawable" format="reference"/>
+        <attr name="dots_positions" format="reference" />
+        <attr name="dots_drawable" format="reference" />
     </declare-styleable>
+
     <declare-styleable name="app">
         <attr name="customFont" format="string" />
-        <attr name="posX" format="integer"></attr>
-        <attr name="posY" format="integer"></attr>
+        <attr name="posX" format="integer" />
+        <attr name="posY" format="integer" />
+    </declare-styleable>
+
+    <declare-styleable name="SegmentedGroup">
+        <attr name="sc_corner_radius" format="dimension" />
+        <attr name="sc_border_width" format="dimension" />
+        <attr name="sc_tint_color" format="color" />
+        <attr name="sc_checked_text_color" format="color" />
+        <attr name="sc_unchecked_tint_color" format="color" />
     </declare-styleable>
 
 </resources>

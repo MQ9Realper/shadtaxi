@@ -14,4 +14,8 @@
     <color name="colorBlack">#000000</color>
     <color name="colorBlackLight">#707070</color>
     <color name="colorBlackLighter">#6F6F6F</color>
+
+    <color name="radio_button_selected_color">@color/colorBlackLight</color>
+    <color name="radio_button_unselected_color">@color/colorWhite</color>
+
 </resources>
