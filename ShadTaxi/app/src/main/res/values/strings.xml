@@ -23,6 +23,7 @@
     <string name="string_disable_driver">Disable Driver</string>
     <string name="string_disable_passenger">Disable Passenger</string>
     <string name="string_driver_settings"><u>Driver Settings</u></string>
+    <string name="string_change_photo">Change Photo</string>
 
     <string name="no_location_detected">
         No location detected. Make sure location is enabled on the device.
