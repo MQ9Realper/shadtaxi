@@ -181,7 +181,7 @@ public class RegisterFragment extends Fragment {
                 User user = new User();
                 user.setName(edtFullName.getText().toString());
                 user.setEmail(edtEmail.getText().toString());
-                user.setPhone(edtMobileNumber.getText().toString());
+                user.setPhone(formatPhoneNumber(edtMobileNumber.getText().toString()));
                 user.setPassword(edtPassword.getText().toString());
                 user.setPassword_confirmation(edtConfirmPassword.getText().toString());
 
@@ -384,6 +384,20 @@ public class RegisterFragment extends Fragment {
         if (progressDialog.isShowing()) {
             progressDialog.dismiss();
         }
+    }
+
+    private String formatPhoneNumber(String phone_number) {
+        String formatted_number = "";
+        if (phone_number.startsWith("07")) {
+            formatted_number = phone_number.replaceFirst("0", "254");
+        } else if (phone_number.startsWith("254")) {
+            formatted_number = phone_number;
+        } else if (phone_number.startsWith("+254")) {
+            formatted_number = phone_number.replaceFirst("\'+", "");
+        }
+
+        return formatted_number;
+
     }
 
 }

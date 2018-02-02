@@ -61,6 +61,15 @@ public class PreferenceHelper {
         return app_prefs.getString("user_email","");
     }
 
+    public int getCurrentVehicleId(){
+        return app_prefs.getInt("vehicle_id",0);
+    }
+
+    public void putCurrentVehicleId(int vehicle_id){
+        SharedPreferences.Editor edit = app_prefs.edit();
+        edit.putInt("vehicle_id", vehicle_id);
+        edit.apply();
+    }
     public void putSelectedVehicleType(String selected_vehicle_type) {
         SharedPreferences.Editor edit = app_prefs.edit();
         edit.putString("selected_vehicle_type", selected_vehicle_type);

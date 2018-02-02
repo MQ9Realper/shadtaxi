@@ -110,7 +110,7 @@ public class LoginFragment extends Fragment {
     public void loginCommand(String username, final String password) {
         showProgressDialog("Logging in. Please wait...");
         AndroidNetworking.post(Constants.LOGIN_URL)
-                .addBodyParameter("username", username)
+                .addBodyParameter("username", formatPhoneNumber(username))
                 .addBodyParameter("password", password)
                 .addBodyParameter("grant_type", "password")
                 .setTag("login")
@@ -193,6 +193,14 @@ public class LoginFragment extends Fragment {
                             final String isRider = jsonObject.getString("isRider");
                             final String isDriver = jsonObject.getString("isDriver");
                             final String profile = jsonObject.getString("profile");
+
+                            JSONObject jsonObjectDriver = jsonObject.getJSONObject("driver");
+                            JSONObject jsonData = jsonObjectDriver.getJSONObject("data");
+                            JSONObject jsonObjectCurrent = jsonData.getJSONObject("current");
+                            JSONObject jsonCurrentData = jsonObjectCurrent.getJSONObject("data");
+
+                            int current_vehicle_id = jsonCurrentData.getInt("id");
+                            preferenceHelper.putCurrentVehicleId(current_vehicle_id);
 
                             User user = new User();
                             user.setId(id);
@@ -289,6 +297,20 @@ public class LoginFragment extends Fragment {
         if (progressDialog.isShowing()) {
             progressDialog.dismiss();
         }
+    }
+
+    private String formatPhoneNumber(String phone_number) {
+        String formatted_number = "";
+        if (phone_number.startsWith("07")) {
+            formatted_number = phone_number.replaceFirst("0", "254");
+        } else if (phone_number.startsWith("254")) {
+            formatted_number = phone_number;
+        } else if (phone_number.startsWith("+254")) {
+            formatted_number = phone_number.replaceFirst("\'+", "");
+        }
+
+        return formatted_number;
+
     }
 
 }

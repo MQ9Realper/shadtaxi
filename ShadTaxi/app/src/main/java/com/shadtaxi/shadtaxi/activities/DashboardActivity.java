@@ -186,7 +186,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
             public void onClick(View v) {
                 if (!btnProfileAction.getText().equals(R.string.string_become_driver)) {
                     toggleUser();
-                } else {
+                } else if (btnProfileAction.getText().equals(R.string.string_become_driver)) {
                     becomeDriver();
                 }
             }
@@ -230,6 +230,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
             user_name.setText(preferenceHelper.getUserName());
             user_mobile_number.setText(preferenceHelper.getUserEmail());
             user_profile.setText(preferenceHelper.getUserProfile());
+
             if (preferenceHelper.getUserProfile().equals("rider")) {
                 btnProfileAction.setText(R.string.string_switch_to_driver);
                 menuItemDriverSettings.setVisible(false);
@@ -248,6 +249,11 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 layoutDropOff.setVisibility(View.GONE);
             } else if (preferenceHelper.getUserProfile().equals("rider")) {
                 layoutDropOff.setVisibility(View.VISIBLE);
+            }
+
+            //Driver
+            if (preferenceHelper.isRider().equals("false")) {
+                btnProfileAction.setText(R.string.string_become_driver);
             }
 
         } else {
@@ -275,6 +281,12 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
             } else if (user.getProfile().equals("rider")) {
                 layoutDropOff.setVisibility(View.VISIBLE);
             }
+
+            //Driver
+            if (user.isRider().equals("false")) {
+                btnProfileAction.setText(R.string.string_become_driver);
+            }
+
         }
 
     }
