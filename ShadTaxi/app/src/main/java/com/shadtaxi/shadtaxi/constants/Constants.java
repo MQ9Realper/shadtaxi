@@ -10,6 +10,7 @@ public class Constants {
     public static final String LOGIN_URL = BASE_URL + "/oauth/token";
     public static final String GET_USER = BASE_URL + "/api/user";
     public static final String GET_VEHICLE_TYPES = BASE_URL + "/api/app/load";
+    public static final String UPDATE_PHOTO = BASE_URL + "/api/user/upload";
     public static final String UPDATE_PROFILE = BASE_URL + "/api/user/update";
     public static final String BECOME_DRIVER = BASE_URL + "/api/driver";
     public static final String TOGGLE_USER = BASE_URL + "/api/user";
