@@ -90,7 +90,6 @@ import com.shadtaxi.shadtaxi.utils.Utils;
 import com.shadtaxi.shadtaxi.views.Btn;
 import com.shadtaxi.shadtaxi.views.Edt;
 import com.shadtaxi.shadtaxi.views.Txt;
-import com.shadtaxi.shadtaxi.views.TxtItalic;
 import com.shadtaxi.shadtaxi.views.TxtSemiBold;
 
 import org.apache.commons.lang3.text.WordUtils;
@@ -119,8 +118,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     private Utils utils;
     private Edt edtPickUpLocation;
     private Txt edtDropOffLocation, txtTotalDistance, txtTotalTime, txtTotalCost, txtUserMobileNumber;
-    private TxtSemiBold txtUsername;
-    private TxtItalic txtUserProfile;
+    private TxtSemiBold txtUsername, txtUserProfile;
     private CircleImageView profileImage;
     private String MY_ADDRESS = "";
     private String CURRENCY = "Kes ";
@@ -129,10 +127,11 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     private double DISTANCE = 0.00;
     private LinearLayout layoutBookingDetails, layoutDropOff;
     private DecimalFormat decimalFormat;
-    private Btn btnFindTaxi;
+    private Btn btnFindTaxi, btnProfileAction;
     private PreferenceHelper preferenceHelper;
     private DatabaseHelper databaseHelper;
     private ArrayList<VehicleType> vehicleTypes;
+    private MenuItem menuItemDriverSettings;
     public static final int PERMISSIONS_REQUEST_CODE = 0;
     private static final String BROADCAST_ACTION = "android.location.PROVIDERS_CHANGED";
 
@@ -172,11 +171,27 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        Menu menu = navigationView.getMenu();
+        menuItemDriverSettings = menu.getItem(3);
+
         View headerView = navigationView.getHeaderView(0);
         profileImage = (CircleImageView) headerView.findViewById(R.id.profile_image);
         txtUsername = (TxtSemiBold) headerView.findViewById(R.id.txtUsername);
         txtUserMobileNumber = (Txt) headerView.findViewById(R.id.txtUserMobileNumber);
-        txtUserProfile = (TxtItalic) headerView.findViewById(R.id.txtUserProfile);
+        txtUserProfile = (TxtSemiBold) headerView.findViewById(R.id.txtUserProfile);
+        btnProfileAction = (Btn) headerView.findViewById(R.id.btnProfileAction);
+
+        btnProfileAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!btnProfileAction.getText().equals(R.string.string_become_driver)) {
+                    toggleUser();
+                } else {
+                    becomeDriver();
+                }
+            }
+        });
+
         profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -218,11 +233,19 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         btnFindTaxi.setOnClickListener(this);
     }
 
-    private void setProfile(ArrayList<User> users, CircleImageView profile_image, TxtSemiBold user_name, Txt user_mobile_number, TxtItalic user_profile) {
+    private void setProfile(ArrayList<User> users, CircleImageView profile_image, TxtSemiBold user_name, Txt user_mobile_number, TxtSemiBold user_profile) {
         if (users.isEmpty()) {
             user_name.setText(preferenceHelper.getUserName());
             user_mobile_number.setText(preferenceHelper.getUserEmail());
             user_profile.setText(preferenceHelper.getUserProfile());
+            if (preferenceHelper.getUserProfile().equals("rider")) {
+                btnProfileAction.setText(R.string.string_switch_to_driver);
+                menuItemDriverSettings.setVisible(false);
+            } else if (preferenceHelper.getUserProfile().equals("driver")) {
+                btnProfileAction.setText(R.string.string_switch_to_passenger);
+                menuItemDriverSettings.setVisible(true);
+            }
+
             if (!preferenceHelper.getUserImage().isEmpty()) {
                 Glide.with(this).load(preferenceHelper.getUserImage()).into(profile_image);
             } else {
@@ -240,6 +263,14 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
             user_name.setText(user.getName());
             user_mobile_number.setText(user.getEmail()); //phone number
             user_profile.setText(WordUtils.capitalizeFully(user.getProfile()));
+
+            if (user.getProfile().equals("rider")) {
+                btnProfileAction.setText(R.string.string_switch_to_driver);
+                menuItemDriverSettings.setVisible(false);
+            } else if (user.getProfile().equals("driver")) {
+                btnProfileAction.setText(R.string.string_switch_to_passenger);
+                menuItemDriverSettings.setVisible(true);
+            }
 
             if (!user.getImage().isEmpty()) {
                 Glide.with(this).load(user.getImage()).into(profile_image);
@@ -288,25 +319,6 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
             googleApiClient.connect();
         }
 
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.dashboard, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                Intent intent = new Intent(DashboardActivity.this, SettingsActivity.class);
-                startActivity(intent);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     @Override
@@ -539,10 +551,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 alertLogout.setPositiveButton("Logout", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        ArrayList<User> users = databaseHelper.getAllUsers();
-                        ArrayList<VehicleType> vehicleTypes = databaseHelper.getAllVehicleTypes();
-                        databaseHelper.clearUsers(users);
-                        databaseHelper.clearVehicleTypes(vehicleTypes);
+                        getApplicationContext().deleteDatabase("Safiree");
                         preferenceHelper.putIsLoggedIn(false);
                         preferenceHelper.clearData();
                         Intent intent1 = new Intent(DashboardActivity.this, StartActivity.class);
@@ -560,6 +569,10 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 Dialog dialog = alertLogout.create();
                 dialog.show();
 
+                break;
+            case R.id.nav_driver_settings:
+                Intent settingsIntent = new Intent(DashboardActivity.this, SettingsActivity.class);
+                startActivity(settingsIntent);
                 break;
             default:
                 break;
@@ -998,5 +1011,181 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         if (container != null) {
             Snackbar.make(container, text, Snackbar.LENGTH_LONG).show();
         }
+    }
+
+    /**
+     * Change user status
+     */
+    private void toggleUser() {
+        utils.showProgressDialog("Please wait...");
+        AndroidNetworking.post(Constants.TOGGLE_USER)
+                .addHeaders("Authorization", "Bearer " + preferenceHelper.getAccessToken())
+                .addHeaders("Content-Type", "application/x-www-form-urlencoded")
+                .addHeaders("Accept", "application/json")
+                .setTag("toggleUser")
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .getAsString(new StringRequestListener() {
+                    public void onResponse(String response) {
+                        utils.dismissProgressDialog();
+                        try {
+                            JSONObject jsonArray = new JSONObject(response);
+                            JSONObject jsonObject = jsonArray.getJSONObject("data");
+
+                            final String id = jsonObject.getString("id");
+                            final String name = jsonObject.getString("name");
+                            final String email = jsonObject.getString("email");
+                            final String phone = jsonObject.getString("phone");
+                            final String image = jsonObject.getString("image");
+                            final String isRider = jsonObject.getString("isRider");
+                            final String isDriver = jsonObject.getString("isDriver");
+                            final String profile = jsonObject.getString("profile");
+
+                            User user = new User();
+                            user.setId(id);
+                            user.setName(name);
+                            user.setEmail(email);
+                            user.setPhone(phone);
+                            user.setImage(image);
+                            user.setRider(isRider);
+                            user.setDriver(isDriver);
+                            user.setProfile(profile);
+
+                            databaseHelper.updateUser(user);
+
+                            indicateUserStatus(user);
+
+                            utils.showSuccessToast("Success!");
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+                        utils.dismissProgressDialog();
+                        String response_string = error.getErrorBody();
+                        if (response_string != null) {
+                            if (response_string.contains("data")) {
+                                try {
+                                    JSONObject jsonObject = new JSONObject(response_string);
+                                    JSONObject jsonObject1 = jsonObject.getJSONObject("data");
+                                    utils.showErrorToast(jsonObject1.getString("message"));
+
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+                            } else {
+                                try {
+                                    JSONObject jsonObject = new JSONObject(response_string);
+                                    utils.showErrorToast(jsonObject.getString("message"));
+
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+                            }
+
+                        } else {
+                            utils.showErrorToast("Internet is not available, please try again!");
+                        }
+                    }
+                });
+    }
+
+    /**
+     * Register as a driver
+     */
+    private void becomeDriver() {
+        utils.showProgressDialog("Please wait...");
+        AndroidNetworking.post(Constants.BECOME_DRIVER)
+                .addHeaders("Authorization", "Bearer " + preferenceHelper.getAccessToken())
+                .addBodyParameter("latlong", "-4.365655,37.12444")
+                .setTag("becomeDriver")
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .getAsString(new StringRequestListener() {
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject jsonArray = new JSONObject(response);
+                            JSONObject jsonObject = jsonArray.getJSONObject("data");
+
+                            final String id = jsonObject.getString("id");
+                            final String name = jsonObject.getString("name");
+                            final String email = jsonObject.getString("email");
+                            final String phone = jsonObject.getString("phone");
+                            final String image = jsonObject.getString("image");
+                            final String isRider = jsonObject.getString("isRider");
+                            final String isDriver = jsonObject.getString("isDriver");
+                            final String profile = jsonObject.getString("profile");
+
+                            User user = new User();
+                            user.setId(id);
+                            user.setName(name);
+                            user.setEmail(email);
+                            user.setPhone(phone);
+                            user.setImage(image);
+                            user.setRider(isRider);
+                            user.setDriver(isDriver);
+                            user.setProfile(profile);
+
+                            databaseHelper.updateUser(user);
+
+                            indicateUserStatus(user);
+
+                            utils.dismissProgressDialog();
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+                        utils.dismissProgressDialog();
+                        String response_string = error.getErrorBody();
+                        if (response_string != null) {
+                            if (response_string.contains("data")) {
+                                try {
+                                    JSONObject jsonObject = new JSONObject(response_string);
+                                    JSONObject jsonObject1 = jsonObject.getJSONObject("data");
+                                    utils.showErrorToast(jsonObject1.getString("message"));
+
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+                            } else {
+                                try {
+                                    JSONObject jsonObject = new JSONObject(response_string);
+                                    utils.showErrorToast(jsonObject.getString("message"));
+
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+                            }
+
+                        } else {
+                            utils.showErrorToast("Internet is not available, please try again!");
+                        }
+                    }
+                });
+    }
+
+    private void indicateUserStatus(User user) {
+        if (user.getProfile().equals("driver")) {
+            btnProfileAction.setText(getString(R.string.string_switch_to_passenger));
+            txtUserProfile.setText(WordUtils.capitalizeFully(user.getProfile()));
+            menuItemDriverSettings.setVisible(true);
+            layoutDropOff.setVisibility(View.GONE);
+
+        } else if (user.getProfile().equals("rider")) {
+            btnProfileAction.setText(getString(R.string.string_switch_to_driver));
+            txtUserProfile.setText(WordUtils.capitalizeFully(user.getProfile()));
+            menuItemDriverSettings.setVisible(false);
+            layoutDropOff.setVisibility(View.VISIBLE);
+        }
+
     }
 }

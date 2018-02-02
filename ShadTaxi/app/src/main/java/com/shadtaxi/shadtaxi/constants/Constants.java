@@ -5,7 +5,7 @@ package com.shadtaxi.shadtaxi.constants;
  */
 
 public class Constants {
-    public static final String BASE_URL = "https://jccrnkocbv.localtunnel.me";
+    public static final String BASE_URL = "http://90d037ef.ngrok.io";
     public static final String REGISTRATION_URL = BASE_URL + "/api/user/register/";
     public static final String LOGIN_URL = BASE_URL + "/oauth/token";
     public static final String GET_USER = BASE_URL + "/api/user";
