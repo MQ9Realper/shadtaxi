@@ -119,7 +119,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     private Edt edtPickUpLocation;
     private Txt edtDropOffLocation, txtTotalDistance, txtTotalTime, txtTotalCost, txtUserMobileNumber;
     private TxtSemiBold txtUsername, txtUserProfile;
-    private CircleImageView profileImage;
+    public static CircleImageView profileImage;
     private String MY_ADDRESS = "";
     private String CURRENCY = "Kes ";
     private String duration_value = "";
@@ -189,14 +189,6 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 } else {
                     becomeDriver();
                 }
-            }
-        });
-
-        profileImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(DashboardActivity.this, ProfileActivity.class);
-                startActivity(intent);
             }
         });
 
@@ -512,6 +504,10 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         switch (item.getItemId()) {
+            case R.id.nav_profile:
+                Intent intentProfile = new Intent(DashboardActivity.this, ProfileActivity.class);
+                startActivity(intentProfile);
+                break;
             case R.id.nav_trips:
                 Intent intent = new Intent(DashboardActivity.this, HistoryActivity.class);
                 startActivity(intent);
