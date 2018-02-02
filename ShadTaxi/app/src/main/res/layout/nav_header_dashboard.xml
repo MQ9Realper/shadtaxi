@@ -76,16 +76,31 @@
                 android:layout_marginTop="4dp"
                 android:orientation="horizontal">
 
-                <com.shadtaxi.shadtaxi.views.TxtItalic
+                <com.shadtaxi.shadtaxi.views.TxtSemiBold
                     android:id="@+id/txtUserProfile"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:text="..."
-                    android:textColor="@color/colorSecondaryDark"
+                    android:textColor="@color/colorPrimary"
                     android:textSize="14sp"
-                    android:textStyle="italic" />
+                    android:textStyle="bold" />
+
             </LinearLayout>
+
+            <com.shadtaxi.shadtaxi.views.Btn
+                android:id="@+id/btnProfileAction"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/drawable_driver_book"
+                android:text="@string/string_become_driver"
+                android:textAllCaps="false"
+                android:textColor="@color/colorWhite"
+                android:textSize="15sp" />
 
         </LinearLayout>
 
@@ -93,7 +108,7 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="0.7dp"
+        android:layout_height="0.4dp"
         android:layout_alignParentBottom="true"
         android:background="@android:color/black" />
 </RelativeLayout>

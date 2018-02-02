@@ -1,22 +1,28 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorWhite"
-    android:orientation="vertical"
-    tools:context="com.shadtaxi.shadtaxi.activities.SignUpActivity">
+    android:orientation="vertical">
 
     <include
         android:id="@+id/toolbarHistory"
-        layout="@layout/layout_toolbar" />
+        layout="@layout/layout_toolbar"/>
 
-    <ListView
+    <include
+        android:id="@+id/layoutEmptyList"
+        layout="@layout/layout_empty_trip_history"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
+
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/listViewHistory"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="8dp"
-        android:divider="@null" />
+        android:layout_below="@+id/toolbarHistory"
+        android:visibility="gone"
+        android:layout_margin="8dp" />
 
-</LinearLayout>
+</RelativeLayout>

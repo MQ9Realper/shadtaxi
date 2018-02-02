@@ -1,24 +1,30 @@
-package com.shadtaxi.shadtaxi.activities;
+package com.shadtaxi.shadtaxi.fragments;
 
-import android.support.v7.app.AppCompatActivity;
+
+import android.app.ProgressDialog;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.StringRequestListener;
+import com.muddzdev.styleabletoastlibrary.StyleableToast;
 import com.shadtaxi.shadtaxi.R;
 import com.shadtaxi.shadtaxi.adapters.VehicleListAdapter;
 import com.shadtaxi.shadtaxi.constants.Constants;
 import com.shadtaxi.shadtaxi.models.Vehicle;
 import com.shadtaxi.shadtaxi.utils.PreferenceHelper;
-import com.shadtaxi.shadtaxi.utils.Utils;
 import com.shadtaxi.shadtaxi.views.Btn;
 
 import org.json.JSONArray;
@@ -28,40 +34,57 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VehicleListActivity extends AppCompatActivity {
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class VehicleListFragment extends Fragment implements View.OnClickListener {
+    private ProgressDialog progressDialog;
     private PreferenceHelper preferenceHelper;
     private List<Vehicle> vehicleList;
     private RecyclerView listVehicles;
     private LinearLayout layoutEmptyVehicleList;
-    private Btn btnVehicleListRefresh;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_vehicle_list);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarVehicleList);
-        final Utils utils = new Utils(this, this);
-        utils.initToolbar(toolbar, "Vehicle List", SettingsActivity.class);
-        preferenceHelper = new PreferenceHelper(this);
-        vehicleList = new ArrayList<>();
-        listVehicles = (RecyclerView) findViewById(R.id.listViewVehicles);
-        layoutEmptyVehicleList = (LinearLayout) findViewById(R.id.layoutEmptyList);
-        btnVehicleListRefresh = (Btn) layoutEmptyVehicleList.findViewById(R.id.btnRefreshVehicles);
 
-        getVehicleTypes(utils);
-
-        btnVehicleListRefresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getVehicleTypes(utils);
-            }
-        });
+    public VehicleListFragment() {
+        // Required empty public constructor
     }
 
-    private void getVehicleTypes(final Utils utils) {
-        utils.showProgressDialog("Please wait...");
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        preferenceHelper = new PreferenceHelper(getActivity());
+        vehicleList = new ArrayList<>();
+        View view = inflater.inflate(R.layout.fragment_vehicle_list2, container, false);
+        initViews(view);
+        getVehicleList();
+        return view;
+    }
+
+    private void initViews(View view) {
+        listVehicles = (RecyclerView) view.findViewById(R.id.listViewVehicles);
+        layoutEmptyVehicleList = (LinearLayout) view.findViewById(R.id.layoutEmptyList);
+        Btn btnVehicleListRefresh = (Btn) layoutEmptyVehicleList.findViewById(R.id.btnRefreshVehicles);
+
+        btnVehicleListRefresh.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btnRefreshVehicles:
+                getVehicleList();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void getVehicleList() {
+        showProgressDialog("Please wait...");
         String token = preferenceHelper.getAccessToken();
-        AndroidNetworking.post(Constants.GET_VEHICLE_TYPES)
+        AndroidNetworking.get(Constants.GET_VEHICLES)
                 .addHeaders("Authorization", "Bearer " + token)
                 .addHeaders("Accept", "application/json")
                 .addHeaders("Content-Type", "application/x-www-form-urlencoded")
@@ -71,7 +94,6 @@ public class VehicleListActivity extends AppCompatActivity {
                 .getAsString(new StringRequestListener() {
                     @Override
                     public void onResponse(String response) {
-                        //showErrorToast(response);
                         try {
                             JSONObject jsonArray = new JSONObject(response);
                             JSONArray jsonArray1 = jsonArray.getJSONArray("data");
@@ -103,13 +125,13 @@ public class VehicleListActivity extends AppCompatActivity {
                         }
 
                         initVehicleList(vehicleList);
-                        utils.dismissProgressDialog();
+                        dismissProgressDialog();
 
                     }
 
                     @Override
                     public void onError(ANError error) {
-                        utils.dismissProgressDialog();
+                        dismissProgressDialog();
                         layoutEmptyVehicleList.setVisibility(View.VISIBLE);
                         String response_string = error.getErrorBody();
                         Log.e("error:::", response_string);
@@ -118,7 +140,7 @@ public class VehicleListActivity extends AppCompatActivity {
                                 try {
                                     JSONObject jsonObject = new JSONObject(response_string);
                                     JSONObject jsonObject1 = jsonObject.getJSONObject("data");
-                                    utils.showErrorToast(jsonObject1.getString("message"));
+                                    showErrorToast(jsonObject1.getString("message"));
 
                                 } catch (Exception ex) {
                                     ex.printStackTrace();
@@ -126,7 +148,7 @@ public class VehicleListActivity extends AppCompatActivity {
                             } else {
                                 try {
                                     JSONObject jsonObject = new JSONObject(response_string);
-                                    utils.showErrorToast(jsonObject.getString("message"));
+                                    showErrorToast(jsonObject.getString("message"));
 
                                 } catch (Exception ex) {
                                     ex.printStackTrace();
@@ -134,7 +156,7 @@ public class VehicleListActivity extends AppCompatActivity {
                             }
 
                         } else {
-                            utils.showErrorToast("Internet is not available, please try again!");
+                            showErrorToast("Internet is not available, please try again!");
                         }
                     }
                 });
@@ -148,11 +170,43 @@ public class VehicleListActivity extends AppCompatActivity {
         } else {
             listVehicles.setVisibility(View.VISIBLE);
             layoutEmptyVehicleList.setVisibility(View.GONE);
-            VehicleListAdapter vehicleListAdapter = new VehicleListAdapter(this, vehicleList);
-            listVehicles.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+            VehicleListAdapter vehicleListAdapter = new VehicleListAdapter(getActivity(), vehicleList);
+            listVehicles.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
             listVehicles.setHasFixedSize(true);
             listVehicles.setAdapter(vehicleListAdapter);
         }
 
     }
+
+    private void showErrorToast(String message) {
+        StyleableToast styleableToast = new StyleableToast
+                .Builder(getActivity())
+                .duration(Toast.LENGTH_LONG)
+                .text(message)
+                .textColor(Color.WHITE)
+                .typeface(Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Medium.ttf"))
+                .backgroundColor(Color.RED)
+                .build();
+
+        if (styleableToast != null) {
+            styleableToast.show();
+            styleableToast = null;
+        }
+    }
+
+    private void showProgressDialog(String message) {
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage(message);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        if (!progressDialog.isShowing()) {
+            progressDialog.show();
+        }
+    }
+
+    private void dismissProgressDialog() {
+        if (progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+    }
+
 }

@@ -1,15 +1,17 @@
-package com.shadtaxi.shadtaxi.activities;
+package com.shadtaxi.shadtaxi.fragments;
+
 
 import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatSpinner;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
@@ -24,13 +26,15 @@ import com.shadtaxi.shadtaxi.adapters.VehicleTypeSpinnerAdapter;
 import com.shadtaxi.shadtaxi.constants.Constants;
 import com.shadtaxi.shadtaxi.database.DatabaseHelper;
 import com.shadtaxi.shadtaxi.utils.PreferenceHelper;
-import com.shadtaxi.shadtaxi.utils.Utils;
 import com.shadtaxi.shadtaxi.views.Btn;
 import com.shadtaxi.shadtaxi.views.Edt;
 
 import org.json.JSONObject;
 
-public class AddVehicleActivity extends AppCompatActivity implements View.OnClickListener{
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class AddVehicleFragment extends Fragment implements View.OnClickListener{
     private AppCompatSpinner spinnerVehicleTypes,txtVehicleModels;
     private PreferenceHelper preferenceHelper;
     private ProgressDialog progressDialog;
@@ -38,37 +42,38 @@ public class AddVehicleActivity extends AppCompatActivity implements View.OnClic
     private Edt edtVehicleCapacity, edtVehicleNumber;
     private DatabaseHelper databaseHelper;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_vehicle);
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        databaseHelper = new DatabaseHelper(this);
-        preferenceHelper = new PreferenceHelper(this);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarAddVehicle);
-        initViews();
-
-        Utils utils = new Utils(this,this);
-        utils.initToolbar(toolbar, "Add Vehicle", SettingsActivity.class);
-
-        initVehicleTypeList();
-
-        initVehicleModels();
-
-        initListeners();
-
+    public AddVehicleFragment() {
+        // Required empty public constructor
     }
 
-    private void initViews() {
-        spinnerVehicleTypes = (AppCompatSpinner) findViewById(R.id.spinnerVehicleType);
-        txtVehicleModels = (AppCompatSpinner) findViewById(R.id.txtVehicleModel);
-        btnSaveVehicle = (Btn) findViewById(R.id.btnSaveVehicle);
-        edtVehicleCapacity = (Edt) findViewById(R.id.edtVehicleCapacity);
-        edtVehicleNumber = (Edt) findViewById(R.id.edtVehicleNumber);
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        databaseHelper = new DatabaseHelper(getActivity());
+        preferenceHelper = new PreferenceHelper(getActivity());
+
+        View view = inflater.inflate(R.layout.fragment_add_vehicle, container, false);
+        initViews(view);
+        initVehicleTypeList();
+        initVehicleModels();
+        initListeners();
+
+        return view;
+    }
+
+    private void initViews(View view) {
+        spinnerVehicleTypes = (AppCompatSpinner) view.findViewById(R.id.spinnerVehicleType);
+        txtVehicleModels = (AppCompatSpinner) view.findViewById(R.id.txtVehicleModel);
+        btnSaveVehicle = (Btn) view.findViewById(R.id.btnSaveVehicle);
+        edtVehicleCapacity = (Edt) view.findViewById(R.id.edtVehicleCapacity);
+        edtVehicleNumber = (Edt) view.findViewById(R.id.edtVehicleNumber);
     }
 
     private void initVehicleTypeList() {
-        VehicleTypeSpinnerAdapter vehicleTypeSpinnerAdapter = new VehicleTypeSpinnerAdapter(this, R.layout.layout_spinner_item, databaseHelper.getAllVehicleTypes());
+        VehicleTypeSpinnerAdapter vehicleTypeSpinnerAdapter = new VehicleTypeSpinnerAdapter(getActivity(), R.layout.layout_spinner_item, databaseHelper.getAllVehicleTypes());
         spinnerVehicleTypes.setAdapter(vehicleTypeSpinnerAdapter);
     }
 
@@ -78,7 +83,7 @@ public class AddVehicleActivity extends AppCompatActivity implements View.OnClic
 
     private void initVehicleModels() {
         String[] vehicleModels = {"Toyota Allion", "Toyota Belta", "Toyota Axio", "Toyota Fielder", "Toyota NZE", "Tiger 900", "Tiger 955i", "Tiger 1050", "Tiger 800", "Ape A", "Ape C", "Ape P501"};
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.layout_spinner_item, R.id.txtSpinnerItem, vehicleModels);
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.layout_spinner_item, R.id.txtSpinnerItem, vehicleModels);
         txtVehicleModels.setAdapter(arrayAdapter);
     }
 
@@ -159,11 +164,11 @@ public class AddVehicleActivity extends AppCompatActivity implements View.OnClic
 
     private void showErrorToast(String message) {
         StyleableToast styleableToast = new StyleableToast
-                .Builder(this)
+                .Builder(getActivity())
                 .duration(Toast.LENGTH_LONG)
                 .text(message)
                 .textColor(Color.WHITE)
-                .typeface(Typeface.createFromAsset(getAssets(), "fonts/Roboto-Medium.ttf"))
+                .typeface(Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Medium.ttf"))
                 .backgroundColor(Color.RED)
                 .build();
 
@@ -174,7 +179,7 @@ public class AddVehicleActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void showProgressDialog(String message) {
-        progressDialog = new ProgressDialog(this);
+        progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMessage(message);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         if (!progressDialog.isShowing()) {
@@ -190,11 +195,11 @@ public class AddVehicleActivity extends AppCompatActivity implements View.OnClic
 
     private void showSuccessToast(String message) {
         StyleableToast styleableToast = new StyleableToast
-                .Builder(this)
+                .Builder(getActivity())
                 .duration(Toast.LENGTH_LONG)
                 .text(message)
                 .textColor(Color.WHITE)
-                .typeface(Typeface.createFromAsset(getAssets(), "fonts/Roboto-Medium.ttf"))
+                .typeface(Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Medium.ttf"))
                 .backgroundColor(Color.parseColor("#2cb742"))
                 .build();
 
@@ -205,4 +210,3 @@ public class AddVehicleActivity extends AppCompatActivity implements View.OnClic
 
     }
 }
-

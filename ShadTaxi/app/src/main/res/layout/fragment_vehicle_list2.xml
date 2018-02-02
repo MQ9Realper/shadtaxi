@@ -2,27 +2,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorWhite"
-    android:orientation="vertical">
-
-    <include
-        android:id="@+id/toolbarVehicleList"
-        layout="@layout/layout_toolbar"/>
+    android:background="@color/colorWhite">
 
     <include
         android:id="@+id/layoutEmptyList"
         layout="@layout/layout_empty_vehicle_list"
-        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true" />
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/listViewVehicles"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/toolbarVehicleList"
-        android:visibility="gone"
-        android:layout_margin="8dp" />
+        android:layout_margin="8dp"
+        android:visibility="gone" />
 
 </RelativeLayout>

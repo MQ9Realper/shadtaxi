@@ -45,7 +45,7 @@ public class VehicleListAdapter extends RecyclerView.Adapter<VehicleListAdapter.
     public void onBindViewHolder(ViewHolder holder, final int position) {
         holder.txtVehicleNumber.setText(listVehicles.get(position).getNumber());
         holder.txtVehicleModel.setText(listVehicles.get(position).getModel());
-        holder.txtVehicleCapacity.setText(listVehicles.get(position).getCapacity());
+        holder.txtVehicleCapacity.setText(String.valueOf(listVehicles.get(position).getCapacity()) + " passengers");
 
         holder.eventView.setBackgroundColor(generateRandomColor());
 

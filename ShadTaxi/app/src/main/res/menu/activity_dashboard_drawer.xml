@@ -3,33 +3,37 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_home_black_24dp"
-            android:title="Home" />
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/ic_person_black_24dp"
+            android:title="My Profile" />
+
         <item
             android:id="@+id/nav_gallery"
             android:icon="@drawable/ic_account_balance_wallet_black_24dp"
-            android:visible="false"
-            android:title="Payments" />
+            android:title="Payments"
+            android:visible="false" />
+
         <item
             android:id="@+id/nav_trips"
             android:icon="@drawable/ic_history_black_24dp"
             android:title="My Trips" />
 
-    </group>
+        <item
+            android:id="@+id/nav_driver_settings"
+            android:icon="@drawable/ic_settings_applications_black_24dp"
+            android:title="Settings" />
 
-    <item android:title="Communicate">
-        <menu>
-            <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_share_black_24dp"
-                android:title="Refer" />
-            <item
-                android:id="@+id/nav_contact_us"
-                android:icon="@drawable/ic_forum_black_24dp"
-                android:title="Contact Us" />
-        </menu>
-    </item>
+        <item
+            android:id="@+id/nav_share"
+            android:icon="@drawable/ic_share_black_24dp"
+            android:title="Refer" />
+
+        <item
+            android:id="@+id/nav_contact_us"
+            android:icon="@drawable/ic_forum_black_24dp"
+            android:title="Contact Us" />
+
+    </group>
 
     <item android:title="">
         <menu>

@@ -16,39 +16,78 @@ public class PreferenceHelper {
         app_prefs = context.getSharedPreferences("SAFIREE", Context.MODE_PRIVATE);
     }
 
+    public void putUserDetails(String user_id, String user_name, String user_phone, String user_image, String isRider, String isDriver, String profile, String user_email) {
+        SharedPreferences.Editor edit = app_prefs.edit();
+        edit.putString("user_id", user_id);
+        edit.putString("user_name", user_name);
+        edit.putString("user_phone", user_phone);
+        edit.putString("user_image", user_image);
+        edit.putString("user_email", user_email);
+        edit.putString("isRider", isRider);
+        edit.putString("isDriver", isDriver);
+        edit.putString("user_profile", profile);
+        edit.apply();
+    }
+
+    public String getUser_Id() {
+        return app_prefs.getString("user_id", "");
+    }
+
+    public String getUserName() {
+        return app_prefs.getString("user_name", "");
+    }
+
+    public String getUserPhone() {
+        return app_prefs.getString("user_phone", "");
+    }
+
+    public String getUserImage() {
+        return app_prefs.getString("user_image", "");
+    }
+
+    public String isRider() {
+        return app_prefs.getString("isRider", "");
+    }
+
+    public String isDriver() {
+        return app_prefs.getString("isDriver", "");
+    }
+
+    public String getUserProfile() {
+        return app_prefs.getString("user_profile", "");
+    }
+
+    public String getUserEmail(){
+        return app_prefs.getString("user_email","");
+    }
+
     public void putSelectedVehicleType(String selected_vehicle_type) {
         SharedPreferences.Editor edit = app_prefs.edit();
         edit.putString("selected_vehicle_type", selected_vehicle_type);
         edit.apply();
     }
 
-    public void putPickUpAddress(String pick_up_address){
+    public void putPickUpAddress(String pick_up_address) {
         SharedPreferences.Editor edit = app_prefs.edit();
         edit.putString("pick_up_address", pick_up_address);
         edit.apply();
     }
 
-    public void putDropOffAddress(String drop_off_address){
+    public void putDropOffAddress(String drop_off_address) {
         SharedPreferences.Editor edit = app_prefs.edit();
         edit.putString("drop_off_address", drop_off_address);
         edit.apply();
     }
 
-    public void putUserId(int user_id){
-        SharedPreferences.Editor edit = app_prefs.edit();
-        edit.putInt("user_id", 0);
-        edit.apply();
-    }
-
-    public String getPickUpAddress(){
+    public String getPickUpAddress() {
         return app_prefs.getString("pick_up_address", "");
     }
 
-    public String getDropOffAddress(){
+    public String getDropOffAddress() {
         return app_prefs.getString("drop_off_address", "");
     }
 
-    public String getSelectedVehicleType(){
+    public String getSelectedVehicleType() {
         return app_prefs.getString("selected_vehicle_type", "");
     }
 
@@ -82,7 +121,9 @@ public class PreferenceHelper {
         return app_prefs.getBoolean("logged_in", false);
     }
 
-    public int getUserId(){
-        return app_prefs.getInt("user_id",0);
+    public void clearData() {
+        SharedPreferences.Editor shaEditor = app_prefs.edit();
+        shaEditor.clear();
+        shaEditor.apply();
     }
 }
