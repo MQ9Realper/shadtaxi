@@ -1,20 +1,15 @@
 package com.shadtaxi.shadtaxi.adapters;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.bumptech.glide.Glide;
 import com.shadtaxi.shadtaxi.R;
 import com.shadtaxi.shadtaxi.models.VehicleType;
-import com.shadtaxi.shadtaxi.views.Txt;
 import com.shadtaxi.shadtaxi.views.TxtSemiBold;
 
 import org.apache.commons.lang3.text.WordUtils;
@@ -28,7 +23,7 @@ import java.util.ArrayList;
 public class VehicleTypesAdapter extends RecyclerView.Adapter<VehicleTypesAdapter.ViewHolder> {
     private Context context;
     private ArrayList<VehicleType> vehicleTypeArrayList;
-    private ArrayList<Integer> selectedPositions = new ArrayList<>();
+    public ArrayList<Integer> selectedPositions = new ArrayList<>();
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TxtSemiBold txtVehicleType;

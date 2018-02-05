@@ -88,7 +88,7 @@ public class Utils {
         appCompatActivity.setSupportActionBar(toolbar);
     }
 
-    public void showConfirmationDialog(String pick_up, String drop_off, final String driver_name, String driver_distance, float driver_rating, final int driver_image) {
+    public void showConfirmationDialog(String pick_up, String drop_off, final String driver_name, String driver_distance, float driver_rating, final String driver_image) {
         dialogConfirm = new AlertDialog.Builder(context).create();
         dialogConfirm.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         final View dialogView = LayoutInflater.from(context).inflate(R.layout.layout_confirm_booking, null);
@@ -147,7 +147,7 @@ public class Utils {
         dialogConfirm.show();
     }
 
-    private void showDriverTimer(String driver_name, int driver_image) {
+    private void showDriverTimer(String driver_name, String driver_image) {
         dialogTimer = new AlertDialog.Builder(context).create();
         dialogTimer.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         final View dialogView = LayoutInflater.from(context).inflate(R.layout.layout_arriving_driver, null);
@@ -180,7 +180,7 @@ public class Utils {
         dialogTimer.show();
     }
 
-    private void showOnTripDialog(String driver_name, int driver_image) {
+    private void showOnTripDialog(String driver_name, String driver_image) {
         dialogOnTrip = new Dialog(context, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
         final View dialogView = LayoutInflater.from(context).inflate(R.layout.layout_on_trip, null);
         dialogOnTrip.setCancelable(false);
@@ -233,7 +233,7 @@ public class Utils {
         dialogReceipt.show();
     }
 
-    private void showOnTripDialogTimer(final String driver_name, final int driver_image) {
+    private void showOnTripDialogTimer(final String driver_name, final String driver_image) {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {

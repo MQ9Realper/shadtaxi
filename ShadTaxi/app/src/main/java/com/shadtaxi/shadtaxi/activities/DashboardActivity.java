@@ -123,7 +123,9 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     private String MY_ADDRESS = "";
     private String CURRENCY = "Kes ";
     private String duration_value = "";
-    private String VEHICLE_TYPE = "BodaBoda";
+    private String VEHICLE_TYPE = "";
+    private int VEHICLE_TYPE_ID;
+    private int selectedPosition;
     private double DISTANCE = 0.00;
     private LinearLayout layoutBookingDetails, layoutDropOff;
     private DecimalFormat decimalFormat;
@@ -131,6 +133,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     private PreferenceHelper preferenceHelper;
     private DatabaseHelper databaseHelper;
     private ArrayList<VehicleType> vehicleTypes;
+    private VehicleTypesAdapter vehicleTypesAdapter;
     private MenuItem menuItemDriverSettings;
     public static final int PERMISSIONS_REQUEST_CODE = 0;
     private static final String BROADCAST_ACTION = "android.location.PROVIDERS_CHANGED";
@@ -247,6 +250,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
 
             if (preferenceHelper.getUserProfile().equals("driver")) {
                 layoutDropOff.setVisibility(View.GONE);
+                layoutBookingDetails.setVisibility(View.GONE);
             } else if (preferenceHelper.getUserProfile().equals("rider")) {
                 layoutDropOff.setVisibility(View.VISIBLE);
             }
@@ -278,6 +282,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
 
             if (user.getProfile().equals("driver")) {
                 layoutDropOff.setVisibility(View.GONE);
+                layoutBookingDetails.setVisibility(View.GONE);
             } else if (user.getProfile().equals("rider")) {
                 layoutDropOff.setVisibility(View.VISIBLE);
             }
@@ -395,11 +400,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnBookTaxi:
-                Intent intent = new Intent(DashboardActivity.this, AvailableDriversActivity.class);
-                intent.putExtra("vehicle_type", VEHICLE_TYPE);
-                preferenceHelper.putSelectedVehicleType(VEHICLE_TYPE);
-                preferenceHelper.putDropOffAddress(edtDropOffLocation.getText().toString());
-                startActivity(intent);
+                getNearestDrivers();
                 break;
             default:
                 break;
@@ -460,6 +461,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         ArrayList<VehicleType> vehicleTypes = databaseHelper.getAllVehicleTypes();
         btnFindTaxi.setText("Find " + WordUtils.capitalizeFully(vehicleTypes.get(position).getName()));
         VEHICLE_TYPE = vehicleTypes.get(position).getName();
+        VEHICLE_TYPE_ID = Integer.parseInt(vehicleTypes.get(position).getId());
     }
 
     private String initFareCalculation(double total_distance, String total_duration, int position) {
@@ -678,7 +680,11 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     }
 
     private void initVehicleTypes() {
-        VehicleTypesAdapter vehicleTypesAdapter = new VehicleTypesAdapter(this, databaseHelper.getAllVehicleTypes());
+        vehicleTypesAdapter = new VehicleTypesAdapter(this, databaseHelper.getAllVehicleTypes());
+        selectedPosition = vehicleTypesAdapter.selectedPositions.get(0);
+        VEHICLE_TYPE_ID = Integer.parseInt(databaseHelper.getAllVehicleTypes().get(selectedPosition).getId());
+        VEHICLE_TYPE = databaseHelper.getAllVehicleTypes().get(selectedPosition).getName();
+
         RecyclerView listVehicleTypes = (RecyclerView) findViewById(R.id.listVehicleTypes);
         listVehicleTypes.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, true));
         listVehicleTypes.addItemDecoration(new EqualSpacingItemDecoration(16, EqualSpacingItemDecoration.HORIZONTAL));
@@ -765,47 +771,60 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 .addHeaders("Authorization", "Bearer " + token)
                 .addHeaders("Accept", "application/json")
                 .addHeaders("Content-Type", "application/x-www-form-urlencoded")
-                .addBodyParameter("latlong", "-1.248462, 36.772894")
+                .addBodyParameter("latlong", preferenceHelper.getCurrentLocation())
                 .setTag("vehicleTypes")
                 .setPriority(Priority.HIGH)
                 .build()
                 .getAsString(new StringRequestListener() {
                     @Override
                     public void onResponse(String response) {
-                        try {
-                            JSONObject jsonArray = new JSONObject(response);
-                            JSONObject jsonObject = jsonArray.getJSONObject("data");
-                            JSONArray jsonArray1 = jsonObject.getJSONArray("vehicletypes");
+                        Log.e("vehicles::", response);
 
-                            for (int i = 0; i < jsonArray1.length(); i++) {
-                                JSONObject jsonObject1 = jsonArray1.getJSONObject(i);
-                                final String id = jsonObject1.getString("id");
-                                final String name = jsonObject1.getString("name");
-                                final String icon = jsonObject1.getString("icon");
-                                final double per_distance = jsonObject1.getDouble("per_distance");
-                                final double per_minute = jsonObject1.getDouble("per_minute");
-                                final double minimum_price = jsonObject1.getDouble("minimum_price");
-                                final double base_price = jsonObject1.getDouble("base_price");
+                        if (response.contains("success")) {
+                            try {
+                                JSONObject jsonObject = new JSONObject(response);
+                                JSONObject jsonObject1 = jsonObject.getJSONObject("data");
+                                showSnackbar(WordUtils.capitalizeFully(jsonObject1.getString("message")));
 
-                                VehicleType vehicleType = new VehicleType();
-                                vehicleType.setId(id);
-                                vehicleType.setName(name);
-                                vehicleType.setIcon(icon);
-                                vehicleType.setBase_price(base_price);
-                                vehicleType.setMinimum_price(minimum_price);
-                                vehicleType.setPer_distance(per_distance);
-                                vehicleType.setPer_minute(per_minute);
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        } else {
+                            try {
+                                JSONObject jsonArray = new JSONObject(response);
+                                JSONObject jsonObject = jsonArray.getJSONObject("data");
+                                JSONArray jsonArray1 = jsonObject.getJSONArray("vehicletypes");
 
-                                databaseHelper.addVehicleType(vehicleType);
+                                for (int i = 0; i < jsonArray1.length(); i++) {
+                                    JSONObject jsonObject1 = jsonArray1.getJSONObject(i);
+                                    final String id = jsonObject1.getString("id");
+                                    final String name = jsonObject1.getString("name");
+                                    final String icon = jsonObject1.getString("icon");
+                                    final double per_distance = jsonObject1.getDouble("per_distance");
+                                    final double per_minute = jsonObject1.getDouble("per_minute");
+                                    final double minimum_price = jsonObject1.getDouble("minimum_price");
+                                    final double base_price = jsonObject1.getDouble("base_price");
 
+                                    VehicleType vehicleType = new VehicleType();
+                                    vehicleType.setId(id);
+                                    vehicleType.setName(name);
+                                    vehicleType.setIcon(icon);
+                                    vehicleType.setBase_price(base_price);
+                                    vehicleType.setMinimum_price(minimum_price);
+                                    vehicleType.setPer_distance(per_distance);
+                                    vehicleType.setPer_minute(per_minute);
+
+                                    databaseHelper.addVehicleType(vehicleType);
+
+                                }
+
+                                initVehicleTypes();
+
+                            } catch (JSONException e) {
+                                Log.e("vehicles::", e.getMessage());
                             }
 
-
-                        } catch (JSONException e) {
-                            Log.e("vehicles::", e.getMessage());
                         }
-
-                        initVehicleTypes();
 
                     }
 
@@ -1181,12 +1200,85 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 });
     }
 
+    /**
+     * Get nearest drivers
+     */
+    private void getNearestDrivers() {
+        utils.showProgressDialog("Finding nearby drivers...");
+        AndroidNetworking.post(Constants.NEAREST_DRIVERS)
+                .addHeaders("Authorization", "Bearer " + preferenceHelper.getAccessToken())
+                .addHeaders("Content-Type", "application/x-www-form-urlencoded")
+                .addHeaders("Accept", "application/json")
+                .addBodyParameter("latlong", preferenceHelper.getCurrentLocation())
+                .addBodyParameter("vehicle_type", String.valueOf(VEHICLE_TYPE_ID))
+                .setTag("nearestDrivers")
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .getAsString(new StringRequestListener() {
+                    public void onResponse(String response) {
+                        utils.dismissProgressDialog();
+                        if (response.contains("success")) {
+                            try {
+                                JSONObject jsonObject = new JSONObject(response);
+                                JSONObject jsonObject1 = jsonObject.getJSONObject("data");
+                                utils.showErrorToast(WordUtils.capitalizeFully(jsonObject1.getString("message")));
+
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        } else {
+                            Intent intent = new Intent(DashboardActivity.this, NearestDriversActivity.class);
+                            intent.putExtra("vehicle_type", VEHICLE_TYPE);
+                            intent.putExtra("vehicle_type_id", VEHICLE_TYPE_ID);
+                            intent.putExtra("response", response);
+                            preferenceHelper.putSelectedVehicleType(VEHICLE_TYPE);
+                            preferenceHelper.putSelectedVehicleTypeId(VEHICLE_TYPE_ID);
+                            preferenceHelper.putDropOffAddress(edtDropOffLocation.getText().toString());
+                            startActivity(intent);
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+                        utils.dismissProgressDialog();
+                        String response_string = error.getErrorBody();
+                        if (response_string != null) {
+                            if (response_string.contains("data")) {
+                                try {
+                                    JSONObject jsonObject = new JSONObject(response_string);
+                                    JSONObject jsonObject1 = jsonObject.getJSONObject("data");
+                                    utils.showErrorToast(jsonObject1.getString("message"));
+
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+                            } else {
+                                try {
+                                    JSONObject jsonObject = new JSONObject(response_string);
+                                    utils.showErrorToast(jsonObject.getString("message"));
+
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+                            }
+
+                        } else {
+                            utils.showErrorToast("Internet is not available, please try again!");
+                        }
+                    }
+                });
+    }
+
     private void indicateUserStatus(User user) {
         if (user.getProfile().equals("driver")) {
             btnProfileAction.setText(getString(R.string.string_switch_to_passenger));
             txtUserProfile.setText(WordUtils.capitalizeFully(user.getProfile()));
             menuItemDriverSettings.setVisible(true);
             layoutDropOff.setVisibility(View.GONE);
+
+            if (layoutBookingDetails.getVisibility() == View.VISIBLE) {
+                layoutBookingDetails.setVisibility(View.GONE);
+            }
 
         } else if (user.getProfile().equals("rider")) {
             btnProfileAction.setText(getString(R.string.string_switch_to_driver));

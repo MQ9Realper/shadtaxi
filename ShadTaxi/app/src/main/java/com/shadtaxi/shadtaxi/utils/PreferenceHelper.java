@@ -57,22 +57,29 @@ public class PreferenceHelper {
         return app_prefs.getString("user_profile", "");
     }
 
-    public String getUserEmail(){
-        return app_prefs.getString("user_email","");
+    public String getUserEmail() {
+        return app_prefs.getString("user_email", "");
     }
 
-    public int getCurrentVehicleId(){
-        return app_prefs.getInt("vehicle_id",0);
+    public int getCurrentVehicleId() {
+        return app_prefs.getInt("vehicle_id", 0);
     }
 
-    public void putCurrentVehicleId(int vehicle_id){
+    public void putCurrentVehicleId(int vehicle_id) {
         SharedPreferences.Editor edit = app_prefs.edit();
         edit.putInt("vehicle_id", vehicle_id);
         edit.apply();
     }
+
     public void putSelectedVehicleType(String selected_vehicle_type) {
         SharedPreferences.Editor edit = app_prefs.edit();
         edit.putString("selected_vehicle_type", selected_vehicle_type);
+        edit.apply();
+    }
+
+    public void putSelectedVehicleTypeId(int vehicle_type_id) {
+        SharedPreferences.Editor edit = app_prefs.edit();
+        edit.putInt("selected_vehicle_type_id", vehicle_type_id);
         edit.apply();
     }
 
@@ -100,6 +107,10 @@ public class PreferenceHelper {
         return app_prefs.getString("selected_vehicle_type", "");
     }
 
+    public int getSelectedVehicleTypeId() {
+        return app_prefs.getInt("selected_vehicle_type_id", 0);
+    }
+
     public void putIsLoggedIn(boolean logged_in) {
         SharedPreferences.Editor edit = app_prefs.edit();
         edit.putBoolean("logged_in", logged_in);
@@ -116,6 +127,16 @@ public class PreferenceHelper {
         SharedPreferences.Editor edit = app_prefs.edit();
         edit.putString("refresh_token", refresh_token);
         edit.apply();
+    }
+
+    public void putCurrentLocation(String current_location) {
+        SharedPreferences.Editor edit = app_prefs.edit();
+        edit.putString("current_location", current_location);
+        edit.apply();
+    }
+
+    public String getCurrentLocation() {
+        return app_prefs.getString("current_location", "");
     }
 
     public String getAccessToken() {

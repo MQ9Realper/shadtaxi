@@ -30,7 +30,7 @@ public class BookDriverActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(BookDriverActivity.this, AvailableDriversActivity.class);
+                Intent intent = new Intent(BookDriverActivity.this, NearestDriversActivity.class);
                 startActivity(intent);
                 finish();
             }

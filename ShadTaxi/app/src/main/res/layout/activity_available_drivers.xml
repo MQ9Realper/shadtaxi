@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/colorWhite"
-    tools:context="com.shadtaxi.shadtaxi.activities.AvailableDriversActivity">
+    android:orientation="vertical"
+    tools:context="com.shadtaxi.shadtaxi.activities.NearestDriversActivity">
 
     <include
         android:id="@+id/toolbarAvailableDrivers"
@@ -19,12 +19,12 @@
         android:layout_margin="8dp"
         android:background="@drawable/edittext_background"
         android:hint="@string/hint_search_driver"
-        android:padding="10dp" />
+        android:padding="10dp"
+        android:visibility="gone" />
 
-    <ListView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/listViewDrivers"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="8dp"
         android:divider="@null" />
 </LinearLayout>
