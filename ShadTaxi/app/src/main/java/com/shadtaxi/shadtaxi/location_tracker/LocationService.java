@@ -69,7 +69,7 @@ public class LocationService extends Service implements
         }
     }
 
-    protected void sendLocationDataToWebsite(Location location) {
+    protected void sendLocationDataToServer(Location location) {
         SharedPreferences sharedPreferences = this.getSharedPreferences("safiree_tracking", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
@@ -111,8 +111,8 @@ public class LocationService extends Service implements
     public void onLocationChanged(Location location) {
         if (location != null) {
             Log.e(TAG, "position: " + location.getLatitude() + ", " + location.getLongitude() + " accuracy: " + location.getAccuracy());
-
-            sendLocationDataToWebsite(location);
+            preferenceHelper.putCurrentLocation(location.getLatitude() + "," + location.getLongitude());
+            sendLocationDataToServer(location);
 
         }
     }
