@@ -45,6 +45,8 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.ahmadrosid.lib.drawroutemap.DrawMarker;
+import com.ahmadrosid.lib.drawroutemap.DrawRouteMaps;
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
@@ -405,6 +407,12 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
             default:
                 break;
         }
+    }
+
+    private void drawPathOnMap(LatLng origin, LatLng destination, String origin_address, String destination_address){
+        DrawRouteMaps.getInstance(this).draw(origin, destination, mMap);
+        DrawMarker.getInstance(this).draw(mMap, origin, R.drawable.marker_a, origin_address);
+        DrawMarker.getInstance(this).draw(mMap, destination, R.drawable.marker_b, destination_address);
     }
 
     private void initDistanceMatrix(String origin, String destination, String api_key) {
