@@ -7,8 +7,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.Filter;
 
 import com.bumptech.glide.Glide;
 import com.shadtaxi.shadtaxi.R;
@@ -21,7 +19,6 @@ import com.shadtaxi.shadtaxi.views.TxtSemiBold;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -82,7 +79,7 @@ public class NearestDriversAdapter extends RecyclerView.Adapter<NearestDriversAd
         holder.txtDriverName.setText(driverList.get(position).getName());
         holder.txtDriverDistance.setText(driverList.get(position).getDistance() + " away");
         holder.ratingBar.setRating(driverList.get(position).getRating());
-        Glide.with(context).load(driverList).into(holder.imageDriver);
+        Glide.with(context).load(driverList.get(position).getImage_url()).into(holder.imageDriver);
 
         showConfirmation(holder, position);
     }
