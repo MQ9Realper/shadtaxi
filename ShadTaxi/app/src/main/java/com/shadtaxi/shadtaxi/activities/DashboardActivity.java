@@ -1035,9 +1035,14 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
      */
     private void showSnackbar(final String text) {
         View container = findViewById(R.id.layoutStart);
-        if (container != null) {
-            Snackbar.make(container, text, Snackbar.LENGTH_LONG).show();
-        }
+
+        Snackbar snackbar = Snackbar.make(container, text, Snackbar.LENGTH_LONG);
+
+        // Changing action button text color
+        View sbView = snackbar.getView();
+        TxtSemiBold textView = (TxtSemiBold) sbView.findViewById(android.support.design.R.id.snackbar_text);
+        textView.setTextColor(getResources().getColor(R.color.colorWhite));
+        snackbar.show();
     }
 
     /**
@@ -1082,7 +1087,8 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
 
                             indicateUserStatus(user);
 
-                            utils.showSuccessToast("Success!");
+                            View view = findViewById(R.id.layoutStart);
+                            utils.showSnackBar(view, WordUtils.capitalizeFully("You have switched to " + profile));
 
                         } catch (JSONException e) {
                             e.printStackTrace();
