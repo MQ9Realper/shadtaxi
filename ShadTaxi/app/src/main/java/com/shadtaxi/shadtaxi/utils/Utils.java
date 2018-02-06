@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatRatingBar;
@@ -104,7 +105,7 @@ public class Utils {
 
         txtConfirmPickUp.setText(pick_up);
         txtConfirmDropOff.setText(drop_off);
-        txtDriverDistance.setText(driver_distance);
+        txtDriverDistance.setText(driver_distance + " away");
         txtDriverName.setText(driver_name);
         ratingDriver.setRating(driver_rating);
         Glide.with(context).load(driver_image).into(driverImage);
@@ -125,7 +126,7 @@ public class Utils {
             public void onClick(View v) {
                 final ProgressDialog progressDialog = new ProgressDialog(context);
                 progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                progressDialog.setMessage("Booking driver. Please wait...");
+                progressDialog.setMessage("Booking driver...");
                 progressDialog.setCancelable(false);
                 progressDialog.show();
 
@@ -288,7 +289,7 @@ public class Utils {
         }
     }
 
-    public void showProgressToast(String message){
+    public void showProgressToast(String message) {
         StyleableToast styleableToast = new StyleableToast
                 .Builder(context)
                 .duration(Toast.LENGTH_LONG)
@@ -330,6 +331,20 @@ public class Utils {
         String result = cursor.getString(column_index);
         cursor.close();
         return result;
+    }
+
+    /**
+     * Show SnackBar
+     */
+    public void showSnackBar(View container, final String text) {
+        Snackbar snackbar = Snackbar.make(container, text, Snackbar.LENGTH_LONG);
+        // Changing action button text color
+        View sbView = snackbar.getView();
+        TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+        Typeface typeface = Typeface.createFromAsset(context.getAssets(),"fonts/Roboto-Bold.ttf");
+        textView.setTextColor(context.getResources().getColor(R.color.colorWhite));
+        textView.setTypeface(typeface);
+        snackbar.show();
     }
 
 }
