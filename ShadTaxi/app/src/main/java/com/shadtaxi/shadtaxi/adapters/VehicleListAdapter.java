@@ -1,7 +1,6 @@
 package com.shadtaxi.shadtaxi.adapters;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -53,10 +52,10 @@ public class VehicleListAdapter extends RecyclerView.Adapter<VehicleListAdapter.
         holder.txtVehicleModel.setText(listVehicles.get(position).getModel());
         holder.txtVehicleCapacity.setText(String.valueOf(listVehicles.get(position).getCapacity()) + " passengers");
 
-        if (listVehicles.get(position).getId() == preferenceHelper.getCurrentVehicleId()){
+        if (listVehicles.get(position).getId() == preferenceHelper.getCurrentVehicleId()) {
             holder.txtActivateVehicle.setText("ACTIVE");
             holder.txtActivateVehicle.setBackground(context.getResources().getDrawable(R.drawable.drawable_deactivate_vehicle));
-        }else{
+        } else {
             holder.txtActivateVehicle.setText("ACTIVATE");
             holder.txtActivateVehicle.setBackground(context.getResources().getDrawable(R.drawable.drawable_activate_vehicle));
         }
