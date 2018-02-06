@@ -29,7 +29,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:contentDescription="@string/app_name"
-                android:src="@drawable/icon_pickup_location" />
+                android:src="@drawable/navigation" />
 
         </LinearLayout>
 
@@ -69,7 +69,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:contentDescription="@string/app_name"
-                android:src="@drawable/icon_dropoff_location" />
+                android:src="@drawable/navigation" />
 
         </LinearLayout>
 
