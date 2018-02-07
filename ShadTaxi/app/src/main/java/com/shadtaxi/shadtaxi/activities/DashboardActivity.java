@@ -45,8 +45,6 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.ahmadrosid.lib.drawroutemap.DrawMarker;
-import com.ahmadrosid.lib.drawroutemap.DrawRouteMaps;
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
@@ -84,6 +82,8 @@ import com.shadtaxi.shadtaxi.R;
 import com.shadtaxi.shadtaxi.adapters.VehicleTypesAdapter;
 import com.shadtaxi.shadtaxi.constants.Constants;
 import com.shadtaxi.shadtaxi.database.DatabaseHelper;
+import com.shadtaxi.shadtaxi.draw_path.DrawMarker;
+import com.shadtaxi.shadtaxi.draw_path.DrawRouteMaps;
 import com.shadtaxi.shadtaxi.models.User;
 import com.shadtaxi.shadtaxi.models.VehicleType;
 import com.shadtaxi.shadtaxi.utils.EqualSpacingItemDecoration;
@@ -119,8 +119,8 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     private static final String TAG = DashboardActivity.class.getSimpleName();
     private Utils utils;
     private Edt edtPickUpLocation;
-    private Txt edtDropOffLocation, txtTotalDistance, txtTotalTime, txtTotalCost, txtUserMobileNumber;
-    private TxtSemiBold txtUsername, txtUserProfile;
+    private Txt txtTotalDistance, txtTotalTime, txtTotalCost, txtUserMobileNumber;
+    private TxtSemiBold txtUsername, txtUserProfile, edtDropOffLocation;
     public static CircleImageView profileImage;
     private String MY_ADDRESS = "";
     private String CURRENCY = "Kes ";
@@ -160,11 +160,14 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
 
         utils.initToolbar(toolbar, "Safiree", null);
 
-        checkDropOffAvailability();
+        checkDropOffAvailability(null, null, "", "");
 
-        edtDropOffLocation.setOnClickListener(new View.OnClickListener() {
+        layoutDropOff.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (mMap != null) {
+                    mMap.clear();
+                }
                 initPlacesPicker();
             }
         });
@@ -219,7 +222,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
 
     private void initViews() {
         edtPickUpLocation = (Edt) findViewById(R.id.edtPickUpLocation);
-        edtDropOffLocation = (Txt) findViewById(R.id.edtDropOffLocation);
+        edtDropOffLocation = (TxtSemiBold) findViewById(R.id.edtDropOffLocation);
         layoutBookingDetails = (LinearLayout) findViewById(R.id.layoutBookingDetails);
         layoutDropOff = (LinearLayout) findViewById(R.id.layoutSelectDropoff);
         txtTotalDistance = (Txt) layoutBookingDetails.findViewById(R.id.txtTotalDistance);
@@ -298,11 +301,14 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
 
     }
 
-    private void checkDropOffAvailability() {
-        if (edtDropOffLocation.getText().toString().isEmpty()) {
+    private void checkDropOffAvailability(LatLng origin, LatLng destination, String origin_address, String destination_address) {
+        if (edtDropOffLocation.getText().toString().equals(getString(R.string.hint_where_to))) {
             layoutBookingDetails.setVisibility(View.GONE);
+
         } else {
             layoutBookingDetails.setVisibility(View.VISIBLE);
+
+            drawPathOnMap(origin, destination, origin_address, destination_address);
         }
     }
 
@@ -337,13 +343,31 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+            resetMapDisplay();
         } else {
             if (preferenceHelper.getIsLoggedIn()) {
+                resetMapDisplay();
                 return;
             }
+
         }
 
         super.onBackPressed();
+    }
+
+    private void resetMapDisplay() {
+        if (mMap != null) {
+            mMap.clear();
+            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+        }
+
+        if (layoutBookingDetails.getVisibility() == View.VISIBLE) {
+            layoutBookingDetails.setVisibility(View.GONE);
+        }
+
+        edtDropOffLocation.setText(getString(R.string.hint_where_to));
+
     }
 
     /**
@@ -409,13 +433,13 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         }
     }
 
-    private void drawPathOnMap(LatLng origin, LatLng destination, String origin_address, String destination_address){
+    private void drawPathOnMap(LatLng origin, LatLng destination, String origin_address, String destination_address) {
         DrawRouteMaps.getInstance(this).draw(origin, destination, mMap);
-        DrawMarker.getInstance(this).draw(mMap, origin, R.drawable.marker_a, origin_address);
-        DrawMarker.getInstance(this).draw(mMap, destination, R.drawable.marker_b, destination_address);
+        DrawMarker.getInstance(this).draw(mMap, origin, R.drawable.icon_origin_point, origin_address);
+        DrawMarker.getInstance(this).draw(mMap, destination, R.drawable.icon_destination_point, destination_address);
     }
 
-    private void initDistanceMatrix(String origin, String destination, String api_key) {
+    private void initDistanceMatrix(final LatLng origin_lats, final LatLng destination_lats, final String origin, final String destination, String api_key) {
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setCancelable(false);
@@ -448,13 +472,13 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
 
                             changeButtonText(databaseHelper.getAllVehicleTypes().size() - 1);
 
-                            checkDropOffAvailability();
-
-                            progressDialog.dismiss();
+                            checkDropOffAvailability(origin_lats, destination_lats, origin, destination);
 
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
+
+                        progressDialog.dismiss();
 
                     }
 
@@ -502,14 +526,13 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                             (new GetAddressTask(DashboardActivity.this)).execute(location);
 
                             LatLng myLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                            BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
-                            MarkerOptions markerOptions = new MarkerOptions().position(myLocation).icon(bitmapDescriptor);
+                            //BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
+                            //MarkerOptions markerOptions = new MarkerOptions().position(myLocation).icon(bitmapDescriptor);
                             //Location.distanceBetween(markerOptions.getPosition().latitude, markerOptions.getPosition().longitude, bidcoHq.latitude, bidcoHq.longitude, results);
-                            markerOptions.title(MY_ADDRESS);
-                            mMap.addMarker(markerOptions);
+                            //markerOptions.title(MY_ADDRESS);
+                            //mMap.addMarker(markerOptions);
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
-
-                            mMap.setTrafficEnabled(true);
+                            mMap.setMyLocationEnabled(true);
                             mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
                         } else {
@@ -1002,7 +1025,13 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
 
                 edtDropOffLocation.setText(place.getName().toString());
 
-                initDistanceMatrix(MY_ADDRESS, place.getAddress().toString(), "AIzaSyAK59qWv6ZvFvD44uvJaRipiH88B5lqTKU");
+                //Origin LatLng
+                LatLng originLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+
+                //Destination LatLng
+                LatLng destinationLatLng = new LatLng(latitude, longitude);
+
+                initDistanceMatrix(originLatLng, destinationLatLng, MY_ADDRESS, place.getAddress().toString(), "AIzaSyAK59qWv6ZvFvD44uvJaRipiH88B5lqTKU");
 
                 Location.distanceBetween(latitude, longitude, location.getLatitude(), location.getLongitude(), results);
 
