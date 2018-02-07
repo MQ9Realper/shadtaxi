@@ -80,7 +80,5 @@ dependencies {
     implementation 'info.hoang8f:android-segmented:1.0.6'
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.zhihu.android:matisse:0.4.3'
-    compile 'com.github.ar-android:DrawRouteMaps:1.0.0'
-
     testCompile 'junit:junit:4.12'
 }
