@@ -49,7 +49,7 @@
     <LinearLayout
         android:id="@+id/layoutSelectDropoff"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_marginBottom="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
@@ -73,16 +73,18 @@
 
         </LinearLayout>
 
-        <com.shadtaxi.shadtaxi.views.Txt
+        <com.shadtaxi.shadtaxi.views.TxtSemiBold
             android:id="@+id/edtDropOffLocation"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="8dp"
             android:background="@null"
-            android:hint="@string/hint_where_to"
-            android:padding="16dp"
+            android:text="@string/hint_where_to"
+            android:textColorHint="@color/colorBlack"
             android:textColor="@color/colorBlack"
             android:textCursorDrawable="@drawable/custom_cursor_secondary"
-            android:textSize="14sp" />
+            android:textSize="20sp" />
     </LinearLayout>
 
 </LinearLayout>
