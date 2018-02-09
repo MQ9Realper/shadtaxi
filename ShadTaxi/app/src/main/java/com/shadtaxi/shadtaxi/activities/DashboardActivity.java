@@ -71,10 +71,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.muddzdev.styleabletoastlibrary.StyleableToast;
@@ -151,7 +148,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         decimalFormat = new DecimalFormat("00.00");
         preferenceHelper = new PreferenceHelper(this);
         databaseHelper = new DatabaseHelper(this);
-        ArrayList<User> users = databaseHelper.getAllUsers();
+        final ArrayList<User> users = databaseHelper.getAllUsers();
         vehicleTypes = new ArrayList<>();
 
         initGoogleApiClient();
@@ -192,10 +189,10 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         btnProfileAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!btnProfileAction.getText().equals(R.string.string_become_driver)) {
-                    toggleUser();
-                } else if (btnProfileAction.getText().equals(R.string.string_become_driver)) {
+                if (users.get(0).isRider().equals("false")) {
                     becomeDriver();
+                } else {
+                    toggleUser();
                 }
             }
         });
@@ -815,7 +812,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                             try {
                                 JSONObject jsonObject = new JSONObject(response);
                                 JSONObject jsonObject1 = jsonObject.getJSONObject("data");
-                                showSnackbar(WordUtils.capitalizeFully(jsonObject1.getString("message")));
+                                utils.showErrorToast(WordUtils.capitalizeFully(jsonObject1.getString("message")));
 
                             } catch (Exception ex) {
                                 ex.printStackTrace();
@@ -1071,7 +1068,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
      * Show SnackBar
      */
     private void showSnackbar(final String text) {
-        View container = findViewById(R.id.layoutStart);
+        View container = findViewById(R.id.frameLayout);
 
         Snackbar snackbar = Snackbar.make(container, text, Snackbar.LENGTH_LONG);
 
@@ -1125,7 +1122,8 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                             indicateUserStatus(user);
 
                             View view = findViewById(R.id.layoutStart);
-                            utils.showSnackBar(view, WordUtils.capitalizeFully("You have switched to " + profile));
+
+                            utils.showSnackBar(view, WordUtils.capitalizeFully("You have switched to " + profile + " mode!"));
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -1171,7 +1169,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         utils.showProgressDialog("Please wait...");
         AndroidNetworking.post(Constants.BECOME_DRIVER)
                 .addHeaders("Authorization", "Bearer " + preferenceHelper.getAccessToken())
-                .addBodyParameter("latlong", "-4.365655,37.12444")
+                .addBodyParameter("latlong", preferenceHelper.getCurrentLocation())
                 .setTag("becomeDriver")
                 .setPriority(Priority.MEDIUM)
                 .build()
@@ -1205,6 +1203,8 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                             indicateUserStatus(user);
 
                             utils.dismissProgressDialog();
+
+                            showSnackbar(WordUtils.capitalizeFully("You have switched to " + profile + " mode!"));
 
                         } catch (JSONException e) {
                             e.printStackTrace();
