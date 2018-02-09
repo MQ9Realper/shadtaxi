@@ -239,7 +239,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
                             databaseHelper.updateUser(user);
 
-                            refreshToken();
+                            getProfileInfo();
+
+                            utils.dismissProgressDialog();
+
+                            utils.showSuccessToast("Profile has been updated!");
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -274,68 +278,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                         } else {
                             utils.showErrorToast("Internet is not available, please try again!");
                         }
-                    }
-                });
-    }
-
-    public void refreshToken() {
-        AndroidNetworking.post(Constants.LOGIN_URL)
-                .addBodyParameter("grant_type", "refresh_token")
-                .addBodyParameter("refresh_token", preferenceHelper.getRefreshToken())
-                .setTag("Refresh token")
-                .setContentType("application/x-www-form-urlencoded")
-                .setPriority(Priority.MEDIUM)
-                .build()
-                .getAsString(new StringRequestListener() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            JSONObject jsonObject = new JSONObject(response);
-                            String access_token = jsonObject.getString("access_token");
-                            String refresh_token = jsonObject.getString("refresh_token");
-
-                            preferenceHelper.putAccessToken(access_token);
-                            preferenceHelper.putRefreshToken(refresh_token);
-
-                            getProfileInfo();
-
-                            utils.dismissProgressDialog();
-                            utils.showSuccessToast("Profile has been updated!");
-
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-
-                    }
-
-                    @Override
-                    public void onError(ANError anError) {
-                        utils.dismissProgressDialog();
-                        String response_string = anError.getErrorBody();
-                        if (response_string != null) {
-                            if (response_string.contains("data")) {
-                                try {
-                                    JSONObject jsonObject = new JSONObject(response_string);
-                                    JSONObject jsonObject1 = jsonObject.getJSONObject("data");
-                                    utils.showErrorToast(jsonObject1.getString("message"));
-
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
-                                }
-                            } else {
-                                try {
-                                    JSONObject jsonObject = new JSONObject(response_string);
-                                    utils.showErrorToast(jsonObject.getString("message"));
-
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
-                                }
-                            }
-
-                        } else {
-                            utils.showErrorToast("Internet is not available, please try again!");
-                        }
-
                     }
                 });
     }
