@@ -16,6 +16,7 @@ android {
         targetSdkVersion 26
         versionCode generateVersionCode()
         versionName generateVersionName()
+        multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -80,5 +81,10 @@ dependencies {
     implementation 'info.hoang8f:android-segmented:1.0.6'
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.zhihu.android:matisse:0.4.3'
+    implementation 'com.google.firebase:firebase-core:11.8.0'
+    implementation 'com.google.firebase:firebase-crash:11.8.0'
+    implementation 'com.android.support:multidex:1.0.2'
     testCompile 'junit:junit:4.12'
 }
+
+apply plugin: 'com.google.gms.google-services'
