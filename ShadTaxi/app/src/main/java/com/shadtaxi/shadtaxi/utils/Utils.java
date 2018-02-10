@@ -27,13 +27,22 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.common.Priority;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.StringRequestListener;
 import com.bumptech.glide.Glide;
 import com.muddzdev.styleabletoastlibrary.StyleableToast;
 import com.shadtaxi.shadtaxi.R;
 import com.shadtaxi.shadtaxi.activities.DashboardActivity;
+import com.shadtaxi.shadtaxi.activities.NearestDriversActivity;
+import com.shadtaxi.shadtaxi.constants.Constants;
 import com.shadtaxi.shadtaxi.views.Btn;
 import com.shadtaxi.shadtaxi.views.Txt;
 import com.shadtaxi.shadtaxi.views.TxtSemiBold;
+
+import org.apache.commons.lang3.text.WordUtils;
+import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -52,11 +61,13 @@ public class Utils {
     private AlertDialog dialogConfirm, dialogTimer;
     private Dialog dialogOnTrip, dialogReceipt;
     private ProgressDialog progressDialog;
+    private PreferenceHelper preferenceHelper;
     private TxtSemiBold txtTimer;
 
     public Utils(Activity activity, AppCompatActivity appCompatActivity) {
         this.context = activity;
         this.appCompatActivity = appCompatActivity;
+        this.preferenceHelper = new PreferenceHelper(activity);
     }
 
     public void centerToolbarTitle(@NonNull final Toolbar toolbar) {
@@ -130,7 +141,9 @@ public class Utils {
                 progressDialog.setCancelable(false);
                 progressDialog.show();
 
-                new Handler().postDelayed(new Runnable() {
+               createRequest();
+
+              /*  new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         progressDialog.dismiss();
@@ -140,7 +153,7 @@ public class Utils {
 
                         showDriverTimer(driver_name, driver_image);
                     }
-                }, 4000);
+                }, 4000);*/
 
             }
         });
@@ -341,10 +354,76 @@ public class Utils {
         // Changing action button text color
         View sbView = snackbar.getView();
         TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
-        Typeface typeface = Typeface.createFromAsset(context.getAssets(),"fonts/Roboto-Bold.ttf");
+        Typeface typeface = Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Bold.ttf");
         textView.setTextColor(context.getResources().getColor(R.color.colorWhite));
         textView.setTypeface(typeface);
         snackbar.show();
+    }
+
+    /**
+     * Create Request
+     */
+    private void createRequest() {
+        showProgressDialog("Booking driver...");
+        AndroidNetworking.post(Constants.CREATE_REQUEST)
+                .addHeaders("Authorization", "Bearer " + preferenceHelper.getAccessToken())
+                .addHeaders("Content-Type", "application/x-www-form-urlencoded")
+                .addHeaders("Accept", "application/json")
+                .addBodyParameter("latlong", preferenceHelper.getCurrentLocation())
+                .addBodyParameter("location", preferenceHelper.getPickUpAddress())
+                .addBodyParameter("driver", String.valueOf(preferenceHelper.getUser_Id()))
+                .addBodyParameter("vehicle", String.valueOf(preferenceHelper.getCurrentVehicleId()))
+                .addBodyParameter("city", String.valueOf(preferenceHelper.getCityId()))
+                .addBodyParameter("vehicletype", String.valueOf(preferenceHelper.getSelectedVehicleTypeId()))
+                .setTag("createRequest")
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .getAsString(new StringRequestListener() {
+                    public void onResponse(String response) {
+                        dismissProgressDialog();
+                        if (response.contains("success")) {
+                            try {
+                                JSONObject jsonObject = new JSONObject(response);
+                                JSONObject jsonObject1 = jsonObject.getJSONObject("data");
+                                showErrorToast(WordUtils.capitalizeFully(jsonObject1.getString("message")));
+
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        } else {
+                            showSuccessToast(response);
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+                        dismissProgressDialog();
+                        String response_string = error.getErrorBody();
+                        if (response_string != null) {
+                            if (response_string.contains("data")) {
+                                try {
+                                    JSONObject jsonObject = new JSONObject(response_string);
+                                    JSONObject jsonObject1 = jsonObject.getJSONObject("data");
+                                    showErrorToast(jsonObject1.getString("message"));
+
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+                            } else {
+                                try {
+                                    JSONObject jsonObject = new JSONObject(response_string);
+                                    showErrorToast(jsonObject.getString("message"));
+
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+                            }
+
+                        } else {
+                            showErrorToast("Internet is not available, please try again!");
+                        }
+                    }
+                });
     }
 
 }
