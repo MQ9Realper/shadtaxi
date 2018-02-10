@@ -18,4 +18,5 @@ public class Constants {
     public static final String GET_VEHICLES = BASE_URL + "/api/driver/vehicles";
     public static final String LOC_UPDATE = BASE_URL + "/api/driver/locupdate";
     public static final String NEAREST_DRIVERS = BASE_URL + "/api/driver/nearest";
+    public static final String CREATE_REQUEST = BASE_URL + "/api/trip/create";
 }
