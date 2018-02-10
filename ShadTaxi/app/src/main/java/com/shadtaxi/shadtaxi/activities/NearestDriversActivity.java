@@ -6,18 +6,13 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.WindowManager;
-import android.widget.ListView;
 
 import com.shadtaxi.shadtaxi.R;
 import com.shadtaxi.shadtaxi.adapters.NearestDriversAdapter;
-import com.shadtaxi.shadtaxi.data.Data;
 import com.shadtaxi.shadtaxi.models.NearestDriver;
 import com.shadtaxi.shadtaxi.utils.PreferenceHelper;
 import com.shadtaxi.shadtaxi.utils.Utils;
-import com.shadtaxi.shadtaxi.views.Edt;
 
 import org.apache.commons.lang3.text.WordUtils;
 import org.json.JSONArray;
