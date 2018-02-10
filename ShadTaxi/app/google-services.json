@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "415581510471",
+    "firebase_url": "https://safiree-84927.firebaseio.com",
+    "project_id": "safiree-84927",
+    "storage_bucket": "safiree-84927.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:415581510471:android:04898dccaa49e05d",
+        "android_client_info": {
+          "package_name": "com.shadtaxi.shadtaxi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "415581510471-534rb98e5ap5377ach19sdeeesfv76fp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2kr-bVkGyGSWHGqpu6xqNevcP7GWzitE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
