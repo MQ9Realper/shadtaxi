@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.shadtaxi.shadtaxi.models.City;
 import com.shadtaxi.shadtaxi.models.User;
 import com.shadtaxi.shadtaxi.models.VehicleType;
 
@@ -18,13 +19,14 @@ import java.util.ArrayList;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Database Version
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     // Database Name
     private static final String DATABASE_NAME = "Safiree";
 
     private static final String TABLE_USER = "table_user";
     private static final String TABLE_VEHICLE_TYPES = "table_vehicle_types";
+    private static final String TABLE_CITY = "table_city";
 
     private static final String KEY_USER_ID = "user_id";
     private static final String KEY_USER_NAME = "user_name";
@@ -43,15 +45,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String KEY_VEHICLE_MINIMUM_PRICE = "vehicle_minimum_price";
     private static final String KEY_VEHICLE_BASE_PRICE = "vehicle_base_price";
 
+    private static final String KEY_CITY_ID = "city_id";
+    private static final String KEY_CITY_NAME = "city_name";
+    private static final String KEY_CITY_COUNTRY = "city_country";
+
     // User table create statement
     private static final String CREATE_USER_TABLE = "CREATE TABLE "
             + TABLE_USER + "(" + KEY_USER_ID + " INTEGER PRIMARY KEY, "
             + KEY_USER_NAME + " TEXT," + KEY_USER_EMAIL + " TEXT," + KEY_USER_PHONE + " TEXT," + KEY_USER_IMAGE + " TEXT," + KEY_USER_ISDRIVER + " TEXT," + KEY_USER_ISRIDER + " TEXT," + KEY_USER_PROFILE + " TEXT" + ")";
 
-    // User table create statement
+    // Vehicle table create statement
     private static final String CREATE_VEHICLE_TYPE_TABLE = "CREATE TABLE "
             + TABLE_VEHICLE_TYPES + "(" + KEY_VEHICLE_ID + " INTEGER PRIMARY KEY, "
             + KEY_VEHICLE_NAME + " TEXT," + KEY_VEHICLE_ICON + " TEXT," + KEY_VEHICLE_PER_DISTANCE + " DOUBLE," + KEY_VEHICLE_PER_MINUTE + " DOUBLE," + KEY_VEHICLE_MINIMUM_PRICE + " DOUBLE," + KEY_VEHICLE_BASE_PRICE + " DOUBLE" + ")";
+
+    // City table create statement
+    private static final String CREATE_CITY_TABLE = "CREATE TABLE "
+            + TABLE_CITY + "(" + KEY_CITY_ID + " INTEGER PRIMARY KEY, "
+            + KEY_CITY_NAME + " TEXT," + KEY_CITY_COUNTRY + " TEXT" + ")";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -62,6 +73,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_USER_TABLE);
         db.execSQL(CREATE_VEHICLE_TYPE_TABLE);
+        db.execSQL(CREATE_CITY_TABLE);
     }
 
     // Upgrading database
@@ -70,6 +82,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // Drop older table if existed
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_VEHICLE_TYPES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_CITY);
 
         // Create tables again
         onCreate(db);
@@ -109,8 +122,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    // Adding City
+    public void addCity(City city) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(KEY_CITY_ID, city.getId());
+        values.put(KEY_CITY_NAME, city.getName());
+        values.put(KEY_CITY_COUNTRY, city.getCountry());
+
+        db.insert(TABLE_CITY, null, values);
+        db.close();
+    }
+
+    // Get a single City record
+    public City getCity(int id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_CITY, new String[]{KEY_CITY_ID, KEY_CITY_NAME, KEY_CITY_COUNTRY}, KEY_CITY_ID + "=?", new String[]{String.valueOf(id)}, null, null, null, null);
+        if (cursor != null)
+            cursor.moveToFirst();
+
+        City city = new City();
+        city.setId(cursor.getInt(0));
+        city.setName(cursor.getString(1));
+        city.setCountry(cursor.getString(2));
+
+        return city;
+    }
+
     // Get all vehicles
-    // Get all users
     public ArrayList<VehicleType> getAllVehicleTypes() {
         ArrayList<VehicleType> vehicleTypes = new ArrayList<VehicleType>();
         String selectQuery = "SELECT * FROM " + TABLE_VEHICLE_TYPES;
@@ -215,10 +254,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Clear database
-    public void clearDatabase(){
+    public void clearDatabase() {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_USER,null, null);
-        db.delete(TABLE_VEHICLE_TYPES,null, null);
+        db.delete(TABLE_USER, null, null);
+        db.delete(TABLE_VEHICLE_TYPES, null, null);
         db.execSQL("delete from " + TABLE_USER);
         db.execSQL("delete from " + TABLE_VEHICLE_TYPES);
         db.close();
