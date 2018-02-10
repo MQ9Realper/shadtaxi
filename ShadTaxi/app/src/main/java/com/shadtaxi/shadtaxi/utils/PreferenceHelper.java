@@ -95,6 +95,16 @@ public class PreferenceHelper {
         edit.apply();
     }
 
+    public void putCityId(int city_id){
+        SharedPreferences.Editor edit = app_prefs.edit();
+        edit.putInt("city_id", city_id);
+        edit.apply();
+    }
+
+    public int getCityId(){
+        return app_prefs.getInt("city_id",0);
+    }
+
     public String getPickUpAddress() {
         return app_prefs.getString("pick_up_address", "");
     }
