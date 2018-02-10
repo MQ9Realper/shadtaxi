@@ -81,6 +81,7 @@ import com.shadtaxi.shadtaxi.constants.Constants;
 import com.shadtaxi.shadtaxi.database.DatabaseHelper;
 import com.shadtaxi.shadtaxi.draw_path.DrawMarker;
 import com.shadtaxi.shadtaxi.draw_path.DrawRouteMaps;
+import com.shadtaxi.shadtaxi.models.City;
 import com.shadtaxi.shadtaxi.models.User;
 import com.shadtaxi.shadtaxi.models.VehicleType;
 import com.shadtaxi.shadtaxi.utils.EqualSpacingItemDecoration;
@@ -822,6 +823,19 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                                 JSONObject jsonArray = new JSONObject(response);
                                 JSONObject jsonObject = jsonArray.getJSONObject("data");
                                 JSONArray jsonArray1 = jsonObject.getJSONArray("vehicletypes");
+                                JSONObject jsonObjectCity = jsonObject.getJSONObject("city");
+
+                                int city_id = jsonObjectCity.getInt("id");
+                                String city_name = jsonObjectCity.getString("name");
+                                String city_country = jsonObjectCity.getString("country");
+
+                                City city = new City();
+                                city.setId(city_id);
+                                city.setName(city_name);
+                                city.setCountry(city_country);
+
+                                preferenceHelper.putCityId(city_id);
+                                databaseHelper.addCity(city);
 
                                 for (int i = 0; i < jsonArray1.length(); i++) {
                                     JSONObject jsonObject1 = jsonArray1.getJSONObject(i);
