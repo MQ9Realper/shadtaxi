@@ -43,6 +43,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.androidnetworking.AndroidNetworking;
@@ -235,7 +236,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         if (users.isEmpty()) {
             user_name.setText(preferenceHelper.getUserName());
             user_mobile_number.setText(preferenceHelper.getUserEmail());
-            user_profile.setText(preferenceHelper.getUserProfile());
+            user_profile.setText(WordUtils.capitalizeFully(preferenceHelper.getUserProfile()));
 
             if (preferenceHelper.getUserProfile().equals("rider")) {
                 btnProfileAction.setText(R.string.string_switch_to_driver);
@@ -1088,8 +1089,10 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
 
         // Changing action button text color
         View sbView = snackbar.getView();
-        TxtSemiBold textView = (TxtSemiBold) sbView.findViewById(android.support.design.R.id.snackbar_text);
+        TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+        Typeface typeface = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Bold.ttf");
         textView.setTextColor(getResources().getColor(R.color.colorWhite));
+        textView.setTypeface(typeface);
         snackbar.show();
     }
 
