@@ -19,4 +19,6 @@ public class Constants {
     public static final String LOC_UPDATE = BASE_URL + "/api/driver/locupdate";
     public static final String NEAREST_DRIVERS = BASE_URL + "/api/driver/nearest";
     public static final String CREATE_REQUEST = BASE_URL + "/api/trip/create";
+    public static final String PUSHER_APP_KEY = "08f56b364869ae010d7f";
+    public static final String PUSHER_APP_CLUSTER = "mt1";
 }

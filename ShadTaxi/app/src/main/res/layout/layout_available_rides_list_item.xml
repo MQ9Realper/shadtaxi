@@ -56,7 +56,7 @@
                 android:backgroundTint="@color/colorAccent"
                 android:numStars="5" />
 
-            <com.shadtaxi.shadtaxi.views.Txt
+            <com.shadtaxi.shadtaxi.views.TxtSemiBold
                 android:id="@+id/txtDriverDistance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

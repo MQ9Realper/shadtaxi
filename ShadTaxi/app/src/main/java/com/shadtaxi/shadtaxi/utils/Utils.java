@@ -19,6 +19,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatRatingBar;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +34,10 @@ import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.StringRequestListener;
 import com.bumptech.glide.Glide;
 import com.muddzdev.styleabletoastlibrary.StyleableToast;
+import com.pusher.client.Pusher;
+import com.pusher.client.PusherOptions;
+import com.pusher.client.channel.Channel;
+import com.pusher.client.channel.SubscriptionEventListener;
 import com.shadtaxi.shadtaxi.R;
 import com.shadtaxi.shadtaxi.activities.DashboardActivity;
 import com.shadtaxi.shadtaxi.activities.NearestDriversActivity;
@@ -100,14 +105,14 @@ public class Utils {
         appCompatActivity.setSupportActionBar(toolbar);
     }
 
-    public void showConfirmationDialog(String pick_up, String drop_off, final String driver_name, String driver_distance, float driver_rating, final String driver_image) {
+    public void showConfirmationDialog(final String driver_email, final int driver_id, String pick_up, String drop_off, final String driver_name, String driver_distance, float driver_rating, final String driver_image) {
         dialogConfirm = new AlertDialog.Builder(context).create();
         dialogConfirm.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         final View dialogView = LayoutInflater.from(context).inflate(R.layout.layout_confirm_booking, null);
         dialogConfirm.setView(dialogView);
         dialogConfirm.setCancelable(false);
 
-        Txt txtDriverDistance = (Txt) dialogView.findViewById(R.id.txtConfirmDriverDistance);
+        TxtSemiBold txtDriverDistance = (TxtSemiBold) dialogView.findViewById(R.id.txtConfirmDriverDistance);
         Txt txtConfirmPickUp = (Txt) dialogView.findViewById(R.id.txtConfirmPickUp);
         Txt txtConfirmDropOff = (Txt) dialogView.findViewById(R.id.txtConfirmDropOff);
         TxtSemiBold txtDriverName = (TxtSemiBold) dialogView.findViewById(R.id.txtConfirmDriverName);
@@ -135,13 +140,7 @@ public class Utils {
         btnBook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final ProgressDialog progressDialog = new ProgressDialog(context);
-                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                progressDialog.setMessage("Booking driver...");
-                progressDialog.setCancelable(false);
-                progressDialog.show();
-
-               createRequest();
+                createRequest(driver_id, driver_email);
 
               /*  new Handler().postDelayed(new Runnable() {
                     @Override
@@ -363,7 +362,7 @@ public class Utils {
     /**
      * Create Request
      */
-    private void createRequest() {
+    private void createRequest(int driver_id, final String driver_email) {
         showProgressDialog("Booking driver...");
         AndroidNetworking.post(Constants.CREATE_REQUEST)
                 .addHeaders("Authorization", "Bearer " + preferenceHelper.getAccessToken())
@@ -371,10 +370,8 @@ public class Utils {
                 .addHeaders("Accept", "application/json")
                 .addBodyParameter("latlong", preferenceHelper.getCurrentLocation())
                 .addBodyParameter("location", preferenceHelper.getPickUpAddress())
-                .addBodyParameter("driver", String.valueOf(preferenceHelper.getUser_Id()))
-                .addBodyParameter("vehicle", String.valueOf(preferenceHelper.getCurrentVehicleId()))
+                .addBodyParameter("driver", String.valueOf(driver_id))
                 .addBodyParameter("city", String.valueOf(preferenceHelper.getCityId()))
-                .addBodyParameter("vehicletype", String.valueOf(preferenceHelper.getSelectedVehicleTypeId()))
                 .setTag("createRequest")
                 .setPriority(Priority.MEDIUM)
                 .build()
@@ -391,7 +388,16 @@ public class Utils {
                                 ex.printStackTrace();
                             }
                         } else {
-                            showSuccessToast(response);
+                            try {
+                                JSONObject jsonObject = new JSONObject(response);
+                                JSONObject jsonObject1 = jsonObject.getJSONObject("data");
+                                String tripId =  jsonObject1.getString("id");
+                                suscribeToPusher(tripId);
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+
+                            Log.e("createRequest::", response);
                         }
                     }
 
@@ -424,6 +430,103 @@ public class Utils {
                         }
                     }
                 });
+    }
+
+    private void suscribeToPusher(String trip_id){
+        PusherOptions pusherOptions = new PusherOptions();
+        pusherOptions.setCluster(Constants.PUSHER_APP_CLUSTER);
+
+        Pusher pusher = new Pusher(Constants.PUSHER_APP_KEY, pusherOptions);
+        pusher.connect();
+
+        Channel channel = pusher.subscribe("Trips-" + trip_id);
+        channel.bind("App\\Events\\TripCreated", new SubscriptionEventListener() {
+            @Override
+            public void onEvent(String channelName, String eventName, final String data) {
+                Log.e("dataCreated::", data);
+
+            }
+        });
+
+        channel.bind("App\\Events\\TripAccepted", new SubscriptionEventListener() {
+            @Override
+            public void onEvent(String channelName, String eventName, final String data) {
+                Log.e("dataAccepted::", data);
+
+            }
+        });
+
+        channel.bind("App\\Events\\TripRiderCancel", new SubscriptionEventListener() {
+            @Override
+            public void onEvent(String channelName, String eventName, final String data) {
+                Log.e("dataRiderCancel::", data);
+
+            }
+        });
+
+        channel.bind("App\\Events\\TripCancelled", new SubscriptionEventListener() {
+            @Override
+            public void onEvent(String channelName, String eventName, final String data) {
+                Log.e("dataCancelled::", data);
+
+            }
+        });
+
+        channel.bind("App\\Events\\TripRejected", new SubscriptionEventListener() {
+            @Override
+            public void onEvent(String channelName, String eventName, final String data) {
+                Log.e("dataRejected::", data);
+
+            }
+        });
+
+        channel.bind("App\\Events\\TripArrived", new SubscriptionEventListener() {
+            @Override
+            public void onEvent(String channelName, String eventName, final String data) {
+                Log.e("dataArrived::", data);
+
+            }
+        });
+
+        channel.bind("App\\Events\\TripStart", new SubscriptionEventListener() {
+            @Override
+            public void onEvent(String channelName, String eventName, final String data) {
+                Log.e("dataStart::", data);
+
+            }
+        });
+
+        channel.bind("App\\Events\\TripEnd", new SubscriptionEventListener() {
+            @Override
+            public void onEvent(String channelName, String eventName, final String data) {
+                Log.e("dataEnd::", data);
+
+            }
+        });
+
+        channel.bind("App\\Events\\TripPaid", new SubscriptionEventListener() {
+            @Override
+            public void onEvent(String channelName, String eventName, final String data) {
+                Log.e("dataPaid::", data);
+
+            }
+        });
+
+        channel.bind("App\\Events\\TripRiderRate", new SubscriptionEventListener() {
+            @Override
+            public void onEvent(String channelName, String eventName, final String data) {
+                Log.e("dataRiderRate::", data);
+
+            }
+        });
+
+        channel.bind("App\\Events\\TripDriverRate", new SubscriptionEventListener() {
+            @Override
+            public void onEvent(String channelName, String eventName, final String data) {
+                Log.e("dataDriverRate::", data);
+
+            }
+        });
     }
 
 }

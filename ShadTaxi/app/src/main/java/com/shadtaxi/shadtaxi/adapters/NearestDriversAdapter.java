@@ -14,7 +14,6 @@ import com.shadtaxi.shadtaxi.models.NearestDriver;
 import com.shadtaxi.shadtaxi.utils.PreferenceHelper;
 import com.shadtaxi.shadtaxi.utils.Utils;
 import com.shadtaxi.shadtaxi.views.Btn;
-import com.shadtaxi.shadtaxi.views.Txt;
 import com.shadtaxi.shadtaxi.views.TxtSemiBold;
 
 import java.util.ArrayList;
@@ -34,8 +33,7 @@ public class NearestDriversAdapter extends RecyclerView.Adapter<NearestDriversAd
     private List<NearestDriver> driverList;
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private TxtSemiBold txtDriverName;
-        private Txt txtDriverDistance;
+        private TxtSemiBold txtDriverName,txtDriverDistance;
         private CircleImageView imageDriver;
         private AppCompatRatingBar ratingBar;
         private Btn btnBook;
@@ -43,7 +41,7 @@ public class NearestDriversAdapter extends RecyclerView.Adapter<NearestDriversAd
         public ViewHolder(View view) {
             super(view);
             txtDriverName = (TxtSemiBold) view.findViewById(R.id.txtDriverName);
-            txtDriverDistance = (Txt) view.findViewById(R.id.txtDriverDistance);
+            txtDriverDistance = (TxtSemiBold) view.findViewById(R.id.txtDriverDistance);
             imageDriver = (CircleImageView) view.findViewById(R.id.imgDriverImage);
             ratingBar = (AppCompatRatingBar) view.findViewById(R.id.ratingDriverRating);
             btnBook = (Btn) view.findViewById(R.id.btnDriverBook);
@@ -88,7 +86,7 @@ public class NearestDriversAdapter extends RecyclerView.Adapter<NearestDriversAd
         viewHolder.btnBook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                utils.showConfirmationDialog(preferenceHelper.getPickUpAddress(), preferenceHelper.getDropOffAddress(), driverList.get(position).getName(), driverList.get(position).getDistance(), driverList.get(position).getRating(), driverList.get(position).getImage_url());
+                utils.showConfirmationDialog(driverList.get(position).getEmail(), driverList.get(position).getId(), preferenceHelper.getPickUpAddress(), preferenceHelper.getDropOffAddress(), driverList.get(position).getName(), driverList.get(position).getDistance(), driverList.get(position).getRating(), driverList.get(position).getImage_url());
             }
         });
     }
