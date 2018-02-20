@@ -14,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -120,6 +121,7 @@ public class LoginFragment extends Fragment {
                 .getAsString(new StringRequestListener() {
                     @Override
                     public void onResponse(String response) {
+                        Log.e("login", response);
                         try {
                             JSONObject jsonObject = new JSONObject(response);
                             String access_token = jsonObject.getString("access_token");
@@ -193,14 +195,6 @@ public class LoginFragment extends Fragment {
                             final String isRider = jsonObject.getString("isRider");
                             final String isDriver = jsonObject.getString("isDriver");
                             final String profile = jsonObject.getString("profile");
-
-                            JSONObject jsonObjectDriver = jsonObject.getJSONObject("driver");
-                            JSONObject jsonData = jsonObjectDriver.getJSONObject("data");
-                            JSONObject jsonObjectCurrent = jsonData.getJSONObject("current");
-                            JSONObject jsonCurrentData = jsonObjectCurrent.getJSONObject("data");
-
-                            int current_vehicle_id = jsonCurrentData.getInt("id");
-                            preferenceHelper.putCurrentVehicleId(current_vehicle_id);
 
                             User user = new User();
                             user.setId(id);
