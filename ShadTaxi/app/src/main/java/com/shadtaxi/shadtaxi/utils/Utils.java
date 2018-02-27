@@ -391,13 +391,22 @@ public class Utils {
                             try {
                                 JSONObject jsonObject = new JSONObject(response);
                                 JSONObject jsonObject1 = jsonObject.getJSONObject("data");
-                                String tripId =  jsonObject1.getString("id");
-                                suscribeToPusher(tripId);
+                                String tripId = jsonObject1.getString("id");
+                                subscribeToPusher(tripId);
+
+                                if (dialogConfirm.isShowing()) {
+                                    dialogConfirm.dismiss();
+                                }
+
+                                showProgressDialog("Waiting for driver accept...");
+
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
 
+                            // Display waiting for driver to accept dialog
                             Log.e("createRequest::", response);
+
                         }
                     }
 
@@ -432,7 +441,7 @@ public class Utils {
                 });
     }
 
-    private void suscribeToPusher(String trip_id){
+    private void subscribeToPusher(String trip_id) {
         PusherOptions pusherOptions = new PusherOptions();
         pusherOptions.setCluster(Constants.PUSHER_APP_CLUSTER);
 
@@ -440,19 +449,12 @@ public class Utils {
         pusher.connect();
 
         Channel channel = pusher.subscribe("Trips-" + trip_id);
-        channel.bind("App\\Events\\TripCreated", new SubscriptionEventListener() {
-            @Override
-            public void onEvent(String channelName, String eventName, final String data) {
-                Log.e("dataCreated::", data);
-
-            }
-        });
 
         channel.bind("App\\Events\\TripAccepted", new SubscriptionEventListener() {
             @Override
             public void onEvent(String channelName, String eventName, final String data) {
                 Log.e("dataAccepted::", data);
-
+                processEventData(data);
             }
         });
 
@@ -484,6 +486,7 @@ public class Utils {
             @Override
             public void onEvent(String channelName, String eventName, final String data) {
                 Log.e("dataArrived::", data);
+                processEventData(data);
 
             }
         });
@@ -492,7 +495,8 @@ public class Utils {
             @Override
             public void onEvent(String channelName, String eventName, final String data) {
                 Log.e("dataStart::", data);
-
+                //showOnTripDialog();
+                processEventData(data);
             }
         });
 
@@ -527,6 +531,40 @@ public class Utils {
 
             }
         });
+    }
+
+    private void processEventData(String data) {
+        try {
+            JSONObject jsonObject = new JSONObject(data);
+            JSONObject tripJSON = jsonObject.getJSONObject("trip");
+            String status = tripJSON.getString("status");
+
+            showSuccessToast(status);
+            switch (status) {
+                case "ACCEPTED":
+                    //dismissProgressDialog();
+                    showSuccessToast("Driver has accepted");
+                    //showDriverTimer("Maurice", ""); // Also include time
+                    Log.e("status", "=== "+status);
+                    break;
+                case "ARRIVED":
+                    Toast.makeText(context, status, Toast.LENGTH_SHORT).show();
+                    break;
+                case "STARTED":
+                    break;
+                case "ENDED":
+                    break;
+                case "PAID":
+                    break;
+                case "RATED":
+                    break;
+                default:
+                    break;
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
 }
