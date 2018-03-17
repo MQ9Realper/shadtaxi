@@ -37,7 +37,11 @@ import com.muddzdev.styleabletoastlibrary.StyleableToast;
 import com.pusher.client.Pusher;
 import com.pusher.client.PusherOptions;
 import com.pusher.client.channel.Channel;
+import com.pusher.client.channel.PresenceChannelEventListener;
+import com.pusher.client.channel.PrivateChannel;
+import com.pusher.client.channel.PrivateChannelEventListener;
 import com.pusher.client.channel.SubscriptionEventListener;
+import com.pusher.client.util.HttpAuthorizer;
 import com.shadtaxi.shadtaxi.R;
 import com.shadtaxi.shadtaxi.activities.DashboardActivity;
 import com.shadtaxi.shadtaxi.activities.NearestDriversActivity;
@@ -52,6 +56,10 @@ import org.json.JSONObject;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -442,95 +450,119 @@ public class Utils {
     }
 
     private void subscribeToPusher(String trip_id) {
-        PusherOptions pusherOptions = new PusherOptions();
+        Map<String, String> mapHeaders = new HashMap<>();
+        mapHeaders.put("Authorization", "Bearer " + preferenceHelper.getAccessToken());
+        HttpAuthorizer authorizer = new HttpAuthorizer(Constants.PUSHER_AUTHENTICATOR);
+        authorizer.setHeaders(mapHeaders);
+
+        PusherOptions pusherOptions = new PusherOptions().setAuthorizer(authorizer);
         pusherOptions.setCluster(Constants.PUSHER_APP_CLUSTER);
 
         Pusher pusher = new Pusher(Constants.PUSHER_APP_KEY, pusherOptions);
+
+        PrivateChannel channel = pusher.subscribePrivate("private-Trips-" + trip_id, new PrivateChannelEventListener() {
+            @Override
+            public void onAuthenticationFailure(String s, Exception e) {
+                Log.e("auth::", "Authentication failed!!" + s);
+            }
+
+            @Override
+            public void onSubscriptionSucceeded(String s) {
+                Log.e("auth::", "Authentication succeeded!!" + s);
+            }
+
+            @Override
+            public void onEvent(String channelName, String eventName, String data) {
+                Log.e("pusher","EventName::" + eventName);
+                if (eventName.contains("TripAccepted")){
+                    Log.e("pusher","EventName::" + data);
+                }
+
+            }
+        },"App\\Events\\TripAccepted", "App\\Events\\TripArrived","App\\Events\\TripStart","App\\Events\\TripEnd","App\\Events\\TripPaid");
+
         pusher.connect();
 
-        Channel channel = pusher.subscribe("Trips-" + trip_id);
-
-        channel.bind("App\\Events\\TripAccepted", new SubscriptionEventListener() {
-            @Override
-            public void onEvent(String channelName, String eventName, final String data) {
-                Log.e("dataAccepted::", data);
-                processEventData(data);
-            }
-        });
-
-        channel.bind("App\\Events\\TripRiderCancel", new SubscriptionEventListener() {
-            @Override
-            public void onEvent(String channelName, String eventName, final String data) {
-                Log.e("dataRiderCancel::", data);
-
-            }
-        });
-
-        channel.bind("App\\Events\\TripCancelled", new SubscriptionEventListener() {
-            @Override
-            public void onEvent(String channelName, String eventName, final String data) {
-                Log.e("dataCancelled::", data);
-
-            }
-        });
-
-        channel.bind("App\\Events\\TripRejected", new SubscriptionEventListener() {
-            @Override
-            public void onEvent(String channelName, String eventName, final String data) {
-                Log.e("dataRejected::", data);
-
-            }
-        });
-
-        channel.bind("App\\Events\\TripArrived", new SubscriptionEventListener() {
-            @Override
-            public void onEvent(String channelName, String eventName, final String data) {
-                Log.e("dataArrived::", data);
-                processEventData(data);
-
-            }
-        });
-
-        channel.bind("App\\Events\\TripStart", new SubscriptionEventListener() {
-            @Override
-            public void onEvent(String channelName, String eventName, final String data) {
-                Log.e("dataStart::", data);
-                //showOnTripDialog();
-                processEventData(data);
-            }
-        });
-
-        channel.bind("App\\Events\\TripEnd", new SubscriptionEventListener() {
-            @Override
-            public void onEvent(String channelName, String eventName, final String data) {
-                Log.e("dataEnd::", data);
-
-            }
-        });
-
-        channel.bind("App\\Events\\TripPaid", new SubscriptionEventListener() {
-            @Override
-            public void onEvent(String channelName, String eventName, final String data) {
-                Log.e("dataPaid::", data);
-
-            }
-        });
-
-        channel.bind("App\\Events\\TripRiderRate", new SubscriptionEventListener() {
-            @Override
-            public void onEvent(String channelName, String eventName, final String data) {
-                Log.e("dataRiderRate::", data);
-
-            }
-        });
-
-        channel.bind("App\\Events\\TripDriverRate", new SubscriptionEventListener() {
-            @Override
-            public void onEvent(String channelName, String eventName, final String data) {
-                Log.e("dataDriverRate::", data);
-
-            }
-        });
+//        channel.bind("App\\Events\\TripAccepted", new SubscriptionEventListener() {
+//            @Override
+//            public void onEvent(String channelName, String eventName, final String data) {
+//                Log.e("dataAccepted::", data);
+//                processEventData(data);
+//            }
+//        });
+//
+//        channel.bind("App\\Events\\TripRiderCancel", new SubscriptionEventListener() {
+//            @Override
+//            public void onEvent(String channelName, String eventName, final String data) {
+//                Log.e("dataRiderCancel::", data);
+//
+//            }
+//        });
+//
+//        channel.bind("App\\Events\\TripCancelled", new SubscriptionEventListener() {
+//            @Override
+//            public void onEvent(String channelName, String eventName, final String data) {
+//                Log.e("dataCancelled::", data);
+//
+//            }
+//        });
+//
+//        channel.bind("App\\Events\\TripRejected", new SubscriptionEventListener() {
+//            @Override
+//            public void onEvent(String channelName, String eventName, final String data) {
+//                Log.e("dataRejected::", data);
+//
+//            }
+//        });
+//
+//        channel.bind("App\\Events\\TripArrived", new SubscriptionEventListener() {
+//            @Override
+//            public void onEvent(String channelName, String eventName, final String data) {
+//                Log.e("dataArrived::", data);
+//                processEventData(data);
+//
+//            }
+//        });
+//
+//        channel.bind("App\\Events\\TripStart", new SubscriptionEventListener() {
+//            @Override
+//            public void onEvent(String channelName, String eventName, final String data) {
+//                Log.e("dataStart::", data);
+//                //showOnTripDialog();
+//                processEventData(data);
+//            }
+//        });
+//
+//        channel.bind("App\\Events\\TripEnd", new SubscriptionEventListener() {
+//            @Override
+//            public void onEvent(String channelName, String eventName, final String data) {
+//                Log.e("dataEnd::", data);
+//
+//            }
+//        });
+//
+//        channel.bind("App\\Events\\TripPaid", new SubscriptionEventListener() {
+//            @Override
+//            public void onEvent(String channelName, String eventName, final String data) {
+//                Log.e("dataPaid::", data);
+//            }
+//        });
+//
+//        channel.bind("App\\Events\\TripRiderRate", new SubscriptionEventListener() {
+//            @Override
+//            public void onEvent(String channelName, String eventName, final String data) {
+//                Log.e("dataRiderRate::", data);
+//
+//            }
+//        });
+//
+//        channel.bind("App\\Events\\TripDriverRate", new SubscriptionEventListener() {
+//            @Override
+//            public void onEvent(String channelName, String eventName, final String data) {
+//                Log.e("dataDriverRate::", data);
+//
+//            }
+//        });
     }
 
     private void processEventData(String data) {
@@ -542,10 +574,9 @@ public class Utils {
             showSuccessToast(status);
             switch (status) {
                 case "ACCEPTED":
-                    //dismissProgressDialog();
-                    showSuccessToast("Driver has accepted");
-                    //showDriverTimer("Maurice", ""); // Also include time
-                    Log.e("status", "=== "+status);
+                    dismissProgressDialog();
+                    showDriverTimer("Maurice", ""); // Also include time
+                    Log.e("status", "=== " + status);
                     break;
                 case "ARRIVED":
                     Toast.makeText(context, status, Toast.LENGTH_SHORT).show();

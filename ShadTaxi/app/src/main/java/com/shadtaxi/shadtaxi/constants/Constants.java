@@ -21,4 +21,5 @@ public class Constants {
     public static final String CREATE_REQUEST = BASE_URL + "/api/trip/create";
     public static final String PUSHER_APP_KEY = "08f56b364869ae010d7f";
     public static final String PUSHER_APP_CLUSTER = "mt1";
+    public static final String PUSHER_AUTHENTICATOR = BASE_URL + "/broadcasting/auth";
 }
