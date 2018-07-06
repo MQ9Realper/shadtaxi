@@ -676,10 +676,10 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
             if (addresses != null && addresses.size() > 0) {
                 // Get the first address
                 Address address = addresses.get(0);
-            /*
-             * Format the first line of address (if available),
-             * city, and country name.
-             */
+                /*
+                 * Format the first line of address (if available),
+                 * city, and country name.
+                 */
                 String addressText = String.format(
                         "%s, %s, %s",
                         // If there's a street address, add it
@@ -1307,7 +1307,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                                 try {
                                     JSONObject jsonObject = new JSONObject(response_string);
                                     JSONObject jsonObject1 = jsonObject.getJSONObject("data");
-                                    utils.showErrorToast(jsonObject1.getString("message"));
+                                    utils.showErrorToast(WordUtils.capitalize(jsonObject1.getString("message")));
 
                                 } catch (Exception ex) {
                                     ex.printStackTrace();
@@ -1315,7 +1315,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                             } else {
                                 try {
                                     JSONObject jsonObject = new JSONObject(response_string);
-                                    utils.showErrorToast(jsonObject.getString("message"));
+                                    utils.showErrorToast(WordUtils.capitalize(jsonObject.getString("message")));
 
                                 } catch (Exception ex) {
                                     ex.printStackTrace();
@@ -1340,11 +1340,15 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 layoutBookingDetails.setVisibility(View.GONE);
             }
 
+            resetMapDisplay();
+
         } else if (user.getProfile().equals("rider")) {
             btnProfileAction.setText(getString(R.string.string_switch_to_driver));
             txtUserProfile.setText(WordUtils.capitalizeFully(user.getProfile()));
             menuItemDriverSettings.setVisible(false);
             layoutDropOff.setVisibility(View.VISIBLE);
+
+            resetMapDisplay();
         }
 
     }
