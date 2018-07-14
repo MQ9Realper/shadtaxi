@@ -78,6 +78,7 @@ public class StartActivity extends AppCompatActivity {
         initGoogleApiClient();
 
         if (preferenceHelper.getIsLoggedIn()) {
+            //if status == driver, listen to requests
             trackLocation();
             Intent intent = new Intent(StartActivity.this, DashboardActivity.class);
             startActivity(intent);
@@ -185,14 +186,7 @@ public class StartActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        try {
-            if (GpsLocationReceiver != null) {
-                unregisterReceiver(GpsLocationReceiver);
-            }
 
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
     }
 
     /**
